@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Juegos educativos interactivos para niños que aprenden español" />
+  <title>El Rincón Español - Aprende Español Jugando</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div class="container">
+          <!-- Área de usuario (derecha) -->
+          <div id="header-user" class="header-user" style="display:none;">
+            <span class="user-greet">👋 Hola, <strong id="user-name"></strong></span>
+            <button id="header-logout" class="option-btn" style="padding:6px 12px; background:#ff6b6b;">Salir</button>
+          </div>
+          <div class="brand" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <img src="/logo-rincon.png" alt="El Rincón Español" class="logo-img" onerror="this.style.display='none'" />
+            <h1 class="logo">El Rincón Español</h1>
+          </div>
+          <p class="subtitle">¡Aprende Español Jugando!</p>
+        </div>
+      </header>
+
+      <main class="main">
+        <div class="container">
+          <section class="welcome-section">
+            <h2>¡Bienvenidos pequeños exploradores!</h2>
+            <p>Descubre el mundo del español a través de juegos divertidos</p>
+          </section>
+
+          <!-- Menu Principal -->
+          <section class="main-menu" id="main-menu">
+            <div class="menu-grid">
+              <div class="menu-card" data-section="videos">
+                <img src="/videos.png" alt="Videos" class="menu-icon-img" />
+                <h3 class="menu-title">Videos</h3>
+                <p class="menu-description">Aprende con videos educativos y divertidos</p>
+              </div>
+              <div class="menu-card" data-section="games">
+                <img src="/juegos.png" alt="Juegos" class="menu-icon-img" />
+                <h3 class="menu-title">Juegos</h3>
+                <p class="menu-description">Practica palabras y amplía tu vocabulario</p>
+              </div>
+              <div class="menu-card" data-section="vocabulario">
+                <img src="/vocabulario.png" alt="Vocabulario" class="menu-icon-img" />
+                <h3 class="menu-title">Vocabulario</h3>
+                <p class="menu-description">Teoría y listas para aprender nuevas palabras</p>
+              </div>
+              <div class="menu-card" data-section="gramatica">
+                <img src="/gramatica.png" alt="Gramática" class="menu-icon-img" />
+                <h3 class="menu-title">Gramática</h3>
+                <p class="menu-description">Reglas, ejemplos y trucos de gramática</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Sección Videos -->
+          <section class="section-container hidden" id="videos-section">
+            <div class="section-header">
+              <button class="back-btn" id="videos-back-btn">← Volver al Menú</button>
+              <h2 class="section-title">🎬 Videos Educativos</h2>
+              <div class="videos-search" style="margin-left:auto; display:flex; align-items:center; gap:8px;">
+                <input id="videos-search" type="search" placeholder="Buscar videos..." aria-label="Buscar videos por título" />
+                <button id="videos-admin-gear" class="option-btn" title="Administrar videos" style="padding:6px 10px;display:none;">⚙️</button>
+              </div>
+            </div>
+            <div class="videos-grid" id="videos-grid">
+              <!-- Videos se cargarán aquí -->
+            </div>
+          </section>
+
+          <!-- Sección Vocabulario (Teoría) -->
+          <section class="section-container hidden" id="vocabulario-section">
+            <div class="section-header">
+              <button class="back-btn" id="vocabulario-back-btn">← Volver al Menú</button>
+              <h2 class="section-title">📚 Teoría de Vocabulario</h2>
+              <button id="vocabulario-admin-gear" class="option-btn" title="Editar páginas de vocabulario" style="margin-left:auto;padding:6px 10px;display:none;">⚙️</button>
+            </div>
+            <div class="theory-grid" id="vocabulario-content">
+              <!-- Contenido teórico de vocabulario -->
+              <article class="theory-card">
+                <h4>Introducción</h4>
+                <p>Aprende nuevas palabras por temas y practica con ejemplos.</p>
+              </article>
+            </div>
+          </section>
+
+          <!-- Sección Gramática (Teoría) -->
+          <section class="section-container hidden" id="gramatica-section">
+            <div class="section-header">
+              <button class="back-btn" id="gramatica-back-btn">← Volver al Menú</button>
+              <h2 class="section-title">🧠 Gramática</h2>
+              <button id="gramatica-admin-gear" class="option-btn" title="Editar páginas de gramática" style="margin-left:auto;padding:6px 10px;display:none;">⚙️</button>
+            </div>
+            <div class="theory-grid" id="gramatica-content">
+              <!-- Contenido teórico de gramática -->
+              <article class="theory-card">
+                <h4>¿Qué es la gramática?</h4>
+                <p>Reglas y ejemplos para hablar y escribir mejor.</p>
+              </article>
+            </div>
+          </section>
+
+          
+
+          <!-- Sección Vocabulary -->
+          <section class="section-container hidden" id="vocabulary-section">
+            <div class="section-header">
+              <button class="back-btn" id="vocabulary-back-btn">← Volver al Menú</button>
+              <h2 class="section-title">🎮 Juegos</h2>
+              <div id="auth-box" style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+                <button id="auth-login" class="option-btn" style="padding:6px 10px;">Entrar</button>
+                <button id="auth-register" class="option-btn" style="padding:6px 10px; background:#4ECDC4;">Crear</button>
+              </div>
+            </div>
+            <div class="games-grid" id="vocabulary-games-grid">
+              <!-- Juegos de vocabulario se cargarán aquí -->
+            </div>
+          </section>
+
+
+          <!-- Contenedor del Juego -->
+          <section class="game-container hidden" id="game-container">
+            <div class="game-header">
+              <button class="back-btn" id="back-btn">← Volver</button>
+              <h3 class="game-title" id="game-title"></h3>
+              <div class="game-stats">
+                <div class="score" id="score">Puntos: 0</div>
+                <div class="progress" id="progress">1/5</div>
+                <div class="lives" id="lives">❤️❤️❤️</div>
+              </div>
+            </div>
+            <div class="game-content" id="game-content">
+              <!-- El contenido del juego se carga aquí -->
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="container">
+          <p>&copy; 2025 El Rincón Español - Aprendiendo español con diversión</p>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main-router.js"></script>
+  </body>
+</html>

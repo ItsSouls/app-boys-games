@@ -1,0 +1,103 @@
+/* Selector de temática para Bubble/Multichoice */
+.theme-selector {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.section-container { animation: slideIn 0.5s ease-out; }
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid #f0f0f0;
+}
+
+.section-title {
+  font-size: 2.2rem;
+  color: #ff6b6b;
+  font-weight: 700;
+  margin: 0;
+}
+
+.themes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.theme-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.theme-card:hover::before { transform: scaleX(1); }
+
+.theme-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  border-color: #4ecdc4;
+}
+
+.theme-icon { font-size: 3.5rem; margin-bottom: 15px; display: block; filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1)); }
+
+.theme-card h3 { font-size: 1.6rem; color: #333; margin-bottom: 10px; font-weight: 700; }
+.theme-card p { color: #666; font-size: 1rem; margin-bottom: 15px; line-height: 1.4; }
+
+.theme-words-count {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.theme-select-btn {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.theme-select-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+  background: linear-gradient(135deg, #ff5252 0%, #ff8f00 100%);
+}
+
+.theme-select-btn:active { transform: translateY(0); }
