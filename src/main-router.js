@@ -745,6 +745,8 @@ router.route('/games/:gameId', (params) =>
   }),
 );
 
+router.init();
+
 document.addEventListener('DOMContentLoaded', () => {
   refreshUserGreeting();
   ensureThemesLoaded().catch(logThemeWarning);
@@ -777,6 +779,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+
+
 
 
 

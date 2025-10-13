@@ -1,9 +1,12 @@
 // Sistema de enrutamiento SPA para App Boys Games
 export class Router {
-  constructor() {
+  constructor({ autoStart = true } = {}) {
     this.routes = {};
     this.currentRoute = '';
-    this.init();
+    this.isStarted = false;
+    if (autoStart) {
+      this.init();
+    }
   }
 
   // Registrar una ruta
@@ -88,6 +91,8 @@ export class Router {
 
   // Inicializar el router
   init() {
+    if (this.isStarted) return;
+    this.isStarted = true;
     // Manejar botón atrás/adelante del navegador
     window.addEventListener('popstate', () => {
       this.handleRoute(window.location.pathname);
@@ -105,4 +110,4 @@ export class Router {
 }
 
 // Instancia global del router
-export const router = new Router();
+export const router = new Router({ autoStart: false });
