@@ -1,4 +1,4 @@
-﻿const API_BASE = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
 
 import { vocabularyGames } from '../../data/games.js';
 
@@ -48,7 +48,7 @@ export function getThemeSummary() {
   const bubbles = themes.filter((t) => t.gameType === 'bubbles').length;
   return {
     multichoice,
-    bubbles: bubbles || multichoice, // bubble usa mismas temÃ¡ticas si no hay dedicadas
+    bubbles: bubbles || multichoice, // bubble usa mismas temáticas si no hay dedicadas
   };
 }
 

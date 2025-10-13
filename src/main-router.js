@@ -1,4 +1,4 @@
-ï»¿// App Boys Games - SPA principal
+// App Boys Games - SPA principal
 import './css/main.css';
 import { router } from './js/router.js';
 import { GameController } from './js/games/gameController.js';
@@ -57,9 +57,9 @@ function showSection(sectionName) {
 async function renderTheory(sectionName) {
   const container = document.getElementById(`${sectionName}-content`);
   if (!container) return;
-  container.innerHTML = '<div style="padding:12px;color:#666;">Cargandoâ€¦</div>';
+  container.innerHTML = '<div style="padding:12px;color:#666;">Cargando…</div>';
   try {
-    const base = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
     const res = await fetch(`${base}/public/pages?section=${encodeURIComponent(sectionName)}`);
     if (!res.ok) throw new Error('Sin contenido');
     const data = await res.json();
@@ -73,7 +73,7 @@ async function renderTheory(sectionName) {
               </article>
             `)
           .join('')
-      : '<div style="padding:12px;color:#666;">No hay contenido todavÃ­a.</div>';
+      : '<div style="padding:12px;color:#666;">No hay contenido todavía.</div>';
   } catch (err) {
     console.error('[theory]', err);
     container.innerHTML = '<div style="padding:12px;color:#e74c3c;">Error al cargar contenido.</div>';
@@ -154,7 +154,7 @@ async function showUnifiedThemeSelector(targetGame) {
   document.querySelector('.game-stats')?.style?.setProperty('display', 'none');
   const titleEl = document.querySelector('#game-title');
   if (titleEl) {
-    titleEl.innerHTML = targetGame === 'bubbles' ? 'ðŸ«§ Burbujas' : 'â“ Multirespuesta';
+    titleEl.innerHTML = targetGame === 'bubbles' ? '?? Burbujas' : '? Multirespuesta';
     titleEl.style.color = targetGame === 'bubbles' ? '#FF9500' : '#4ECDC4';
   }
 
@@ -185,7 +185,7 @@ async function showUnifiedThemeSelector(targetGame) {
           .map(
             ([slug, theme]) => `
               <div class="theme-card" data-theme="${slug}">
-                <div class="theme-icon">${theme.icon || 'ðŸ“˜'}</div>
+                <div class="theme-icon">${theme.icon || '??'}</div>
                 <h3>${theme.title}</h3>
                 <p>${theme.description || ''}</p>
                 <div class="theme-words-count">${theme.words.length} palabras</div>
@@ -237,7 +237,7 @@ async function showGame(gameId) {
 
   const titleEl = document.querySelector('#game-title');
   if (titleEl) {
-    titleEl.innerHTML = `${theme.icon || 'ðŸ“˜'} ${theme.title}`;
+    titleEl.innerHTML = `${theme.icon || '??'} ${theme.title}`;
     titleEl.style.color = '#4ECDC4';
   }
 
@@ -288,7 +288,7 @@ async function refreshUserGreeting() {
     const current = location.pathname.replace(/^\/+/, '').split('/')[0] || '';
     if (current) maybeShowSectionAdminGear(current);
   } catch (err) {
-    console.warn('[auth] token invÃ¡lido', err);
+    console.warn('[auth] token inválido', err);
     localStorage.removeItem('abg_token');
     headerUser.style.display = 'none';
     nameEl.textContent = '';
@@ -336,7 +336,7 @@ async function openAdminPanelModal() {
   modal.style.cssText = 'background:#fff;border-radius:12px;max-width:960px;width:95%;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);font-family:inherit;';
   modal.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-      <h3 style="margin:0">Panel de AdministraciÃ³n</h3>
+      <h3 style="margin:0">Panel de Administración</h3>
       <button id="admin-close" class="option-btn" style="background:#ccc;color:#333;">Cerrar</button>
     </div>
     <div style="display:flex;gap:16px;flex-wrap:wrap;">
@@ -381,11 +381,11 @@ async function loadAdminVideos(container) {
   if (!container) return;
   const token = localStorage.getItem('abg_token');
   if (!token) {
-    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesiÃ³n como administrador</div>';
+    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesión como administrador</div>';
     return;
   }
   try {
-    const base = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
     const res = await fetch(`${base}/admin/videos`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -398,7 +398,7 @@ async function loadAdminVideos(container) {
           .map(
             (video) => `
               <div style="padding:6px 4px;border-bottom:1px solid #eee;display:flex;gap:8px;align-items:center;">
-                <span style="font-size:20px">${video.emoji || 'ðŸ“º'}</span>
+                <span style="font-size:20px">${video.emoji || '??'}</span>
                 <div style="flex:1;min-width:0;">
                   <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${video.title}</div>
                   <div style="font-size:12px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${video.description || ''}</div>
@@ -417,11 +417,11 @@ async function loadAdminThemes(container) {
   if (!container) return;
   const token = localStorage.getItem('abg_token');
   if (!token) {
-    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesiÃ³n como administrador</div>';
+    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesión como administrador</div>';
     return;
   }
   try {
-    const base = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
     const res = await fetch(`${base}/admin/themes`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -477,7 +477,7 @@ async function loadAdminThemes(container) {
 async function deleteTheme(id, container) {
   const token = localStorage.getItem('abg_token') || '';
   try {
-    const base = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
     const res = await fetch(`${base}/admin/themes/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
@@ -528,9 +528,9 @@ function openThemeEditor(theme = null, container) {
     <h3 style="margin:0 0 10px 0">${theme ? 'Editar' : 'Nueva'} tematica</h3>
     <div style="display:grid;gap:10px;">
       <input id="t-slug" placeholder="Identificador (slug)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" value="${theme?.slug || ''}" ${theme ? 'disabled' : ''} />
-      <input id="t-title" placeholder="TÃ­tulo" style="padding:8px;border:1px solid #ddd;border-radius:8px;" value="${theme?.title || ''}" />
+      <input id="t-title" placeholder="Título" style="padding:8px;border:1px solid #ddd;border-radius:8px;" value="${theme?.title || ''}" />
       <input id="t-icon" placeholder="Emoji/Icono (opcional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" value="${theme?.icon || ''}" />
-      <textarea id="t-desc" placeholder="DescripciÃ³n" rows="3" style="padding:8px;border:1px solid #ddd;border-radius:8px;">${theme?.description || ''}</textarea>
+      <textarea id="t-desc" placeholder="Descripción" rows="3" style="padding:8px;border:1px solid #ddd;border-radius:8px;">${theme?.description || ''}</textarea>
       <label style="font-size:0.9rem;color:#555;display:flex;flex-direction:column;gap:6px;">
         Tipo de juego
         <select id="t-type" style="padding:8px;border:1px solid #ddd;border-radius:8px;">
@@ -539,7 +539,7 @@ function openThemeEditor(theme = null, container) {
         </select>
       </label>
       <label style="font-size:0.9rem;color:#555;display:flex;flex-direction:column;gap:6px;">
-        Palabras (formato: espaÃ±ol = inglÃ©s = emoji)
+        Palabras (formato: español = inglés = emoji)
         <textarea id="t-words" rows="8" style="padding:8px;border:1px solid #ddd;border-radius:8px;">${wordsValue}</textarea>
       </label>
       <div id="t-error" style="color:#e74c3c;min-height:1rem;font-size:0.9rem;"></div>
@@ -569,7 +569,7 @@ function openThemeEditor(theme = null, container) {
     const err = modal.querySelector('#t-error');
     if (err) err.textContent = '';
     if (!title || (!theme && !slug)) {
-      if (err) err.textContent = 'Slug y tÃ­tulo son obligatorios';
+      if (err) err.textContent = 'Slug y título son obligatorios';
       return;
     }
     if (!words.length) {
@@ -588,7 +588,7 @@ function openThemeEditor(theme = null, container) {
     };
 
     try {
-      const base = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+      const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
       const url = theme ? `${base}/admin/themes/${theme._id}` : `${base}/admin/themes`;
       const method = theme ? 'PUT' : 'POST';
       const res = await fetch(url, {
@@ -648,7 +648,7 @@ function openEditPageModal(section) {
       return;
     }
     try {
-      const base = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+      const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
       const res = await fetch(`${base}/admin/pages`, {
         method: 'POST',
         headers: {
@@ -677,8 +677,8 @@ function openAddVideoModal() {
   modal.innerHTML = `
     <h3 style="margin:0 0 10px 0">Anadir video</h3>
     <div style="display:grid;gap:8px;">
-      <input id="v-title" placeholder="TÃ­tulo" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
-      <textarea id="v-desc" placeholder="DescripciÃ³n" style="padding:8px;border:1px solid #ddd;border-radius:8px;"></textarea>
+      <input id="v-title" placeholder="Título" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
+      <textarea id="v-desc" placeholder="Descripción" style="padding:8px;border:1px solid #ddd;border-radius:8px;"></textarea>
       <input id="v-url" placeholder="URL de YouTube (embed)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
       <input id="v-emoji" placeholder="Emoji (opcional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
       <div id="v-err" style="color:#e74c3c;min-height:1rem;font-size:0.9rem;"></div>
@@ -705,11 +705,11 @@ function openAddVideoModal() {
     const err = modal.querySelector('#v-err');
     if (err) err.textContent = '';
     if (!title || !embedUrl) {
-      if (err) err.textContent = 'TÃ­tulo y URL son obligatorios.';
+      if (err) err.textContent = 'Título y URL son obligatorios.';
       return;
     }
     try {
-      const base = (import.meta?.env?.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+      const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
       const res = await fetch(`${base}/admin/videos`, {
         method: 'POST',
         headers: {
