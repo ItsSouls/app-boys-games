@@ -12,9 +12,13 @@ html {
 body {
   font-family: 'Fredoka', cursive;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100%;
+  min-height: 100vh;
   color: #333;
   overflow-x: hidden;
+}
+
+#app {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
