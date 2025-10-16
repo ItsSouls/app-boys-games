@@ -1,5 +1,7 @@
 // App Boys Games - SPA principal
 import './css/main.css';
+import DOMPurify from 'dompurify';
+import 'quill/dist/quill.snow.css';
 import { router } from './js/router.js';
 import { GameController } from './js/games/gameController.js';
 import { api } from './js/services/api.js';
@@ -54,29 +56,136 @@ function showSection(sectionName) {
   refreshUserGreeting();
 }
 
+const THEORY_SANITIZE_CONFIG = {
+  ADD_TAGS: ['iframe', 'video', 'source', 'figure', 'figcaption', 'section', 'article'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'style', 'class', 'target', 'rel', 'controls', 'poster', 'width', 'height'],
+};
+
+const HTML_TAG_REGEX = /<([a-z][\s\S]*?)>/i;
+
+const formatTheoryDate = (value) => {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+function prepareTheoryHtml(raw = '') {
+  const trimmed = (raw || '').trim();
+  if (!trimmed) return '';
+  if (HTML_TAG_REGEX.test(trimmed)) return trimmed;
+  return trimmed
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => '<p>' + block.replace(/\n/g, '<br />') + '</p>')
+    .join('');
+}
+
+function sanitizeTheoryHtml(raw = '') {
+  return DOMPurify.sanitize(prepareTheoryHtml(raw), THEORY_SANITIZE_CONFIG);
+}
+
+let quillLoader;
+const loadQuill = async () => {
+  if (!quillLoader) {
+    quillLoader = import('quill').then((mod) => mod.default || mod);
+  }
+  return quillLoader;
+};
+
 async function renderTheory(sectionName) {
-  const container = document.getElementById(`${sectionName}-content`);
+  const container = document.getElementById(sectionName + '-content');
   if (!container) return;
-  container.innerHTML = '<div style="padding:12px;color:#666;">Cargando…</div>';
+  container.innerHTML = "<div class='theory-loading'>Cargando…</div>";
   try {
     const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
-    const res = await fetch(`${base}/public/pages?section=${encodeURIComponent(sectionName)}`);
+    const res = await fetch(base + '/public/pages?section=' + encodeURIComponent(sectionName));
     if (!res.ok) throw new Error('Sin contenido');
     const data = await res.json();
-    const list = data?.pages || [];
-    container.innerHTML = list.length
-      ? list
-          .map((page) => `
-              <article class="theory-card">
-                <h4>${page.topic}</h4>
-                <p>${(page.content || '').replace(/\n/g, '<br/>')}</p>
-              </article>
-            `)
-          .join('')
-      : '<div style="padding:12px;color:#666;">No hay contenido todavía.</div>';
+    const pages = Array.isArray(data?.pages) ? data.pages : [];
+    if (!pages.length) {
+      container.innerHTML = "<div class='theory-empty'>No hay contenido todavía.</div>";
+      return;
+    }
+
+    container.innerHTML = '';
+    pages.forEach((page, index) => {
+      const card = document.createElement('article');
+      card.className = 'theory-card theory-card--rich';
+
+      if (page.coverImage) {
+        const figure = document.createElement('figure');
+        figure.className = 'theory-card__cover';
+        const img = document.createElement('img');
+        img.src = page.coverImage;
+        img.alt = 'Portada para ' + page.topic;
+        img.loading = 'lazy';
+        img.addEventListener('error', () => figure.remove());
+        figure.appendChild(img);
+        card.appendChild(figure);
+      }
+
+      const header = document.createElement('header');
+      header.className = 'theory-card__header';
+      const title = document.createElement('h4');
+      title.textContent = page.topic;
+      header.appendChild(title);
+      if (page.summary) {
+        const summary = document.createElement('p');
+        summary.className = 'theory-card__summary';
+        summary.textContent = page.summary;
+        header.appendChild(summary);
+      }
+      card.appendChild(header);
+
+      const body = document.createElement('div');
+      body.className = 'theory-card__body';
+      const rawContent = page.content || page.summary || '';
+      const sanitized = sanitizeTheoryHtml(rawContent);
+      body.innerHTML = sanitized || "<p style='color:#666;'>Sin contenido disponible todavía.</p>";
+      card.appendChild(body);
+
+      if (Array.isArray(page.resources) && page.resources.length) {
+        const resourcesWrap = document.createElement('section');
+        resourcesWrap.className = 'theory-card__resources';
+        const heading = document.createElement('h5');
+        heading.textContent = 'Recursos recomendados';
+        resourcesWrap.appendChild(heading);
+        const list = document.createElement('ul');
+        page.resources.forEach((resItem) => {
+          const item = document.createElement('li');
+          const link = document.createElement('a');
+          link.href = resItem.url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = resItem.label;
+          item.appendChild(link);
+          list.appendChild(item);
+        });
+        resourcesWrap.appendChild(list);
+        card.appendChild(resourcesWrap);
+      }
+
+      const meta = document.createElement('footer');
+      meta.className = 'theory-card__meta';
+      const blockTag = document.createElement('span');
+      blockTag.className = 'theory-card__index';
+      blockTag.textContent = 'Bloque ' + (index + 1);
+      meta.appendChild(blockTag);
+      const updated = formatTheoryDate(page.updatedAt);
+      if (updated) {
+        const updatedEl = document.createElement('span');
+        updatedEl.textContent = 'Actualizado el ' + updated;
+        meta.appendChild(updatedEl);
+      }
+      card.appendChild(meta);
+
+      container.appendChild(card);
+    });
   } catch (err) {
     console.error('[theory]', err);
-    container.innerHTML = '<div style="padding:12px;color:#e74c3c;">Error al cargar contenido.</div>';
+    container.innerHTML = "<div class='theory-error'>Error al cargar contenido.</div>";
   }
 }
 async function showVocabularyGames() {
@@ -612,61 +721,429 @@ function openThemeEditor(theme = null, container) {
     }
   });
 }
-function openEditPageModal(section) {
+async function openEditPageModal(section) {
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2600;';
+  overlay.className = 'theory-admin-overlay';
+
   const modal = document.createElement('div');
-  modal.style.cssText = 'background:#fff;border-radius:12px;max-width:720px;width:95%;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);font-family:inherit;';
-  modal.innerHTML = `
-    <h3 style="margin:0 0 10px 0">Editar pagina de ${section}</h3>
-    <div style="display:grid;gap:8px;">
-      <input id="p-topic" placeholder="Tema" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
-      <textarea id="p-content" placeholder="Contenido" rows="10" style="padding:8px;border:1px solid #ddd;border-radius:8px;"></textarea>
-      <div id="p-err" style="color:#e74c3c;min-height:1rem;font-size:0.9rem;"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="p-cancel" class="option-btn" style="background:#ccc;color:#333;">Cancelar</button>
-        <button id="p-save" class="option-btn" style="background:#4ECDC4;">Guardar</button>
-      </div>
-    </div>
-  `;
+  modal.className = 'theory-admin-modal';
+  const sectionLabel = section === 'gramatica' ? 'Gramática' : 'Vocabulario';
+  modal.innerHTML = [
+    '<div class="theory-admin">',
+    '  <aside class="theory-admin__sidebar">',
+    '    <div class="theory-admin__sidebar-top">',
+    '      <h3>Gestión de ' + sectionLabel + '</h3>',
+    '      <button type="button" class="option-btn theory-admin__close">Cerrar</button>',
+    '    </div>',
+    '    <button type="button" class="option-btn theory-admin__new">+ Nueva página</button>',
+    '    <div class="theory-admin__list" id="theory-admin-list"><div class="theory-admin__empty">Cargando…</div></div>',
+    '  </aside>',
+    '  <section class="theory-admin__editor">',
+    '    <div class="theory-admin__fields">',
+    '      <label class="theory-admin__field">',
+    '        <span>Tema</span>',
+    '        <input id="theory-topic" type="text" placeholder="Nombre del tema" />',
+    '      </label>',
+    '      <label class="theory-admin__field">',
+    '        <span>Resumen</span>',
+    '        <textarea id="theory-summary" rows="3" placeholder="Descripción breve"></textarea>',
+    '      </label>',
+    '      <label class="theory-admin__field">',
+    '        <span>Imagen de portada (URL)</span>',
+    '        <input id="theory-cover" type="url" placeholder="https://..." />',
+    '      </label>',
+    '      <label class="theory-admin__toggle">',
+    '        <input id="theory-published" type="checkbox" checked />',
+    '        <span>Visible para el alumnado</span>',
+    '      </label>',
+    '    </div>',
+    '    <div class="theory-admin__editor-area">',
+    '      <div id="theory-quill" class="theory-admin__quill"></div>',
+    '    </div>',
+    '    <div class="theory-admin__resources-header">',
+    '      <h4>Recursos adicionales</h4>',
+    '      <button type="button" class="option-btn theory-admin__add-resource">+ Añadir recurso</button>',
+    '    </div>',
+    '    <div class="theory-admin__resources" id="theory-resources"></div>',
+    '    <div class="theory-admin__actions">',
+    '      <div class="theory-admin__actions-left">',
+    '        <button type="button" class="option-btn theory-admin__preview">Vista previa</button>',
+    '        <button type="button" class="option-btn theory-admin__delete">Eliminar</button>',
+    '      </div>',
+    '      <div class="theory-admin__actions-right">',
+    '        <button type="button" class="option-btn theory-admin__cancel">Cerrar</button>',
+    '        <button type="button" class="option-btn theory-admin__save">Guardar cambios</button>',
+    '      </div>',
+    '    </div>',
+    '    <div class="theory-admin__feedback" id="theory-feedback"></div>',
+    '    <div class="theory-admin__preview" id="theory-preview" hidden></div>',
+    '  </section>',
+    '</div>',
+  ].join('');
+
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
-  const close = () => overlay.remove();
+  const closeButtons = modal.querySelectorAll('.theory-admin__close, .theory-admin__cancel');
+  const listEl = modal.querySelector('#theory-admin-list');
+  const topicInput = modal.querySelector('#theory-topic');
+  const summaryInput = modal.querySelector('#theory-summary');
+  const coverInput = modal.querySelector('#theory-cover');
+  const publishedInput = modal.querySelector('#theory-published');
+  const addResourceBtn = modal.querySelector('.theory-admin__add-resource');
+  const resourcesContainer = modal.querySelector('#theory-resources');
+  const saveBtn = modal.querySelector('.theory-admin__save');
+  const deleteBtn = modal.querySelector('.theory-admin__delete');
+  const previewBtn = modal.querySelector('.theory-admin__preview');
+  const feedbackEl = modal.querySelector('#theory-feedback');
+  const previewEl = modal.querySelector('#theory-preview');
+  const newBtn = modal.querySelector('.theory-admin__new');
+
+  const close = () => {
+    overlay.remove();
+  };
   overlay.addEventListener('click', (event) => {
     if (event.target === overlay) close();
   });
-  modal.querySelector('#p-cancel')?.addEventListener('click', close);
+  closeButtons.forEach((btn) => btn.addEventListener('click', close));
 
-  modal.querySelector('#p-save')?.addEventListener('click', async () => {
-    const topic = (modal.querySelector('#p-topic')?.value || '').trim();
-    const content = modal.querySelector('#p-content')?.value || '';
-    const err = modal.querySelector('#p-err');
-    if (err) err.textContent = '';
-    if (!topic) {
-      if (err) err.textContent = 'El tema es obligatorio.';
+  const state = {
+    pages: [],
+    currentId: null,
+    quill: null,
+    saving: false,
+  };
+
+  const toolbar = [
+    [{ header: [1, 2, 3, 4, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ align: [] }],
+    ['blockquote', 'code-block'],
+    ['link', 'image', 'video'],
+    ['clean'],
+  ];
+
+  const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+
+  const showFeedback = (message, tone = 'info') => {
+    if (!feedbackEl) return;
+    feedbackEl.textContent = message || '';
+    feedbackEl.dataset.tone = tone;
+    if (message) {
+      feedbackEl.classList.add('is-visible');
+      setTimeout(() => feedbackEl.classList.remove('is-visible'), 4000);
+    }
+  };
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('abg_token');
+    if (!token) return null;
+    return { Authorization: 'Bearer ' + token };
+  };
+
+  const clearForm = () => {
+    topicInput.value = '';
+    summaryInput.value = '';
+    coverInput.value = '';
+    publishedInput.checked = true;
+    resourcesContainer.innerHTML = '';
+    if (state.quill) state.quill.setContents([]);
+    deleteBtn.disabled = true;
+  };
+
+  const addResourceRow = (resource = {}) => {
+    const row = document.createElement('div');
+    row.className = 'theory-admin__resource';
+    row.innerHTML = [
+      '<input type="text" class="theory-admin__resource-label" placeholder="Título del recurso" value="' + (resource.label || '') + '" />',
+      '<input type="url" class="theory-admin__resource-url" placeholder="https://..." value="' + (resource.url || '') + '" />',
+      '<button type="button" class="option-btn theory-admin__resource-remove">Quitar</button>',
+    ].join('');
+    row.querySelector('.theory-admin__resource-remove').addEventListener('click', () => {
+      row.remove();
+    });
+    resourcesContainer.appendChild(row);
+  };
+
+  const populateResources = (resources) => {
+    resourcesContainer.innerHTML = '';
+    if (Array.isArray(resources) && resources.length) {
+      resources.forEach((res) => addResourceRow(res));
+    }
+  };
+
+  const collectResources = () => {
+    const rows = Array.from(resourcesContainer.querySelectorAll('.theory-admin__resource'));
+    return rows
+      .map((row) => {
+        const label = row.querySelector('.theory-admin__resource-label')?.value.trim();
+        const url = row.querySelector('.theory-admin__resource-url')?.value.trim();
+        return label && url ? { label, url } : null;
+      })
+      .filter(Boolean);
+  };
+
+  const fillForm = (page) => {
+    topicInput.value = page?.topic || '';
+    summaryInput.value = page?.summary || '';
+    coverInput.value = page?.coverImage || '';
+    publishedInput.checked = page?.isPublished !== false;
+    populateResources(page?.resources || []);
+    if (state.quill) {
+      const content = page?.content || '';
+      state.quill.setContents([]);
+      state.quill.clipboard.dangerouslyPasteHTML(content);
+    }
+    if (previewEl && !previewEl.hasAttribute('hidden')) {
+      previewEl.setAttribute('hidden', 'hidden');
+      previewBtn.textContent = 'Vista previa';
+    }
+    deleteBtn.disabled = !page;
+  };
+
+  const renderList = () => {
+    if (!listEl) return;
+    if (!state.pages.length) {
+      listEl.innerHTML = '<div class="theory-admin__empty">Todavía no hay contenido creado.</div>';
+      return;
+    }
+    listEl.innerHTML = '';
+    state.pages.forEach((page, index) => {
+      const item = document.createElement('div');
+      item.className = 'theory-admin__list-item' + (page._id === state.currentId ? ' is-active' : '');
+      item.dataset.id = page._id;
+      item.innerHTML = [
+        '<div class="theory-admin__list-info">',
+        '  <strong>' + page.topic + '</strong>',
+        '  <span>' + (formatTheoryDate(page.updatedAt) || '') + '</span>',
+        '</div>',
+        '<div class="theory-admin__list-actions">',
+        '  <button type="button" data-action="up" ' + (index === 0 ? 'disabled' : '') + '>Subir</button>',
+        '  <button type="button" data-action="down" ' + (index === state.pages.length - 1 ? 'disabled' : '') + '>Bajar</button>',
+        '</div>',
+      ].join('');
+      listEl.appendChild(item);
+    });
+  };
+
+  const selectPage = (id) => {
+    state.currentId = id;
+    const page = state.pages.find((item) => item._id === id) || null;
+    fillForm(page);
+    renderList();
+  };
+
+  const persistOrder = async () => {
+    const headers = getAuthHeaders();
+    if (!headers) {
+      showFeedback('Debes iniciar sesión como administrador.', 'error');
       return;
     }
     try {
-      const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
-      const res = await fetch(`${base}/admin/pages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('abg_token') || ''}`,
-        },
-        body: JSON.stringify({ section, topic, content }),
+      const body = JSON.stringify({ section, order: state.pages.map((page) => page._id) });
+      const res = await fetch(baseUrl + '/admin/pages/reorder', {
+        method: 'PATCH',
+        headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+        body,
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || 'Error al guardar');
+        throw new Error(data?.error || 'No se pudo reordenar');
       }
-      close();
+    } catch (error) {
+      console.error('[pages] reorder', error);
+      showFeedback(error?.message || 'No se pudo actualizar el orden', 'error');
+    }
+  };
+
+  const movePage = (id, direction) => {
+    const index = state.pages.findIndex((page) => page._id === id);
+    if (index < 0) return;
+    const target = index + direction;
+    if (target < 0 || target >= state.pages.length) return;
+    const [item] = state.pages.splice(index, 1);
+    state.pages.splice(target, 0, item);
+    renderList();
+    persistOrder();
+  };
+
+  const gatherPayload = () => {
+    const topic = topicInput.value.trim();
+    const summary = summaryInput.value.trim();
+    const coverImage = coverInput.value.trim();
+    const resources = collectResources();
+    const content = state.quill ? state.quill.root.innerHTML : '';
+    return { topic, summary, coverImage, resources, content, isPublished: publishedInput.checked };
+  };
+
+  const loadPages = async (focusId) => {
+    const headers = getAuthHeaders();
+    if (!headers) {
+      showFeedback('Debes iniciar sesión como administrador.', 'error');
+      return;
+    }
+    try {
+      const res = await fetch(baseUrl + '/admin/pages?section=' + encodeURIComponent(section), {
+        headers,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'No se pudo cargar el contenido');
+      }
+      const payload = await res.json();
+      state.pages = Array.isArray(payload?.pages) ? payload.pages : [];
+      if (state.pages.length) {
+        const nextId = focusId || state.currentId || state.pages[0]._id;
+        state.currentId = nextId;
+        renderList();
+        selectPage(nextId);
+      } else {
+        state.currentId = null;
+        clearForm();
+        renderList();
+      }
+    } catch (error) {
+      console.error('[pages] load', error);
+      showFeedback(error?.message || 'Error al cargar contenido', 'error');
+    }
+  };
+
+  const setSaving = (value) => {
+    state.saving = value;
+    saveBtn.disabled = value;
+    deleteBtn.disabled = value || !state.currentId;
+    newBtn.disabled = value;
+  };
+
+  const saveCurrentPage = async () => {
+    const headers = getAuthHeaders();
+    if (!headers) {
+      showFeedback('Debes iniciar sesión como administrador.', 'error');
+      return;
+    }
+    const payload = gatherPayload();
+    if (!payload.topic) {
+      showFeedback('El tema es obligatorio.', 'error');
+      topicInput.focus();
+      return;
+    }
+    setSaving(true);
+    try {
+      const body = JSON.stringify(Object.assign({ section }, payload));
+      let res;
+      if (state.currentId) {
+        res = await fetch(baseUrl + '/admin/pages/' + state.currentId, {
+          method: 'PUT',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+          body,
+        });
+      } else {
+        res = await fetch(baseUrl + '/admin/pages', {
+          method: 'POST',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+          body,
+        });
+      }
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data?.error || 'No se pudo guardar');
+      }
+      showFeedback('Contenido guardado correctamente.', 'success');
+      const targetId = data?.page?._id || state.currentId;
+      await loadPages(targetId);
       renderTheory(section);
     } catch (error) {
-      if (err) err.textContent = error?.message || 'Fallo al guardar';
+      console.error('[pages] save', error);
+      showFeedback(error?.message || 'Error al guardar', 'error');
+    } finally {
+      setSaving(false);
     }
+  };
+
+  const deleteCurrentPage = async () => {
+    if (!state.currentId) return;
+    if (!window.confirm('¿Seguro que quieres eliminar este contenido?')) return;
+    const headers = getAuthHeaders();
+    if (!headers) {
+      showFeedback('Debes iniciar sesión como administrador.', 'error');
+      return;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch(baseUrl + '/admin/pages/' + state.currentId, {
+        method: 'DELETE',
+        headers,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'No se pudo eliminar');
+      }
+      showFeedback('Página eliminada.', 'success');
+      state.currentId = null;
+      await loadPages();
+      renderTheory(section);
+    } catch (error) {
+      console.error('[pages] delete', error);
+      showFeedback(error?.message || 'Error al eliminar', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const togglePreview = () => {
+    if (!previewEl) return;
+    if (previewEl.hasAttribute('hidden')) {
+      const html = sanitizeTheoryHtml(state.quill ? state.quill.root.innerHTML : '');
+      previewEl.innerHTML = html || '<p style="color:#666;">No hay contenido para previsualizar.</p>';
+      previewEl.removeAttribute('hidden');
+      previewBtn.textContent = 'Ocultar vista previa';
+    } else {
+      previewEl.setAttribute('hidden', 'hidden');
+      previewBtn.textContent = 'Vista previa';
+    }
+  };
+
+  listEl.addEventListener('click', (event) => {
+    const target = event.target;
+    const item = target.closest('.theory-admin__list-item');
+    if (!item) return;
+    const action = target.getAttribute('data-action');
+    const id = item.dataset.id;
+    if (action === 'up') {
+      event.stopPropagation();
+      movePage(id, -1);
+      return;
+    }
+    if (action === 'down') {
+      event.stopPropagation();
+      movePage(id, 1);
+      return;
+    }
+    selectPage(id);
   });
+
+  newBtn.addEventListener('click', () => {
+    state.currentId = null;
+    clearForm();
+    renderList();
+  });
+
+  addResourceBtn.addEventListener('click', () => addResourceRow());
+  saveBtn.addEventListener('click', saveCurrentPage);
+  deleteBtn.addEventListener('click', deleteCurrentPage);
+  previewBtn.addEventListener('click', togglePreview);
+
+  const Quill = await loadQuill();
+  const quillContainer = modal.querySelector('#theory-quill');
+  state.quill = new Quill(quillContainer, {
+    theme: 'snow',
+    modules: { toolbar },
+    placeholder: 'Escribe el contenido principal de la lección...',
+  });
+
+  await loadPages();
 }
 
 function openAddVideoModal() {

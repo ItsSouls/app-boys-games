@@ -22,7 +22,20 @@ router.get('/pages', async (req, res) => {
     const q = {};
     if (section) q.section = section;
     if (topic) q.topic = topic;
-    const list = await Page.find(q, { section: 1, topic: 1, content: 1, updatedAt: 1 }).sort({ updatedAt: -1 }).limit(200);
+    q.isPublished = true;
+    const list = await Page.find(q, {
+      section: 1,
+      topic: 1,
+      summary: 1,
+      coverImage: 1,
+      content: 1,
+      resources: 1,
+      order: 1,
+      updatedAt: 1,
+    })
+      .sort({ order: 1, updatedAt: -1 })
+      .limit(200)
+      .lean();
     res.json({ pages: list });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
