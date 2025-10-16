@@ -727,16 +727,16 @@ async function openEditPageModal(section) {
 
   const modal = document.createElement('div');
   modal.className = 'theory-admin-modal';
-  const sectionLabel = section === 'gramatica' ? 'Gramática' : 'Vocabulario';
+  const sectionLabel = section === 'gramatica' ? 'Gramatica' : 'Vocabulario';
   modal.innerHTML = [
     '<div class="theory-admin">',
     '  <aside class="theory-admin__sidebar">',
     '    <div class="theory-admin__sidebar-top">',
-    '      <h3>Gestión de ' + sectionLabel + '</h3>',
-    '      <button type="button" class="option-btn theory-admin__close">Cerrar</button>',
+    '      <button type="button" class="theory-admin__close-btn" aria-label="Cerrar">&times;</button>',
+    '      <h3>Gestion de ' + sectionLabel + '</h3>',
     '    </div>',
-    '    <button type="button" class="option-btn theory-admin__new">+ Nueva página</button>',
-    '    <div class="theory-admin__list" id="theory-admin-list"><div class="theory-admin__empty">Cargando…</div></div>',
+    '    <button type="button" class="option-btn theory-admin__new">+ Nueva pagina</button>',
+    '    <div class="theory-admin__list" id="theory-admin-list"><div class="theory-admin__empty">Cargando...</div></div>',
     '  </aside>',
     '  <section class="theory-admin__editor">',
     '    <div class="theory-admin__fields">',
@@ -746,7 +746,7 @@ async function openEditPageModal(section) {
     '      </label>',
     '      <label class="theory-admin__field">',
     '        <span>Resumen</span>',
-    '        <textarea id="theory-summary" rows="3" placeholder="Descripción breve"></textarea>',
+    '        <textarea id="theory-summary" rows="3" placeholder="Descripcion breve"></textarea>',
     '      </label>',
     '      <label class="theory-admin__field">',
     '        <span>Imagen de portada (URL)</span>',
@@ -760,18 +760,11 @@ async function openEditPageModal(section) {
     '    <div class="theory-admin__editor-area">',
     '      <div id="theory-quill" class="theory-admin__quill"></div>',
     '    </div>',
-    '    <div class="theory-admin__resources-header">',
-    '      <h4>Recursos adicionales</h4>',
-    '      <button type="button" class="option-btn theory-admin__add-resource">+ Añadir recurso</button>',
-    '    </div>',
-    '    <div class="theory-admin__resources" id="theory-resources"></div>',
     '    <div class="theory-admin__actions">',
     '      <div class="theory-admin__actions-left">',
     '        <button type="button" class="option-btn theory-admin__preview">Vista previa</button>',
-    '        <button type="button" class="option-btn theory-admin__delete">Eliminar</button>',
     '      </div>',
     '      <div class="theory-admin__actions-right">',
-    '        <button type="button" class="option-btn theory-admin__cancel">Cerrar</button>',
     '        <button type="button" class="option-btn theory-admin__save">Guardar cambios</button>',
     '      </div>',
     '    </div>',
@@ -779,33 +772,27 @@ async function openEditPageModal(section) {
     '    <div class="theory-admin__preview" id="theory-preview" hidden></div>',
     '  </section>',
     '</div>',
-  ].join('');
+  ].join('\n');
 
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
-  const closeButtons = modal.querySelectorAll('.theory-admin__close, .theory-admin__cancel');
+  const closeOverlay = () => overlay.remove();
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) closeOverlay();
+  });
+  modal.querySelector('.theory-admin__close-btn')?.addEventListener('click', closeOverlay);
+
   const listEl = modal.querySelector('#theory-admin-list');
   const topicInput = modal.querySelector('#theory-topic');
   const summaryInput = modal.querySelector('#theory-summary');
   const coverInput = modal.querySelector('#theory-cover');
   const publishedInput = modal.querySelector('#theory-published');
-  const addResourceBtn = modal.querySelector('.theory-admin__add-resource');
-  const resourcesContainer = modal.querySelector('#theory-resources');
   const saveBtn = modal.querySelector('.theory-admin__save');
-  const deleteBtn = modal.querySelector('.theory-admin__delete');
   const previewBtn = modal.querySelector('.theory-admin__preview');
   const feedbackEl = modal.querySelector('#theory-feedback');
   const previewEl = modal.querySelector('#theory-preview');
   const newBtn = modal.querySelector('.theory-admin__new');
-
-  const close = () => {
-    overlay.remove();
-  };
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) close();
-  });
-  closeButtons.forEach((btn) => btn.addEventListener('click', close));
 
   const state = {
     pages: [],
@@ -848,41 +835,11 @@ async function openEditPageModal(section) {
     summaryInput.value = '';
     coverInput.value = '';
     publishedInput.checked = true;
-    resourcesContainer.innerHTML = '';
     if (state.quill) state.quill.setContents([]);
-    deleteBtn.disabled = true;
-  };
-
-  const addResourceRow = (resource = {}) => {
-    const row = document.createElement('div');
-    row.className = 'theory-admin__resource';
-    row.innerHTML = [
-      '<input type="text" class="theory-admin__resource-label" placeholder="Título del recurso" value="' + (resource.label || '') + '" />',
-      '<input type="url" class="theory-admin__resource-url" placeholder="https://..." value="' + (resource.url || '') + '" />',
-      '<button type="button" class="option-btn theory-admin__resource-remove">Quitar</button>',
-    ].join('');
-    row.querySelector('.theory-admin__resource-remove').addEventListener('click', () => {
-      row.remove();
-    });
-    resourcesContainer.appendChild(row);
-  };
-
-  const populateResources = (resources) => {
-    resourcesContainer.innerHTML = '';
-    if (Array.isArray(resources) && resources.length) {
-      resources.forEach((res) => addResourceRow(res));
+    if (previewEl && !previewEl.hasAttribute('hidden')) {
+      previewEl.setAttribute('hidden', 'hidden');
+      previewBtn.textContent = 'Vista previa';
     }
-  };
-
-  const collectResources = () => {
-    const rows = Array.from(resourcesContainer.querySelectorAll('.theory-admin__resource'));
-    return rows
-      .map((row) => {
-        const label = row.querySelector('.theory-admin__resource-label')?.value.trim();
-        const url = row.querySelector('.theory-admin__resource-url')?.value.trim();
-        return label && url ? { label, url } : null;
-      })
-      .filter(Boolean);
   };
 
   const fillForm = (page) => {
@@ -890,7 +847,6 @@ async function openEditPageModal(section) {
     summaryInput.value = page?.summary || '';
     coverInput.value = page?.coverImage || '';
     publishedInput.checked = page?.isPublished !== false;
-    populateResources(page?.resources || []);
     if (state.quill) {
       const content = page?.content || '';
       state.quill.setContents([]);
@@ -900,13 +856,12 @@ async function openEditPageModal(section) {
       previewEl.setAttribute('hidden', 'hidden');
       previewBtn.textContent = 'Vista previa';
     }
-    deleteBtn.disabled = !page;
   };
 
   const renderList = () => {
     if (!listEl) return;
     if (!state.pages.length) {
-      listEl.innerHTML = '<div class="theory-admin__empty">Todavía no hay contenido creado.</div>';
+      listEl.innerHTML = '<div class="theory-admin__empty">Todavia no hay contenido creado.</div>';
       return;
     }
     listEl.innerHTML = '';
@@ -920,6 +875,7 @@ async function openEditPageModal(section) {
         '  <span>' + (formatTheoryDate(page.updatedAt) || '') + '</span>',
         '</div>',
         '<div class="theory-admin__list-actions">',
+        '  <button type="button" data-action="delete">Eliminar</button>',
         '  <button type="button" data-action="up" ' + (index === 0 ? 'disabled' : '') + '>Subir</button>',
         '  <button type="button" data-action="down" ' + (index === state.pages.length - 1 ? 'disabled' : '') + '>Bajar</button>',
         '</div>',
@@ -931,14 +887,18 @@ async function openEditPageModal(section) {
   const selectPage = (id) => {
     state.currentId = id;
     const page = state.pages.find((item) => item._id === id) || null;
-    fillForm(page);
+    if (page) {
+      fillForm(page);
+    } else {
+      clearForm();
+    }
     renderList();
   };
 
   const persistOrder = async () => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesión como administrador.', 'error');
+      showFeedback('Debes iniciar sesion como administrador.', 'error');
       return;
     }
     try {
@@ -973,21 +933,18 @@ async function openEditPageModal(section) {
     const topic = topicInput.value.trim();
     const summary = summaryInput.value.trim();
     const coverImage = coverInput.value.trim();
-    const resources = collectResources();
     const content = state.quill ? state.quill.root.innerHTML : '';
-    return { topic, summary, coverImage, resources, content, isPublished: publishedInput.checked };
+    return { topic, summary, coverImage, content, isPublished: publishedInput.checked };
   };
 
   const loadPages = async (focusId) => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesión como administrador.', 'error');
+      showFeedback('Debes iniciar sesion como administrador.', 'error');
       return;
     }
     try {
-      const res = await fetch(baseUrl + '/admin/pages?section=' + encodeURIComponent(section), {
-        headers,
-      });
+      const res = await fetch(baseUrl + '/admin/pages?section=' + encodeURIComponent(section), { headers });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || 'No se pudo cargar el contenido');
@@ -996,8 +953,6 @@ async function openEditPageModal(section) {
       state.pages = Array.isArray(payload?.pages) ? payload.pages : [];
       if (state.pages.length) {
         const nextId = focusId || state.currentId || state.pages[0]._id;
-        state.currentId = nextId;
-        renderList();
         selectPage(nextId);
       } else {
         state.currentId = null;
@@ -1013,14 +968,13 @@ async function openEditPageModal(section) {
   const setSaving = (value) => {
     state.saving = value;
     saveBtn.disabled = value;
-    deleteBtn.disabled = value || !state.currentId;
     newBtn.disabled = value;
   };
 
   const saveCurrentPage = async () => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesión como administrador.', 'error');
+      showFeedback('Debes iniciar sesion como administrador.', 'error');
       return;
     }
     const payload = gatherPayload();
@@ -1062,17 +1016,16 @@ async function openEditPageModal(section) {
     }
   };
 
-  const deleteCurrentPage = async () => {
-    if (!state.currentId) return;
-    if (!window.confirm('¿Seguro que quieres eliminar este contenido?')) return;
+  const deletePage = async (id) => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesión como administrador.', 'error');
+      showFeedback('Debes iniciar sesion como administrador.', 'error');
       return;
     }
+    if (!window.confirm('Seguro que quieres eliminar este contenido?')) return;
     setSaving(true);
     try {
-      const res = await fetch(baseUrl + '/admin/pages/' + state.currentId, {
+      const res = await fetch(baseUrl + '/admin/pages/' + id, {
         method: 'DELETE',
         headers,
       });
@@ -1080,8 +1033,10 @@ async function openEditPageModal(section) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || 'No se pudo eliminar');
       }
-      showFeedback('Página eliminada.', 'success');
-      state.currentId = null;
+      showFeedback('Pagina eliminada.', 'success');
+      if (state.currentId === id) {
+        state.currentId = null;
+      }
       await loadPages();
       renderTheory(section);
     } catch (error) {
@@ -1121,6 +1076,11 @@ async function openEditPageModal(section) {
       movePage(id, 1);
       return;
     }
+    if (action === 'delete') {
+      event.stopPropagation();
+      deletePage(id);
+      return;
+    }
     selectPage(id);
   });
 
@@ -1130,9 +1090,7 @@ async function openEditPageModal(section) {
     renderList();
   });
 
-  addResourceBtn.addEventListener('click', () => addResourceRow());
   saveBtn.addEventListener('click', saveCurrentPage);
-  deleteBtn.addEventListener('click', deleteCurrentPage);
   previewBtn.addEventListener('click', togglePreview);
 
   const Quill = await loadQuill();
@@ -1140,12 +1098,11 @@ async function openEditPageModal(section) {
   state.quill = new Quill(quillContainer, {
     theme: 'snow',
     modules: { toolbar },
-    placeholder: 'Escribe el contenido principal de la lección...',
+    placeholder: 'Escribe el contenido principal de la leccion...',
   });
 
   await loadPages();
 }
-
 function openAddVideoModal() {
   const overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2600;';
