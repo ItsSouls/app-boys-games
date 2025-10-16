@@ -869,17 +869,44 @@ async function openEditPageModal(section) {
       const item = document.createElement('div');
       item.className = 'theory-admin__list-item' + (page._id === state.currentId ? ' is-active' : '');
       item.dataset.id = page._id;
-      item.innerHTML = [
-        '<div class="theory-admin__list-info">',
-        '  <strong>' + page.topic + '</strong>',
-        '  <span>' + (formatTheoryDate(page.updatedAt) || '') + '</span>',
-        '</div>',
-        '<div class="theory-admin__list-actions">',
-        '  <button type="button" data-action="delete">Eliminar</button>',
-        '  <button type="button" data-action="up" ' + (index === 0 ? 'disabled' : '') + '>Subir</button>',
-        '  <button type="button" data-action="down" ' + (index === state.pages.length - 1 ? 'disabled' : '') + '>Bajar</button>',
-        '</div>',
-      ].join('');
+
+      const info = document.createElement('div');
+      info.className = 'theory-admin__list-info';
+      info.innerHTML = '<strong>' + page.topic + '</strong><span>' + (formatTheoryDate(page.updatedAt) || '') + '</span>';
+      item.appendChild(info);
+
+      const actions = document.createElement('div');
+      actions.className = 'theory-admin__list-actions';
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'theory-admin__list-btn theory-admin__list-btn--danger';
+      deleteBtn.dataset.action = 'delete';
+      deleteBtn.textContent = 'Eliminar';
+      actions.appendChild(deleteBtn);
+
+      const moveWrap = document.createElement('div');
+      moveWrap.className = 'theory-admin__list-move';
+
+      const upBtn = document.createElement('button');
+      upBtn.type = 'button';
+      upBtn.className = 'theory-admin__list-btn';
+      upBtn.dataset.action = 'up';
+      if (index === 0) upBtn.disabled = true;
+      upBtn.textContent = 'Subir';
+      moveWrap.appendChild(upBtn);
+
+      const downBtn = document.createElement('button');
+      downBtn.type = 'button';
+      downBtn.className = 'theory-admin__list-btn';
+      downBtn.dataset.action = 'down';
+      if (index === state.pages.length - 1) downBtn.disabled = true;
+      downBtn.textContent = 'Bajar';
+      moveWrap.appendChild(downBtn);
+
+      actions.appendChild(moveWrap);
+      item.appendChild(actions);
+
       listEl.appendChild(item);
     });
   };
@@ -1061,27 +1088,33 @@ async function openEditPageModal(section) {
   };
 
   listEl.addEventListener('click', (event) => {
-    const target = event.target;
-    const item = target.closest('.theory-admin__list-item');
-    if (!item) return;
-    const action = target.getAttribute('data-action');
-    const id = item.dataset.id;
-    if (action === 'up') {
-      event.stopPropagation();
-      movePage(id, -1);
-      return;
+    const actionButton = event.target.closest('button[data-action]');
+    if (actionButton) {
+      const item = actionButton.closest('.theory-admin__list-item');
+      if (!item) return;
+      const id = item.dataset.id;
+      if (!id) return;
+      const action = actionButton.dataset.action;
+      if (action === 'up') {
+        event.stopPropagation();
+        movePage(id, -1);
+        return;
+      }
+      if (action === 'down') {
+        event.stopPropagation();
+        movePage(id, 1);
+        return;
+      }
+      if (action === 'delete') {
+        event.stopPropagation();
+        deletePage(id);
+        return;
+      }
     }
-    if (action === 'down') {
-      event.stopPropagation();
-      movePage(id, 1);
-      return;
+    const item = event.target.closest('.theory-admin__list-item');
+    if (item && item.dataset.id) {
+      selectPage(item.dataset.id);
     }
-    if (action === 'delete') {
-      event.stopPropagation();
-      deletePage(id);
-      return;
-    }
-    selectPage(id);
   });
 
   newBtn.addEventListener('click', () => {

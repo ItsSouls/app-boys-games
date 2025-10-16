@@ -921,10 +921,10 @@ button {
 
 .theory-admin__list-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid transparent;
   background: rgba(247, 248, 255, 0.85);
@@ -952,10 +952,8 @@ button {
 .theory-admin__list-info strong {
   font-size: 0.95rem;
   color: var(--color-text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 180px;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .theory-admin__list-info span {
@@ -965,29 +963,47 @@ button {
 
 .theory-admin__list-actions {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.theory-admin__list-move {
+  display: flex;
   gap: 6px;
 }
 
-.theory-admin__list-actions button {
+.theory-admin__list-btn {
   border: none;
   background: rgba(0, 0, 0, 0.05);
   color: var(--color-text);
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 600;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.theory-admin__list-actions button:hover:not(:disabled) {
+.theory-admin__list-btn:hover:not(:disabled) {
   background: rgba(78, 205, 196, 0.2);
   color: var(--color-secondary);
 }
 
-.theory-admin__list-actions button:disabled {
+.theory-admin__list-btn:disabled {
   opacity: 0.35;
   cursor: default;
+}
+
+.theory-admin__list-btn--danger {
+  background: rgba(231, 76, 60, 0.15);
+  color: #c0392b;
+}
+
+.theory-admin__list-btn--danger:hover:not(:disabled) {
+  background: rgba(231, 76, 60, 0.25);
+  color: #e74c3c;
 }
 
 .theory-admin__editor {
