@@ -1098,7 +1098,8 @@ async function openEditPageModal(section) {
       const body = JSON.stringify(Object.assign({ section }, payload));
       let res;
       if (state.currentId) {
-        res = await fetch(baseUrl + '/admin/pages/' + state.currentId, {
+        const safeId = sanitizeIdForUrl(state.currentId);
+        res = await fetch(baseUrl + '/admin/pages/' + safeId, {
           method: 'PUT',
           headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
           body,
@@ -1135,7 +1136,8 @@ async function openEditPageModal(section) {
     if (!window.confirm('Seguro que quieres eliminar este contenido?')) return;
     setSaving(true);
     try {
-      const res = await fetch(baseUrl + '/admin/pages/' + id, {
+      const safeId = sanitizeIdForUrl(id);
+      const res = await fetch(baseUrl + '/admin/pages/' + safeId, {
         method: 'DELETE',
         headers,
       });
