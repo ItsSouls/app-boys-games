@@ -97,7 +97,7 @@ const loadQuill = async () => {
 async function renderTheory(sectionName) {
   const container = document.getElementById(sectionName + '-content');
   if (!container) return;
-  container.innerHTML = "<div class='theory-loading'>Cargando…</div>";
+  container.innerHTML = "<div class='theory-loading'>Cargando...</div>";
   try {
     const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
     const res = await fetch(base + '/public/pages?section=' + encodeURIComponent(sectionName));
@@ -105,9 +105,18 @@ async function renderTheory(sectionName) {
     const data = await res.json();
     const pages = Array.isArray(data?.pages) ? data.pages : [];
     if (!pages.length) {
-      container.innerHTML = "<div class='theory-empty'>No hay contenido todavía.</div>";
+      container.innerHTML = "<div class='theory-empty'>No hay contenido todavia.</div>";
       return;
     }
+
+    const createExcerpt = (page) => {
+      if (page.summary) return page.summary;
+      const raw = page.content || '';
+      const temp = document.createElement('div');
+      temp.innerHTML = sanitizeTheoryHtml(raw);
+      const text = temp.textContent || '';
+      return text.length > 220 ? text.slice(0, 220).trim() + '…' : text;
+    };
 
     container.innerHTML = '';
     pages.forEach((page, index) => {
@@ -139,47 +148,30 @@ async function renderTheory(sectionName) {
       }
       card.appendChild(header);
 
-      const body = document.createElement('div');
-      body.className = 'theory-card__body';
-      const rawContent = page.content || page.summary || '';
-      const sanitized = sanitizeTheoryHtml(rawContent);
-      body.innerHTML = sanitized || "<p style='color:#666;'>Sin contenido disponible todavía.</p>";
-      card.appendChild(body);
-
-      if (Array.isArray(page.resources) && page.resources.length) {
-        const resourcesWrap = document.createElement('section');
-        resourcesWrap.className = 'theory-card__resources';
-        const heading = document.createElement('h5');
-        heading.textContent = 'Recursos recomendados';
-        resourcesWrap.appendChild(heading);
-        const list = document.createElement('ul');
-        page.resources.forEach((resItem) => {
-          const item = document.createElement('li');
-          const link = document.createElement('a');
-          link.href = resItem.url;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          link.textContent = resItem.label;
-          item.appendChild(link);
-          list.appendChild(item);
-        });
-        resourcesWrap.appendChild(list);
-        card.appendChild(resourcesWrap);
-      }
+      const excerpt = document.createElement('p');
+      excerpt.className = 'theory-card__excerpt';
+      excerpt.textContent = createExcerpt(page);
+      card.appendChild(excerpt);
 
       const meta = document.createElement('footer');
-      meta.className = 'theory-card__meta';
+      meta.className = 'theory-card__meta theory-card__meta--actions';
       const blockTag = document.createElement('span');
       blockTag.className = 'theory-card__index';
       blockTag.textContent = 'Bloque ' + (index + 1);
       meta.appendChild(blockTag);
-      const updated = formatTheoryDate(page.updatedAt);
-      if (updated) {
-        const updatedEl = document.createElement('span');
-        updatedEl.textContent = 'Actualizado el ' + updated;
-        meta.appendChild(updatedEl);
-      }
+      const openBtn = document.createElement('button');
+      openBtn.type = 'button';
+      openBtn.className = 'theory-card__open';
+      openBtn.textContent = 'Ver contenido';
+      meta.appendChild(openBtn);
       card.appendChild(meta);
+
+      const openModal = () => openTheoryModal(page, sectionName);
+      card.addEventListener('click', openModal);
+      openBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openModal();
+      });
 
       container.appendChild(card);
     });
@@ -188,6 +180,92 @@ async function renderTheory(sectionName) {
     container.innerHTML = "<div class='theory-error'>Error al cargar contenido.</div>";
   }
 }
+function openTheoryModal(page, sectionName) {
+  const overlay = document.createElement('div');
+  overlay.className = 'theory-modal-overlay';
+
+  const modal = document.createElement('div');
+  modal.className = 'theory-modal';
+
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'theory-modal__close';
+  closeBtn.innerHTML = '&times;';
+
+  const title = document.createElement('h3');
+  title.className = 'theory-modal__title';
+  title.textContent = page.topic;
+
+  const header = document.createElement('header');
+  header.className = 'theory-modal__header';
+  header.appendChild(title);
+  header.appendChild(closeBtn);
+  modal.appendChild(header);
+
+  if (page.summary) {
+    const summary = document.createElement('p');
+    summary.className = 'theory-modal__summary';
+    summary.textContent = page.summary;
+    modal.appendChild(summary);
+  }
+
+  if (page.coverImage) {
+    const figure = document.createElement('figure');
+    figure.className = 'theory-modal__cover';
+    const img = document.createElement('img');
+    img.src = page.coverImage;
+    img.alt = 'Imagen del tema ' + page.topic;
+    img.loading = 'lazy';
+    figure.appendChild(img);
+    modal.appendChild(figure);
+  }
+
+  const body = document.createElement('div');
+  body.className = 'theory-modal__body';
+  body.innerHTML = sanitizeTheoryHtml(page.content || page.summary || '');
+  modal.appendChild(body);
+
+  if (Array.isArray(page.resources) && page.resources.length) {
+    const resources = document.createElement('section');
+    resources.className = 'theory-modal__resources';
+    const heading = document.createElement('h4');
+    heading.textContent = 'Recursos recomendados';
+    resources.appendChild(heading);
+    const list = document.createElement('ul');
+    page.resources.forEach((resource) => {
+      const item = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = resource.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = resource.label;
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+    resources.appendChild(list);
+    modal.appendChild(resources);
+  }
+
+  const meta = document.createElement('footer');
+  meta.className = 'theory-modal__footer';
+  const updated = formatTheoryDate(page.updatedAt);
+  if (updated) {
+    const stamp = document.createElement('span');
+    stamp.textContent = 'Actualizado el ' + updated;
+    meta.appendChild(stamp);
+  }
+  modal.appendChild(meta);
+
+  const close = () => overlay.remove();
+  closeBtn.addEventListener('click', close);
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) close();
+  });
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
 async function showVocabularyGames() {
   hideAllSections();
   const section = document.querySelector('#vocabulary-section');
@@ -752,24 +830,22 @@ async function openEditPageModal(section) {
     '        <span>Imagen de portada (URL)</span>',
     '        <input id="theory-cover" type="url" placeholder="https://..." />',
     '      </label>',
-    '      <label class="theory-admin__toggle">',
-    '        <input id="theory-published" type="checkbox" checked />',
-    '        <span>Visible para el alumnado</span>',
-    '      </label>',
     '    </div>',
     '    <div class="theory-admin__editor-area">',
     '      <div id="theory-quill" class="theory-admin__quill"></div>',
     '    </div>',
     '    <div class="theory-admin__actions">',
     '      <div class="theory-admin__actions-left">',
-    '        <button type="button" class="option-btn theory-admin__preview">Vista previa</button>',
+    '        <label class="theory-admin__toggle">',
+    '          <input id="theory-published" type="checkbox" checked />',
+    '          <span>Visible para el alumnado</span>',
+    '        </label>',
     '      </div>',
     '      <div class="theory-admin__actions-right">',
     '        <button type="button" class="option-btn theory-admin__save">Guardar cambios</button>',
     '      </div>',
     '    </div>',
     '    <div class="theory-admin__feedback" id="theory-feedback"></div>',
-    '    <div class="theory-admin__preview" id="theory-preview" hidden></div>',
     '  </section>',
     '</div>',
   ].join('\n');
@@ -789,9 +865,7 @@ async function openEditPageModal(section) {
   const coverInput = modal.querySelector('#theory-cover');
   const publishedInput = modal.querySelector('#theory-published');
   const saveBtn = modal.querySelector('.theory-admin__save');
-  const previewBtn = modal.querySelector('.theory-admin__preview');
   const feedbackEl = modal.querySelector('#theory-feedback');
-  const previewEl = modal.querySelector('#theory-preview');
   const newBtn = modal.querySelector('.theory-admin__new');
 
   const state = {
@@ -836,10 +910,6 @@ async function openEditPageModal(section) {
     coverInput.value = '';
     publishedInput.checked = true;
     if (state.quill) state.quill.setContents([]);
-    if (previewEl && !previewEl.hasAttribute('hidden')) {
-      previewEl.setAttribute('hidden', 'hidden');
-      previewBtn.textContent = 'Vista previa';
-    }
   };
 
   const fillForm = (page) => {
@@ -851,10 +921,6 @@ async function openEditPageModal(section) {
       const content = page?.content || '';
       state.quill.setContents([]);
       state.quill.clipboard.dangerouslyPasteHTML(content);
-    }
-    if (previewEl && !previewEl.hasAttribute('hidden')) {
-      previewEl.setAttribute('hidden', 'hidden');
-      previewBtn.textContent = 'Vista previa';
     }
   };
 
@@ -1074,19 +1140,6 @@ async function openEditPageModal(section) {
     }
   };
 
-  const togglePreview = () => {
-    if (!previewEl) return;
-    if (previewEl.hasAttribute('hidden')) {
-      const html = sanitizeTheoryHtml(state.quill ? state.quill.root.innerHTML : '');
-      previewEl.innerHTML = html || '<p style="color:#666;">No hay contenido para previsualizar.</p>';
-      previewEl.removeAttribute('hidden');
-      previewBtn.textContent = 'Ocultar vista previa';
-    } else {
-      previewEl.setAttribute('hidden', 'hidden');
-      previewBtn.textContent = 'Vista previa';
-    }
-  };
-
   listEl.addEventListener('click', (event) => {
     const actionButton = event.target.closest('button[data-action]');
     if (actionButton) {
@@ -1124,7 +1177,6 @@ async function openEditPageModal(section) {
   });
 
   saveBtn.addEventListener('click', saveCurrentPage);
-  previewBtn.addEventListener('click', togglePreview);
 
   const Quill = await loadQuill();
   const quillContainer = modal.querySelector('#theory-quill');

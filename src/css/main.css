@@ -817,6 +817,36 @@ button {
   flex-wrap: wrap;
 }
 
+.theory-card__meta--actions {
+  align-items: center;
+}
+
+.theory-card__excerpt {
+  background: rgba(0, 0, 0, 0.03);
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: var(--color-text);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.theory-card__open {
+  border: none;
+  background: var(--color-secondary);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theory-card__open:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(78, 205, 196, 0.25);
+}
+
+
 .theory-card__index {
   background: var(--color-secondary);
   color: #fff;
@@ -1123,14 +1153,6 @@ button {
   color: var(--color-text);
 }
 
-.theory-admin__preview {
-  border: 1px solid #dcdde1;
-  border-radius: 12px;
-  padding: 16px;
-  background: #fbfbff;
-  max-height: 280px;
-  overflow: auto;
-}
 
 .theory-admin__empty {
   padding: 18px 12px;
@@ -1179,6 +1201,125 @@ button {
   .theory-admin__actions-right {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+/* Theory Modal */
+.theory-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  z-index: 1900;
+}
+
+.theory-modal {
+  background: #fff;
+  border-radius: 20px;
+  width: min(960px, 100%);
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+}
+
+.theory-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.theory-modal__title {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--color-primary);
+}
+
+.theory-modal__close {
+  border: none;
+  background: transparent;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.theory-modal__summary {
+  margin: 0;
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.theory-modal__cover {
+  margin: 0;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.theory-modal__cover img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.theory-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 1.7;
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.theory-modal__body h2,
+.theory-modal__body h3,
+.theory-modal__body h4 {
+  color: var(--color-primary);
+}
+
+.theory-modal__resources {
+  background: rgba(78, 205, 196, 0.12);
+  border-left: 4px solid var(--color-secondary);
+  padding: 16px 20px;
+  border-radius: 14px;
+}
+
+.theory-modal__resources ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+}
+
+.theory-modal__resources a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.theory-modal__resources a:hover {
+  text-decoration: underline;
+}
+
+.theory-modal__footer {
+  margin-top: 8px;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .theory-modal {
+    padding: 18px;
+  }
+  .theory-modal__title {
+    font-size: 1.4rem;
   }
 }
 
