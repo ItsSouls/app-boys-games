@@ -22,7 +22,8 @@ router.get('/pages', async (req, res) => {
     const q = {};
     if (section) q.section = section;
     if (topic) q.topic = topic;
-    q.isPublished = true;
+    // include legacy docs without isPublished flag (treated as published)
+    q.$or = [{ isPublished: { $eq: true } }, { isPublished: { $exists: false } }];
     const list = await Page.find(q, {
       section: 1,
       topic: 1,
