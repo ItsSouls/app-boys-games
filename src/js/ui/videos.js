@@ -18,7 +18,6 @@ export async function renderVideos(filter = '') {
           title: v.title,
           description: v.description,
           embedUrl: v.embedUrl,
-          thumbnail: v.emoji || '🟠',
         }));
       } else {
         cache = [];
@@ -42,15 +41,11 @@ export async function renderVideos(filter = '') {
                data-video="${video.id || ''}"
                data-title="${(video.title || '').replace(/"/g, '&quot;')}"
                data-description="${(video.description || '').replace(/"/g, '&quot;')}"
-               data-embed="${(video.embedUrl || '').replace(/"/g, '&quot;')}"
-               data-emoji="${(video.thumbnail || '🟠').replace(/"/g, '&quot;')}"
-               style="cursor:pointer;">
-            <div class="video-thumbnail">
-              <span style="font-size:4rem;">${video.thumbnail || '🟠'}</span>
-            </div>
+               data-embed="${(video.embedUrl || '').replace(/"/g, '&quot;')}">
             <div class="video-info">
               <h4 class="video-title">${video.title}</h4>
               <p class="video-description">${video.description || ''}</p>
+              <button type="button" class="video-card__open">Ver video</button>
             </div>
           </div>
         `
@@ -74,7 +69,7 @@ function ensureGridListeners(videosGrid) {
       title: card.dataset.title,
       description: card.dataset.description,
       embedUrl: card.dataset.embed,
-      emoji: card.dataset.emoji,
+      emoji: undefined,
     });
   });
 }
@@ -92,36 +87,29 @@ export function openVideoModal(video) {
 
   const overlay = document.createElement('div');
   overlay.className = 'video-overlay';
-  overlay.style.cssText =
-    'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:2500;';
 
   const modal = document.createElement('div');
   modal.className = 'video-modal';
-  modal.style.cssText =
-    'background:#fff;border-radius:16px;max-width:720px;width:90%;padding:20px;box-shadow:0 12px 32px rgba(0,0,0,0.2);';
   modal.innerHTML = `
-    <header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span style="font-size:2.5rem;">${video.emoji || '🟠'}</span>
-        <h3 style="margin:0;">${video.title || 'Video'}</h3>
-      </div>
-      <button id="video-close-btn" class="option-btn" style="background:#ff6b6b;color:#fff;">Cerrar</button>
+    <button type="button" class="video-modal__close" aria-label="Cerrar">×</button>
+    <header class="video-modal__header">
+      <h3>${video.title || 'Video'}</h3>
     </header>
-    <main>
-      <p style="color:#555;margin:0 0 16px;">${video.description || ''}</p>
-      <div class="video-player" style="aspect-ratio:16 / 9;position:relative;">
-        <iframe
-          width="100%"
-          height="100%"
-          src="${video.embedUrl}?autoplay=0&rel=0&modestbranding=1&fs=1"
-          title="${video.title || 'Video'}"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </main>
+    ${
+      video.description
+        ? `<p class="video-modal__description">${video.description}</p>`
+        : ''
+    }
+    <div class="video-modal__player">
+      <iframe
+        src="${video.embedUrl}?autoplay=0&rel=0&modestbranding=1&fs=1"
+        title="${video.title || 'Video'}"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    </div>
   `;
 
   overlay.appendChild(modal);
@@ -131,7 +119,7 @@ export function openVideoModal(video) {
   overlay.addEventListener('click', (event) => {
     if (event.target === overlay) close();
   });
-  modal.querySelector('#video-close-btn')?.addEventListener('click', close);
+  modal.querySelector('.video-modal__close')?.addEventListener('click', close);
   document.addEventListener(
     'keydown',
     function handler(event) {
