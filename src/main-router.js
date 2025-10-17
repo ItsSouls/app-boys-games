@@ -850,7 +850,9 @@ async function openEditPageModal(section) {
     '      </label>',
     '    </div>',
     '    <div class="theory-admin__editor-area">',
-    '      <div id="theory-quill" class="theory-admin__quill"></div>',
+    '      <div class="theory-admin__quill-wrapper">',
+    '        <div id="theory-quill" class="theory-admin__quill"></div>',
+    '      </div>',
     '    </div>',
     '    <div class="theory-admin__actions">',
     '      <div class="theory-admin__actions-left">',
@@ -1216,7 +1218,6 @@ async function openEditPageModal(section) {
     },
     placeholder: 'Escribe el contenido principal de la leccion...',
   });
-  quillContainer.classList.add('theory-admin__quill-wrapper');
 
   await loadPages();
 }

@@ -1100,6 +1100,8 @@ button {
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 .theory-admin__quill .ql-editor {
@@ -1116,6 +1118,7 @@ button {
 .theory-admin__quill-wrapper {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .theory-admin__quill-wrapper .ql-toolbar {
