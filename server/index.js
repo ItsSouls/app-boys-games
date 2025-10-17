@@ -28,9 +28,11 @@ try {
 const app = express();
 const PORT = process.env.PORT || 4000;
 const ORIGIN = process.env.CORS_ORIGIN || '*';
+const BODY_LIMIT = process.env.JSON_BODY_LIMIT || '2mb';
 
 app.use(cors({ origin: ORIGIN, credentials: true }));
-app.use(express.json());
+app.use(express.json({ limit: BODY_LIMIT }));
+app.use(express.urlencoded({ limit: BODY_LIMIT, extended: true }));
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
