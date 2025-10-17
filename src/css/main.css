@@ -1098,7 +1098,6 @@ button {
 .theory-admin__editor-area {
   border: 1px solid #dcdde1;
   border-radius: 12px;
-  overflow: hidden;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -1118,15 +1117,22 @@ button {
 .theory-admin__quill-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  max-height: 420px;
+  overflow: hidden;
+  background: #fff;
 }
 
 .theory-admin__quill-wrapper .ql-toolbar {
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #fff;
 }
 
 .theory-admin__quill-wrapper .ql-container {
   flex: 1 1 auto;
+  overflow-y: auto;
 }
 
 .theory-admin__quill .ql-toolbar {
