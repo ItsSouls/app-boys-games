@@ -10,6 +10,19 @@ import { vocabularyGames } from './data/games.js';
 import { renderVideos } from './js/ui/videos.js';
 import { setupAuthControls } from './js/ui/auth.js';
 
+const API_BASE = (() => {
+  if (import.meta.env?.VITE_API_BASE_URL) {
+    return String(import.meta.env.VITE_API_BASE_URL).replace(/\/$/, '');
+  }
+  if (import.meta.env?.DEV) {
+    return 'http://localhost:4000/api';
+  }
+  if (typeof window !== 'undefined' && window.location) {
+    return (window.location.origin + '/api').replace(/\/$/, '');
+  }
+  return '/api';
+})();
+
 console.log('App Boys Games - Aprende Espanol Jugando');
 
 const gameController = new GameController();
@@ -99,7 +112,7 @@ async function renderTheory(sectionName) {
   if (!container) return;
   container.innerHTML = "<div class='theory-loading'>Cargando...</div>";
   try {
-    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = API_BASE;
     const res = await fetch(base + '/public/pages?section=' + encodeURIComponent(sectionName));
     if (!res.ok) throw new Error('Sin contenido');
     const data = await res.json();
@@ -180,6 +193,10 @@ async function renderTheory(sectionName) {
     container.innerHTML = "<div class='theory-error'>Error al cargar contenido.</div>";
   }
 }
+function sanitizeIdForUrl(id) {
+  return encodeURIComponent(id).replace(/\(/g, '%28').replace(/\)/g, '%29');
+}
+
 function openTheoryModal(page, sectionName) {
   const overlay = document.createElement('div');
   overlay.className = 'theory-modal-overlay';
@@ -572,7 +589,7 @@ async function loadAdminVideos(container) {
     return;
   }
   try {
-    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = API_BASE;
     const res = await fetch(`${base}/admin/videos`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -608,7 +625,7 @@ async function loadAdminThemes(container) {
     return;
   }
   try {
-    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = API_BASE;
     const res = await fetch(`${base}/admin/themes`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -664,7 +681,7 @@ async function loadAdminThemes(container) {
 async function deleteTheme(id, container) {
   const token = localStorage.getItem('abg_token') || '';
   try {
-    const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+    const base = API_BASE;
     const res = await fetch(`${base}/admin/themes/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
@@ -775,7 +792,7 @@ function openThemeEditor(theme = null, container) {
     };
 
     try {
-      const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+      const base = API_BASE;
       const url = theme ? `${base}/admin/themes/${theme._id}` : `${base}/admin/themes`;
       const method = theme ? 'PUT' : 'POST';
       const res = await fetch(url, {
@@ -886,7 +903,7 @@ async function openEditPageModal(section) {
     ['clean'],
   ];
 
-  const baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+  const baseUrl = API_BASE;
 
   const showFeedback = (message, tone = 'info') => {
     if (!feedbackEl) return;
@@ -1097,10 +1114,10 @@ async function openEditPageModal(section) {
       if (!res.ok) {
         throw new Error(data?.error || 'No se pudo guardar');
       }
-      showFeedback('Contenido guardado correctamente.', 'success');
       const targetId = data?.page?._id || state.currentId;
       await loadPages(targetId);
-      renderTheory(section);
+      await renderTheory(section);
+      showFeedback('Contenido guardado correctamente.', 'success');
     } catch (error) {
       console.error('[pages] save', error);
       showFeedback(error?.message || 'Error al guardar', 'error');
@@ -1126,12 +1143,12 @@ async function openEditPageModal(section) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || 'No se pudo eliminar');
       }
-      showFeedback('Pagina eliminada.', 'success');
       if (state.currentId === id) {
         state.currentId = null;
       }
       await loadPages();
-      renderTheory(section);
+      await renderTheory(section);
+      showFeedback('Pagina eliminada.', 'success');
     } catch (error) {
       console.error('[pages] delete', error);
       showFeedback(error?.message || 'Error al eliminar', 'error');
@@ -1228,7 +1245,7 @@ function openAddVideoModal() {
       return;
     }
     try {
-      const base = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+      const base = API_BASE;
       const res = await fetch(`${base}/admin/videos`, {
         method: 'POST',
         headers: {
