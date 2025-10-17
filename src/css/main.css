@@ -1304,6 +1304,13 @@ button {
   color: var(--color-text);
 }
 
+.theory-modal__body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
 .theory-modal__body h2,
 .theory-modal__body h3,
 .theory-modal__body h4 {
