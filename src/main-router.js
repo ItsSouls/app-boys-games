@@ -1210,9 +1210,13 @@ async function openEditPageModal(section) {
   const quillContainer = modal.querySelector('#theory-quill');
   state.quill = new Quill(quillContainer, {
     theme: 'snow',
-    modules: { toolbar },
+    modules: {
+      toolbar,
+      clipboard: { matchVisual: false },
+    },
     placeholder: 'Escribe el contenido principal de la leccion...',
   });
+  quillContainer.classList.add('theory-admin__quill-wrapper');
 
   await loadPages();
 }

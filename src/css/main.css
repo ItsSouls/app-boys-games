@@ -1113,6 +1113,19 @@ button {
   border: none;
 }
 
+.theory-admin__quill-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.theory-admin__quill-wrapper .ql-toolbar {
+  flex-shrink: 0;
+}
+
+.theory-admin__quill-wrapper .ql-container {
+  flex: 1 1 auto;
+}
+
 .theory-admin__quill .ql-toolbar {
   border: none;
   border-bottom: 1px solid #eaeaea;
