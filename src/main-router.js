@@ -1143,10 +1143,18 @@ async function openEditPageModal(section) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data?.error || 'No se pudo eliminar');
       }
+      const previousId = state.currentId;
       if (state.currentId === id) {
         state.currentId = null;
       }
       await loadPages();
+      if (previousId && state.pages.find((page) => page._id === previousId)) {
+        selectPage(previousId);
+      } else if (state.pages.length) {
+        selectPage(state.pages[0]._id);
+      } else {
+        clearForm();
+      }
       await renderTheory(section);
       showFeedback('Pagina eliminada.', 'success');
     } catch (error) {
