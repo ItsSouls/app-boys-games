@@ -194,7 +194,8 @@ async function renderTheory(sectionName) {
   }
 }
 function sanitizeIdForUrl(id) {
-  return encodeURIComponent(id).replace(/\(/g, '%28').replace(/\)/g, '%29');
+  const trimmed = String(id ?? '').trim();
+  return encodeURIComponent(trimmed).replace(/\(/g, '%28').replace(/\)/g, '%29');
 }
 
 function openTheoryModal(page, sectionName) {
