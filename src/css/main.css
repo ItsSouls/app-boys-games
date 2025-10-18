@@ -1014,7 +1014,7 @@ button {
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   background: #fff;
-  padding: 6px 28px 6px 6px;
+  padding: 6px 12px 6px 6px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1037,11 +1037,13 @@ button {
 }
 
 .theory-admin__list-item {
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 10px;
-  padding: 12px 14px;
+  padding: 12px 22px;
   border-radius: 12px;
   border: 1px solid transparent;
   background: rgba(247, 248, 255, 0.85);
@@ -2083,3 +2085,5 @@ button {
     order: -1;
   }
 }
+
+
