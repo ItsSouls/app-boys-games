@@ -233,8 +233,9 @@ button {
 
 .section-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
   margin-bottom: 40px;
   padding-bottom: 20px;
   border-bottom: 3px solid #f0f0f0;
@@ -242,6 +243,11 @@ button {
 
 .videos-search {
   margin-left: auto;
+}
+
+.section-header .back-btn,
+.section-header .option-btn {
+  flex-shrink: 0;
 }
 
 .videos-search input[type="search"] {
@@ -263,6 +269,8 @@ button {
   color: var(--color-primary);
   font-weight: 700;
   margin: 0;
+  flex: 1;
+  text-align: center;
 }
 
 /* Theory sections */
@@ -915,7 +923,7 @@ button {
 .theory-admin__sidebar-top {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 12px;
 }
 
@@ -924,7 +932,8 @@ button {
   font-size: 1.05rem;
 }
 
-.admin-panel__close {
+.admin-panel__close,
+.theory-admin__close-btn {
   border: none;
   background: var(--color-primary);
   color: #fff;
@@ -936,30 +945,18 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
-.admin-panel__close:hover {
+.admin-panel__close:hover,
+.theory-admin__close-btn:hover {
   transform: scale(1.08);
   background: var(--color-primary-dark);
+  color: #fff;
 }
 
-.theory-admin__close-btn {
-  background: transparent;
-  border: none;
-  color: var(--color-text);
-  font-size: 1.5rem;
-  line-height: 1;
-  padding: 4px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.theory-admin__close-btn:hover {
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--color-primary);
-}
 
 .theory-admin__new {
   background: var(--color-secondary);

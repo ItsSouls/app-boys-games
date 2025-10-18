@@ -118,7 +118,7 @@ async function renderTheory(sectionName) {
     const data = await res.json();
     const pages = Array.isArray(data?.pages) ? data.pages : [];
     if (!pages.length) {
-      container.innerHTML = "<div class='theory-empty'>No hay contenido todavia.</div>";
+      container.innerHTML = "<div class='theory-empty'>No hay contenido todav\u00EDa.</div>";
       return;
     }
 
@@ -128,7 +128,7 @@ async function renderTheory(sectionName) {
       const temp = document.createElement('div');
       temp.innerHTML = sanitizeTheoryHtml(raw);
       const text = temp.textContent || '';
-      return text.length > 220 ? text.slice(0, 220).trim() + '…' : text;
+      return text.length > 220 ? text.slice(0, 220).trim() + '\u2026' : text;
     };
 
     container.innerHTML = '';
@@ -493,7 +493,7 @@ async function refreshUserGreeting() {
     const current = location.pathname.replace(/^\/+/, '').split('/')[0] || '';
     if (current) maybeShowSectionAdminGear(current);
   } catch (err) {
-    console.warn('[auth] token inválido', err);
+    console.warn('[auth] token inv\u00E1lido', err);
     localStorage.removeItem('abg_token');
     headerUser.style.display = 'none';
     nameEl.textContent = '';
@@ -541,7 +541,7 @@ async function openAdminPanelModal() {
   modal.style.cssText = 'background:#fff;border-radius:12px;max-width:960px;width:95%;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);font-family:inherit;';
   modal.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-      <h3 style="margin:0">Panel de Administraciýn</h3>
+      <h3 style="margin:0">Panel de Administraci\u00F3n</h3>
       <button id="admin-close" type="button" class="admin-panel__close" aria-label="Cerrar">&times;</button>
     </div>
     <div style="display:flex;gap:16px;flex-wrap:wrap;">
@@ -574,7 +574,7 @@ async function loadAdminVideos(container) {
   if (!container) return;
   const token = localStorage.getItem('abg_token');
   if (!token) {
-    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesión como administrador</div>';
+    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesi\u00F3n como administrador</div>';
     return;
   }
   try {
@@ -612,15 +612,15 @@ async function openEditPageModal(section) {
 
   const modal = document.createElement('div');
   modal.className = 'theory-admin-modal';
-  const sectionLabel = section === 'gramatica' ? 'Gramatica' : 'Vocabulario';
+  const sectionLabel = section === 'gramatica' ? 'Gram\u00E1tica' : 'Vocabulario';
   modal.innerHTML = [
     '<div class="theory-admin">',
     '  <aside class="theory-admin__sidebar">',
     '    <div class="theory-admin__sidebar-top">',
+    '      <h3>Gesti\u00F3n de ' + sectionLabel + '</h3>',
     '      <button type="button" class="theory-admin__close-btn" aria-label="Cerrar">&times;</button>',
-    '      <h3>Gestion de ' + sectionLabel + '</h3>',
     '    </div>',
-    '    <button type="button" class="option-btn theory-admin__new">+ Nueva pagina</button>',
+    '    <button type="button" class="option-btn theory-admin__new">+ Nueva p\u00E1gina</button>',
     '    <div class="theory-admin__list" id="theory-admin-list"><div class="theory-admin__empty">Cargando...</div></div>',
     '  </aside>',
     '  <section class="theory-admin__editor">',
@@ -635,7 +635,7 @@ async function openEditPageModal(section) {
     '      </label>',
     '      <label class="theory-admin__field theory-admin__field--full">',
     '        <span>Resumen</span>',
-    '        <textarea id="theory-summary" rows="3" placeholder="Descripcion breve"></textarea>',
+    '        <textarea id="theory-summary" rows="3" placeholder="Descripci\u00F3n breve"></textarea>',
     '      </label>',
     '    </div>',
     '    <div class="theory-admin__editor-area">',
@@ -736,7 +736,7 @@ async function openEditPageModal(section) {
   const renderList = () => {
     if (!listEl) return;
     if (!state.pages.length) {
-      listEl.innerHTML = '<div class="theory-admin__empty">Todavia no hay contenido creado.</div>';
+      listEl.innerHTML = '<div class="theory-admin__empty">Todav\u00EDa no hay contenido creado.</div>';
       return;
     }
     listEl.innerHTML = '';
@@ -800,7 +800,7 @@ async function openEditPageModal(section) {
   const persistOrder = async () => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesion como administrador.', 'error');
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
       return;
     }
     try {
@@ -842,7 +842,7 @@ async function openEditPageModal(section) {
   const loadPages = async (focusId) => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesion como administrador.', 'error');
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
       return;
     }
     try {
@@ -876,7 +876,7 @@ async function openEditPageModal(section) {
   const saveCurrentPage = async () => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesion como administrador.', 'error');
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
       return;
     }
     const payload = gatherPayload();
@@ -922,7 +922,7 @@ async function openEditPageModal(section) {
   const deletePage = async (id) => {
     const headers = getAuthHeaders();
     if (!headers) {
-      showFeedback('Debes iniciar sesion como administrador.', 'error');
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
       return;
     }
     if (!window.confirm('Seguro que quieres eliminar este contenido?')) return;
@@ -950,7 +950,7 @@ async function openEditPageModal(section) {
         clearForm();
       }
       await renderTheory(section);
-      showFeedback('Pagina eliminada.', 'success');
+      showFeedback('P\u00E1gina eliminada.', 'success');
     } catch (error) {
       console.error('[pages] delete', error);
       showFeedback(error?.message || 'Error al eliminar', 'error');
@@ -1018,8 +1018,8 @@ function openAddVideoModal() {
   modal.innerHTML = `
     <h3 style="margin:0 0 10px 0">Anadir video</h3>
     <div style="display:grid;gap:8px;">
-      <input id="v-title" placeholder="Título" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
-      <textarea id="v-desc" placeholder="Descripción" style="padding:8px;border:1px solid #ddd;border-radius:8px;"></textarea>
+      <input id="v-title" placeholder="T\u00EDtulo" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
+      <textarea id="v-desc" placeholder="Descripci\u00F3n" style="padding:8px;border:1px solid #ddd;border-radius:8px;"></textarea>
       <input id="v-url" placeholder="URL de YouTube (embed)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
       <input id="v-emoji" placeholder="Emoji (opcional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
       <div id="v-err" style="color:#e74c3c;min-height:1rem;font-size:0.9rem;"></div>
@@ -1046,7 +1046,7 @@ function openAddVideoModal() {
     const err = modal.querySelector('#v-err');
     if (err) err.textContent = '';
     if (!title || !embedUrl) {
-      if (err) err.textContent = 'Título y URL son obligatorios.';
+      if (err) err.textContent = 'T\u00EDtulo y URL son obligatorios.';
       return;
     }
     try {
