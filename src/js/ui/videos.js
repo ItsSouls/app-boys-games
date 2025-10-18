@@ -18,6 +18,7 @@ export async function renderVideos(filter = '') {
           title: v.title,
           description: v.description,
           embedUrl: v.embedUrl,
+          emoji: v.emoji,
         }));
       } else {
         cache = [];
@@ -41,11 +42,14 @@ export async function renderVideos(filter = '') {
                data-video="${video.id || ''}"
                data-title="${(video.title || '').replace(/"/g, '&quot;')}"
                data-description="${(video.description || '').replace(/"/g, '&quot;')}"
-               data-embed="${(video.embedUrl || '').replace(/"/g, '&quot;')}">
+               data-embed="${(video.embedUrl || '').replace(/"/g, '&quot;')}"
+               data-emoji="${(video.emoji || '').replace(/"/g, '&quot;')}">
+            <div class="video-thumbnail" aria-hidden="true">
+              ${video.emoji || '🎬'}
+            </div>
             <div class="video-info">
               <h4 class="video-title">${video.title}</h4>
               <p class="video-description">${video.description || ''}</p>
-              <button type="button" class="video-card__open">Ver video</button>
             </div>
           </div>
         `

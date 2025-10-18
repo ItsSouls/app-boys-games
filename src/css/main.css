@@ -306,6 +306,8 @@ button {
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
 }
 
 .video-card:hover {
@@ -324,38 +326,14 @@ button {
   color: white;
   position: relative;
 }
-
-.video-thumbnail::after {
-  content: '▶️';
-  position: absolute;
-  font-size: 2rem;
-  opacity: 0.8;
-}
-
 .video-info {
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  align-items: center;
+  text-align: center;
 }
-
-.video-card__open {
-  align-self: flex-start;
-  border: none;
-  background: var(--color-primary);
-  color: #fff;
-  padding: 10px 18px;
-  border-radius: 999px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.video-card__open:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(255, 107, 107, 0.25);
-}
-
 .video-title {
   font-size: 1.3rem;
   font-weight: 600;
