@@ -52,4 +52,6 @@
   font-size: 1rem;
   color: #666;
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

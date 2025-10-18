@@ -359,6 +359,8 @@ button {
   font-size: 1rem;
   color: var(--color-muted);
   line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .game-card {
@@ -737,6 +739,8 @@ button {
   font-size: 1rem;
   color: var(--color-muted);
   margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .theory-card__body {
@@ -848,6 +852,8 @@ button {
   color: var(--color-text);
   line-height: 1.6;
   font-size: 0.95rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .theory-card__open {
