@@ -651,7 +651,8 @@ async function openAdminPanelModal() {
       const info = document.createElement('div');
       info.className = 'theory-admin__list-info';
       const emoji = video.emoji || '\u{1F3AC}';
-      info.innerHTML = '<strong>' + emoji + ' ' + video.title + '</strong><span>' + (video.description || video.embedUrl) + '</span>';
+      const updatedLabel = formatTheoryDate(video.updatedAt) || '';
+      info.innerHTML = '<strong>' + emoji + ' ' + video.title + '</strong><span>' + updatedLabel + '</span>';
       item.appendChild(info);
 
       const actions = document.createElement('div');
