@@ -1307,12 +1307,15 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, background 0.2s ease;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .video-modal__close:hover {
   transform: scale(1.1);
   background: var(--color-primary-dark);
+  color: #fff;
 }
 
 .video-modal__header h3 {

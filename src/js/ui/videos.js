@@ -91,7 +91,7 @@ export function openVideoModal(video) {
   const modal = document.createElement('div');
   modal.className = 'video-modal';
   modal.innerHTML = `
-    <button type="button" class="video-modal__close" aria-label="Cerrar">×</button>
+    <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="video-modal__header">
       <h3>${video.title || 'Video'}</h3>
     </header>
