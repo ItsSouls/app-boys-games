@@ -1298,11 +1298,11 @@ button {
   right: 16px;
   border: none;
   background: var(--color-primary);
-  color: #fff;
+  color: transparent;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  font-size: 1.3rem;
+  font-size: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1310,12 +1310,40 @@ button {
   line-height: 1;
   padding: 0;
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  position: absolute;
 }
 
 .video-modal__close:hover {
   transform: scale(1.1);
   background: var(--color-primary-dark);
   color: #fff;
+}
+
+.video-modal__close::before,
+.video-modal__close::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: #fff;
+  border-radius: 999px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: background 0.2s ease;
+}
+
+.video-modal__close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.video-modal__close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.video-modal__close:hover::before,
+.video-modal__close:hover::after {
+  background: #fff;
 }
 
 .video-modal__header h3 {
