@@ -936,11 +936,11 @@ button {
 .theory-admin__close-btn {
   border: none;
   background: var(--color-primary);
-  color: #fff;
+  color: transparent;
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  font-size: 1.2rem;
+  font-size: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -948,6 +948,7 @@ button {
   line-height: 1;
   padding: 0;
   transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  position: relative;
 }
 
 .admin-panel__close:hover,
@@ -955,6 +956,39 @@ button {
   transform: scale(1.08);
   background: var(--color-primary-dark);
   color: #fff;
+}
+
+.admin-panel__close::before,
+.admin-panel__close::after,
+.theory-admin__close-btn::before,
+.theory-admin__close-btn::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  background: #fff;
+  border-radius: 999px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: background 0.2s ease;
+}
+
+.admin-panel__close::before,
+.theory-admin__close-btn::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.admin-panel__close::after,
+.theory-admin__close-btn::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.admin-panel__close:hover::before,
+.admin-panel__close:hover::after,
+.theory-admin__close-btn:hover::before,
+.theory-admin__close-btn:hover::after {
+  background: #fff;
 }
 
 
