@@ -39,7 +39,7 @@ router.post('/videos', auth, requireAdmin, async (req, res) => {
     title,
     description: description || '',
     embedUrl,
-    emoji: emoji || '🎬',
+    emoji: typeof emoji === 'string' && emoji.trim() ? emoji.trim() : '\u{1F3AC}',
     order: nextOrder,
     createdBy: req.user.id,
   });
@@ -53,7 +53,7 @@ router.put('/videos/:id', auth, requireAdmin, async (req, res) => {
     title,
     description: description || '',
     embedUrl,
-    emoji: emoji || '🎬',
+    emoji: typeof emoji === 'string' && emoji.trim() ? emoji.trim() : '\u{1F3AC}',
   };
   const v = await Video.findByIdAndUpdate(id, { $set: payload }, { new: true });
   res.json({ ok: true, video: v });

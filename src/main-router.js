@@ -557,8 +557,8 @@ async function openAdminPanelModal() {
     '        <input id="video-title" type="text" placeholder="T\u00EDtulo del video" />',
     '      </label>',
     '      <label class="theory-admin__field">',
-    '        <span>Emoji</span>',
-    '        <input id="video-emoji" type="text" maxlength="4" placeholder="&#x1F3AC;" />',
+    '        <span>Emoji o imagen (URL)</span>',
+    '        <input id="video-emoji" type="text" placeholder="&#x1F3AC; o https://mis-imagenes.com/miniatura.png" />',
     '      </label>',
     '      <label class="theory-admin__field theory-admin__field--full">',
     '        <span>URL de YouTube (embed)</span>',
@@ -597,10 +597,21 @@ async function openAdminPanelModal() {
   const newBtn = modal.querySelector('.video-admin__new');
   const feedbackEl = modal.querySelector('#video-admin-feedback');
 
+  if (emojiInput) {
+    emojiInput.removeAttribute('maxlength');
+    emojiInput.maxLength = 2048;
+  }
+
   const state = {
     videos: [],
     currentId: null,
     saving: false,
+  };
+
+  const isImageUrl = (value) => {
+    if (!value) return false;
+    const source = String(value).trim();
+    return /^https?:\/\//i.test(source);
   };
 
   const showFeedback = (message, tone = 'info') => {
@@ -650,9 +661,31 @@ async function openAdminPanelModal() {
 
       const info = document.createElement('div');
       info.className = 'theory-admin__list-info';
-      const emoji = video.emoji || '\u{1F3AC}';
+      const rawMedia =
+        typeof video.emoji === 'string' ? video.emoji.trim() : '';
+      const displayMedia = rawMedia || '\u{1F3AC}';
       const updatedLabel = formatTheoryDate(video.updatedAt) || '';
-      info.innerHTML = '<strong>' + emoji + ' ' + video.title + '</strong><span>' + updatedLabel + '</span>';
+      const headline = document.createElement('strong');
+      headline.className = 'video-admin__list-headline';
+      const badgeWrapper = document.createElement('span');
+      badgeWrapper.className = 'video-admin__badge';
+      if (isImageUrl(rawMedia)) {
+        const preview = document.createElement('img');
+        preview.className = 'video-admin__badge-image';
+        preview.src = rawMedia;
+        preview.alt = '';
+        badgeWrapper.appendChild(preview);
+      } else {
+        badgeWrapper.classList.add('video-admin__badge--emoji');
+        badgeWrapper.textContent = displayMedia;
+      }
+      headline.appendChild(badgeWrapper);
+      headline.appendChild(document.createTextNode(' ' + (video.title || '')));
+      info.appendChild(headline);
+
+      const meta = document.createElement('span');
+      meta.textContent = updatedLabel;
+      info.appendChild(meta);
       item.appendChild(info);
 
       const actions = document.createElement('div');
@@ -706,12 +739,12 @@ async function openAdminPanelModal() {
     const title = titleInput?.value.trim() || '';
     const embedUrl = urlInput?.value.trim() || '';
     const description = descriptionInput?.value.trim() || '';
-    const emojiRaw = emojiInput?.value.trim() || '';
+    const mediaRaw = emojiInput?.value.trim() || '';
     return {
       title,
       embedUrl,
       description,
-      emoji: emojiRaw ? emojiRaw.slice(0, 4) : '\u{1F3AC}',
+      emoji: mediaRaw || '\u{1F3AC}',
     };
   };
 

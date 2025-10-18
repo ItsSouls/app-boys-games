@@ -2,6 +2,23 @@ const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/ap
 
 let cache = [];
 
+const isImageUrl = (value) => {
+  if (!value) return false;
+  return /^https?:\/\//i.test(String(value).trim());
+};
+
+const escapeHtml = (value) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+const escapeAttribute = (value) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;');
+
 export async function renderVideos(filter = '') {
   const videosGrid = document.getElementById('videos-grid');
   const searchInput = document.getElementById('videos-search');
@@ -37,29 +54,39 @@ export async function renderVideos(filter = '') {
   } else {
     videosGrid.innerHTML = list
       .map(
-        (video) => `
+        (video) => {
+          const rawMedia =
+            typeof video.emoji === 'string' ? video.emoji.trim() : '';
+          const normalizedMedia = rawMedia || '🎬';
+          const mediaAttr = escapeAttribute(rawMedia || normalizedMedia);
+          const isMediaImage = isImageUrl(rawMedia);
+          const thumbnailMarkup = isMediaImage
+            ? `<img class="video-thumbnail__image" src="${escapeAttribute(rawMedia)}" alt="" loading="lazy" />`
+            : `<span class="video-thumbnail__emoji">${escapeHtml(normalizedMedia)}</span>`;
+          return `
           <div class="video-card"
                data-video="${video.id || ''}"
                data-title="${(video.title || '').replace(/"/g, '&quot;')}"
                data-description="${(video.description || '').replace(/"/g, '&quot;')}"
                data-embed="${(video.embedUrl || '').replace(/"/g, '&quot;')}"
-               data-emoji="${(video.emoji || '').replace(/"/g, '&quot;')}">
+               data-emoji="${mediaAttr}">
             <div class="video-thumbnail" aria-hidden="true">
-              ${video.emoji || '🎬'}
+              ${thumbnailMarkup}
             </div>
             <div class="video-info">
               <h4 class="video-title">${video.title}</h4>
               <p class="video-description">${video.description || ''}</p>
             </div>
           </div>
-        `
+        `;
+        }
       )
       .join('');
   }
 
   ensureGridListeners(videosGrid);
   wireSearchInput(searchInput);
-  console.log(`🎬 ${list.length} videos renderizados`);
+  console.log(`[videos] ${list.length} videos renderizados`);
 }
 
 function ensureGridListeners(videosGrid) {
@@ -73,7 +100,7 @@ function ensureGridListeners(videosGrid) {
       title: card.dataset.title,
       description: card.dataset.description,
       embedUrl: card.dataset.embed,
-      emoji: undefined,
+      emoji: card.dataset.emoji || undefined,
     });
   });
 }
