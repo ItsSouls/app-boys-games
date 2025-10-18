@@ -541,8 +541,8 @@ async function openAdminPanelModal() {
   modal.style.cssText = 'background:#fff;border-radius:12px;max-width:960px;width:95%;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);font-family:inherit;';
   modal.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-      <h3 style="margin:0">Panel de Administración</h3>
-      <button id="admin-close" class="option-btn" style="background:#ccc;color:#333;">Cerrar</button>
+      <h3 style="margin:0">Panel de Administraciýn</h3>
+      <button id="admin-close" type="button" class="admin-panel__close" aria-label="Cerrar">&times;</button>
     </div>
     <div style="display:flex;gap:16px;flex-wrap:wrap;">
       <section style="flex:1 1 300px;min-width:280px;display:flex;flex-direction:column;gap:8px;">
@@ -551,15 +551,6 @@ async function openAdminPanelModal() {
           <button id="admin-video-add" class="option-btn" style="padding:4px 10px;background:#4ECDC4;color:#fff;">Nuevo</button>
         </div>
         <div id="admin-videos" style="flex:1;max-height:300px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:8px;background:#fafafa;">
-          <div style="color:#777">Cargando...</div>
-        </div>
-      </section>
-      <section style="flex:1 1 300px;min-width:280px;display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <h4 style="margin:0">tematicas</h4>
-          <button id="admin-theme-add" class="option-btn" style="padding:4px 10px;background:#FF9500;color:#fff;">Nueva</button>
-        </div>
-        <div id="admin-themes" style="flex:1;max-height:300px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:8px;background:#fafafa;">
           <div style="color:#777">Cargando...</div>
         </div>
       </section>
@@ -575,12 +566,9 @@ async function openAdminPanelModal() {
   });
 
   const videosBox = modal.querySelector('#admin-videos');
-  const themesBox = modal.querySelector('#admin-themes');
   modal.querySelector('#admin-video-add')?.addEventListener('click', openAddVideoModal);
-  modal.querySelector('#admin-theme-add')?.addEventListener('click', () => openThemeEditor());
 
   await loadAdminVideos(videosBox);
-  await loadAdminThemes(themesBox);
 }
 async function loadAdminVideos(container) {
   if (!container) return;
@@ -618,205 +606,6 @@ async function loadAdminVideos(container) {
   }
 }
 
-async function loadAdminThemes(container) {
-  if (!container) return;
-  const token = localStorage.getItem('abg_token');
-  if (!token) {
-    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesión como administrador</div>';
-    return;
-  }
-  try {
-    const base = API_BASE;
-    const res = await fetch(`${base}/admin/themes`, { headers: { Authorization: `Bearer ${token}` } });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      container.innerHTML = `<div style="color:#e74c3c;">${data?.error || 'No autorizado'}</div>`;
-      return;
-    }
-    const themes = Array.isArray(data?.themes) ? data.themes : [];
-    if (!themes.length) {
-      container.innerHTML = '<div style="color:#777">No hay tematicas cargadas</div>';
-      return;
-    }
-    container.innerHTML = themes
-      .map(
-        (theme) => `
-          <div class="admin-theme" data-id="${theme._id}" data-slug="${theme.slug}" style="padding:8px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:12px;">
-            <div style="flex:1;min-width:0;">
-              <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${theme.title} (${theme.slug})</div>
-              <div style="font-size:12px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${theme.gameType || 'multichoice'} - ${Array.isArray(theme.words) ? theme.words.length : 0} palabras</div>
-            </div>
-            <div style="display:flex;gap:6px;">
-              <button class="theme-edit option-btn" style="padding:4px 8px;background:#3498db;color:#fff;">Editar</button>
-              <button class="theme-delete option-btn" style="padding:4px 8px;background:#e74c3c;color:#fff;">Borrar</button>
-            </div>
-          </div>
-        `,
-      )
-      .join('');
-
-    container.querySelectorAll('.theme-edit').forEach((btn) => {
-      btn.addEventListener('click', (event) => {
-        const row = event.currentTarget.closest('.admin-theme');
-        const id = row?.getAttribute('data-id');
-        const slug = row?.getAttribute('data-slug');
-        const theme = themes.find((item) => item._id === id || item.slug === slug);
-        openThemeEditor(theme || null, container);
-      });
-    });
-
-    container.querySelectorAll('.theme-delete').forEach((btn) => {
-      btn.addEventListener('click', async (event) => {
-        const row = event.currentTarget.closest('.admin-theme');
-        const id = row?.getAttribute('data-id');
-        if (!id) return;
-        if (!window.confirm('Eliminar esta tematica?')) return;
-        await deleteTheme(id, container);
-      });
-    });
-  } catch (err) {
-    container.innerHTML = `<div style="color:#e74c3c;">Fallo al cargar: ${err?.message || err}</div>`;
-  }
-}
-
-async function deleteTheme(id, container) {
-  const token = localStorage.getItem('abg_token') || '';
-  try {
-    const base = API_BASE;
-    const res = await fetch(`${base}/admin/themes/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      alert(data?.error || 'No se pudo eliminar la tematica');
-      return;
-    }
-    await ensureThemesLoaded({ force: true });
-    await loadAdminThemes(container);
-    await showVocabularyGames();
-  } catch (err) {
-    alert(err?.message || err);
-  }
-}
-function wordsToTextarea(words) {
-  if (!Array.isArray(words)) return '';
-  return words
-    .map((word) => {
-      const parts = [word.spanish || '', word.english || ''];
-      if (word.emoji) parts.push(word.emoji);
-      return parts.join(' = ');
-    })
-    .join('\n');
-}
-
-function parseWordsInput(value) {
-  return value
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [spanish, english, emoji] = line.split('=').map((part) => part.trim());
-      if (!spanish || !english) return null;
-      return { spanish, english, ...(emoji ? { emoji } : {}) };
-    })
-    .filter(Boolean);
-}
-
-function openThemeEditor(theme = null, container) {
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2700;';
-  const modal = document.createElement('div');
-  modal.style.cssText = 'background:#fff;border-radius:12px;max-width:600px;width:95%;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.25);font-family:inherit;';
-  const wordsValue = wordsToTextarea(theme?.words || []);
-  modal.innerHTML = `
-    <h3 style="margin:0 0 10px 0">${theme ? 'Editar' : 'Nueva'} tematica</h3>
-    <div style="display:grid;gap:10px;">
-      <input id="t-slug" placeholder="Identificador (slug)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" value="${theme?.slug || ''}" ${theme ? 'disabled' : ''} />
-      <input id="t-title" placeholder="Título" style="padding:8px;border:1px solid #ddd;border-radius:8px;" value="${theme?.title || ''}" />
-      <input id="t-icon" placeholder="Emoji/Icono (opcional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" value="${theme?.icon || ''}" />
-      <textarea id="t-desc" placeholder="Descripción" rows="3" style="padding:8px;border:1px solid #ddd;border-radius:8px;">${theme?.description || ''}</textarea>
-      <label style="font-size:0.9rem;color:#555;display:flex;flex-direction:column;gap:6px;">
-        Tipo de juego
-        <select id="t-type" style="padding:8px;border:1px solid #ddd;border-radius:8px;">
-          <option value="multichoice" ${!theme || theme.gameType !== 'bubbles' ? 'selected' : ''}>Multirespuesta</option>
-          <option value="bubbles" ${theme?.gameType === 'bubbles' ? 'selected' : ''}>Burbujas</option>
-        </select>
-      </label>
-      <label style="font-size:0.9rem;color:#555;display:flex;flex-direction:column;gap:6px;">
-        Palabras (formato: español = inglés = emoji)
-        <textarea id="t-words" rows="8" style="padding:8px;border:1px solid #ddd;border-radius:8px;">${wordsValue}</textarea>
-      </label>
-      <div id="t-error" style="color:#e74c3c;min-height:1rem;font-size:0.9rem;"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="t-cancel" class="option-btn" style="background:#ccc;color:#333;">Cancelar</button>
-        <button id="t-save" class="option-btn" style="background:#FF9500;color:#fff;">Guardar</button>
-      </div>
-    </div>
-  `;
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-
-  const close = () => overlay.remove();
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) close();
-  });
-  modal.querySelector('#t-cancel')?.addEventListener('click', close);
-
-  modal.querySelector('#t-save')?.addEventListener('click', async () => {
-    const slugInput = modal.querySelector('#t-slug');
-    const slug = (slugInput?.value || '').trim();
-    const title = (modal.querySelector('#t-title')?.value || '').trim();
-    const description = (modal.querySelector('#t-desc')?.value || '').trim();
-    const icon = (modal.querySelector('#t-icon')?.value || '').trim();
-    const gameType = modal.querySelector('#t-type')?.value || 'multichoice';
-    const words = parseWordsInput(modal.querySelector('#t-words')?.value || '');
-    const err = modal.querySelector('#t-error');
-    if (err) err.textContent = '';
-    if (!title || (!theme && !slug)) {
-      if (err) err.textContent = 'Slug y título son obligatorios';
-      return;
-    }
-    if (!words.length) {
-      if (err) err.textContent = 'Agrega al menos una palabra';
-      return;
-    }
-
-    const token = localStorage.getItem('abg_token') || '';
-    const payload = {
-      slug: theme ? theme.slug : slug,
-      title,
-      description,
-      icon,
-      gameType,
-      words,
-    };
-
-    try {
-      const base = API_BASE;
-      const url = theme ? `${base}/admin/themes/${theme._id}` : `${base}/admin/themes`;
-      const method = theme ? 'PUT' : 'POST';
-      const res = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || 'No se pudo guardar la tematica');
-      }
-      close();
-      await ensureThemesLoaded({ force: true });
-      if (container) await loadAdminThemes(container);
-      await showVocabularyGames();
-    } catch (error) {
-      if (err) err.textContent = error?.message || String(error);
-    }
-  });
-}
 async function openEditPageModal(section) {
   const overlay = document.createElement('div');
   overlay.className = 'theory-admin-overlay';

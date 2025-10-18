@@ -924,6 +924,26 @@ button {
   font-size: 1.05rem;
 }
 
+.admin-panel__close {
+  border: none;
+  background: var(--color-primary);
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.admin-panel__close:hover {
+  transform: scale(1.08);
+  background: var(--color-primary-dark);
+}
+
 .theory-admin__close-btn {
   background: transparent;
   border: none;
