@@ -1014,7 +1014,7 @@ button {
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   background: #fff;
-  padding: 6px 18px 6px 6px;
+  padding: 6px 28px 6px 6px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -1047,7 +1047,6 @@ button {
   background: rgba(247, 248, 255, 0.85);
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-right: 8px;
 }
 
 .theory-admin__list-item.is-active {
