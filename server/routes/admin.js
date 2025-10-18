@@ -26,27 +26,59 @@ router.post('/promote', async (req, res) => {
 
 // Videos: CRUD (simple)
 router.get('/videos', auth, requireAdmin, async (req, res) => {
-  const list = await Video.find().sort({ createdAt: -1 }).limit(200);
+  const list = await Video.find().sort({ order: 1, createdAt: -1 }).limit(200);
   res.json({ videos: list });
 });
 
 router.post('/videos', auth, requireAdmin, async (req, res) => {
   const { title, description, embedUrl, emoji } = req.body;
   if (!title || !embedUrl) return res.status(400).json({ error: 'Missing fields' });
-  const v = await Video.create({ title, description: description || '', embedUrl, emoji: emoji || '🎬', createdBy: req.user.id });
+  const highestOrder = await Video.findOne().sort({ order: -1 }).select('order').lean();
+  const nextOrder = (highestOrder?.order ?? 0) + 1;
+  const v = await Video.create({
+    title,
+    description: description || '',
+    embedUrl,
+    emoji: emoji || '🎬',
+    order: nextOrder,
+    createdBy: req.user.id,
+  });
   res.json({ ok: true, video: v });
 });
 
 router.put('/videos/:id', auth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   const { title, description, embedUrl, emoji } = req.body;
-  const v = await Video.findByIdAndUpdate(id, { $set: { title, description, embedUrl, emoji } }, { new: true });
+  const payload = {
+    title,
+    description: description || '',
+    embedUrl,
+    emoji: emoji || '🎬',
+  };
+  const v = await Video.findByIdAndUpdate(id, { $set: payload }, { new: true });
   res.json({ ok: true, video: v });
 });
 
 router.delete('/videos/:id', auth, requireAdmin, async (req, res) => {
   const { id } = req.params;
   await Video.findByIdAndDelete(id);
+  res.json({ ok: true });
+});
+
+router.patch('/videos/reorder', auth, requireAdmin, async (req, res) => {
+  const { order = [] } = req.body || {};
+  if (!Array.isArray(order) || !order.length) {
+    return res.status(400).json({ error: 'Provide a non-empty order array' });
+  }
+
+  const updates = order.map((videoId, index) => ({
+    updateOne: {
+      filter: { _id: videoId },
+      update: { $set: { order: index + 1 } },
+    },
+  }));
+
+  await Video.bulkWrite(updates);
   res.json({ ok: true });
 });
 

@@ -536,74 +536,363 @@ async function maybeShowSectionAdminGear(sectionName) {
 }
 async function openAdminPanelModal() {
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2500;';
+  overlay.className = 'theory-admin-overlay';
+
   const modal = document.createElement('div');
-  modal.style.cssText = 'background:#fff;border-radius:12px;max-width:960px;width:95%;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);font-family:inherit;';
-  modal.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-      <h3 style="margin:0">Panel de Administraci\u00F3n</h3>
-      <button id="admin-close" type="button" class="admin-panel__close" aria-label="Cerrar">&times;</button>
-    </div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;">
-      <section style="flex:1 1 300px;min-width:280px;display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <h4 style="margin:0">Videos</h4>
-          <button id="admin-video-add" class="option-btn" style="padding:4px 10px;background:#4ECDC4;color:#fff;">Nuevo</button>
-        </div>
-        <div id="admin-videos" style="flex:1;max-height:300px;overflow:auto;border:1px solid #eee;border-radius:8px;padding:8px;background:#fafafa;">
-          <div style="color:#777">Cargando...</div>
-        </div>
-      </section>
-    </div>
-  `;
+  modal.className = 'theory-admin-modal';
+  modal.innerHTML = [
+    '<div class="theory-admin video-admin">',
+    '  <aside class="theory-admin__sidebar">',
+    '    <div class="theory-admin__sidebar-top">',
+    '      <h3>Gesti\u00F3n de videos</h3>',
+    '      <button type="button" class="theory-admin__close-btn" aria-label="Cerrar">&times;</button>',
+    '    </div>',
+    '    <button type="button" class="option-btn theory-admin__new video-admin__new">+ Nuevo video</button>',
+    '    <div class="theory-admin__list" id="video-admin-list"><div class="theory-admin__empty">Cargando...</div></div>',
+    '  </aside>',
+    '  <section class="theory-admin__editor video-admin__editor">',
+    '    <div class="theory-admin__fields">',
+    '      <label class="theory-admin__field">',
+    '        <span>T\u00EDtulo</span>',
+    '        <input id="video-title" type="text" placeholder="T\u00EDtulo del video" />',
+    '      </label>',
+    '      <label class="theory-admin__field">',
+    '        <span>Emoji</span>',
+    '        <input id="video-emoji" type="text" maxlength="4" placeholder="&#x1F3AC;" />',
+    '      </label>',
+    '      <label class="theory-admin__field theory-admin__field--full">',
+    '        <span>URL de YouTube (embed)</span>',
+    '        <input id="video-url" type="url" placeholder="https://www.youtube.com/embed/..." />',
+    '      </label>',
+    '      <label class="theory-admin__field theory-admin__field--full">',
+    '        <span>Descripci\u00F3n</span>',
+    '        <textarea id="video-description" rows="3" placeholder="Resumen del video"></textarea>',
+    '      </label>',
+    '    </div>',
+    '    <div class="theory-admin__actions">',
+    '      <div class="theory-admin__actions-right">',
+    '        <button type="button" class="option-btn video-admin__save">Guardar cambios</button>',
+    '      </div>',
+    '    </div>',
+    '    <div class="theory-admin__feedback" id="video-admin-feedback"></div>',
+    '  </section>',
+    '</div>',
+  ].join('\n');
+
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
-  const close = () => overlay.remove();
-  modal.querySelector('#admin-close')?.addEventListener('click', close);
+  const closeOverlay = () => overlay.remove();
   overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) close();
+    if (event.target === overlay) closeOverlay();
   });
+  modal.querySelector('.theory-admin__close-btn')?.addEventListener('click', closeOverlay);
 
-  const videosBox = modal.querySelector('#admin-videos');
-  modal.querySelector('#admin-video-add')?.addEventListener('click', openAddVideoModal);
+  const listEl = modal.querySelector('#video-admin-list');
+  const titleInput = modal.querySelector('#video-title');
+  const emojiInput = modal.querySelector('#video-emoji');
+  const urlInput = modal.querySelector('#video-url');
+  const descriptionInput = modal.querySelector('#video-description');
+  const saveBtn = modal.querySelector('.video-admin__save');
+  const newBtn = modal.querySelector('.video-admin__new');
+  const feedbackEl = modal.querySelector('#video-admin-feedback');
 
-  await loadAdminVideos(videosBox);
-}
-async function loadAdminVideos(container) {
-  if (!container) return;
-  const token = localStorage.getItem('abg_token');
-  if (!token) {
-    container.innerHTML = '<div style="color:#e74c3c;">Inicia sesi\u00F3n como administrador</div>';
-    return;
-  }
-  try {
-    const base = API_BASE;
-    const res = await fetch(`${base}/admin/videos`, { headers: { Authorization: `Bearer ${token}` } });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      container.innerHTML = `<div style="color:#e74c3c;">${data?.error || 'No autorizado'}</div>`;
+  const state = {
+    videos: [],
+    currentId: null,
+    saving: false,
+  };
+
+  const showFeedback = (message, tone = 'info') => {
+    if (!feedbackEl) return;
+    feedbackEl.textContent = message || '';
+    feedbackEl.dataset.tone = tone;
+    if (message) {
+      feedbackEl.classList.add('is-visible');
+      setTimeout(() => feedbackEl.classList.remove('is-visible'), 4000);
+    }
+  };
+
+  const getAuthHeaders = (withJson = false) => {
+    const token = localStorage.getItem('abg_token');
+    if (!token) return null;
+    const headers = { Authorization: 'Bearer ' + token };
+    if (withJson) headers['Content-Type'] = 'application/json';
+    return headers;
+  };
+
+  const clearForm = () => {
+    if (titleInput) titleInput.value = '';
+    if (emojiInput) emojiInput.value = '\u{1F3AC}';
+    if (urlInput) urlInput.value = '';
+    if (descriptionInput) descriptionInput.value = '';
+  };
+
+  const fillForm = (video) => {
+    if (!video) return;
+    if (titleInput) titleInput.value = video.title || '';
+    if (emojiInput) emojiInput.value = video.emoji || '\u{1F3AC}';
+    if (urlInput) urlInput.value = video.embedUrl || '';
+    if (descriptionInput) descriptionInput.value = video.description || '';
+  };
+
+  const renderList = () => {
+    if (!listEl) return;
+    if (!state.videos.length) {
+      listEl.innerHTML = '<div class="theory-admin__empty">Todav\u00EDa no hay videos registrados.</div>';
       return;
     }
-    const list = Array.isArray(data?.videos) ? data.videos : [];
-    container.innerHTML = list.length
-      ? list
-          .map(
-            (video) => `
-              <div style="padding:6px 4px;border-bottom:1px solid #eee;display:flex;gap:8px;align-items:center;">
-                <span style="font-size:20px">${video.emoji || '??'}</span>
-                <div style="flex:1;min-width:0;">
-                  <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${video.title}</div>
-                  <div style="font-size:12px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${video.description || ''}</div>
-                </div>
-              </div>
-            `,
-          )
-          .join('')
-      : '<div style="color:#777">No hay videos registrados</div>';
-  } catch (err) {
-    container.innerHTML = `<div style="color:#e74c3c;">Fallo al cargar: ${err?.message || err}</div>`;
-  }
+    listEl.innerHTML = '';
+    state.videos.forEach((video, index) => {
+      const item = document.createElement('div');
+      item.className = 'theory-admin__list-item' + (video._id === state.currentId ? ' is-active' : '');
+      item.dataset.id = video._id;
+
+      const info = document.createElement('div');
+      info.className = 'theory-admin__list-info';
+      const emoji = video.emoji || '\u{1F3AC}';
+      info.innerHTML = '<strong>' + emoji + ' ' + video.title + '</strong><span>' + (video.description || video.embedUrl) + '</span>';
+      item.appendChild(info);
+
+      const actions = document.createElement('div');
+      actions.className = 'theory-admin__list-actions';
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'theory-admin__list-btn theory-admin__list-btn--danger';
+      deleteBtn.dataset.action = 'delete';
+      deleteBtn.textContent = 'Eliminar';
+      actions.appendChild(deleteBtn);
+
+      const moveWrap = document.createElement('div');
+      moveWrap.className = 'theory-admin__list-move';
+
+      const upBtn = document.createElement('button');
+      upBtn.type = 'button';
+      upBtn.className = 'theory-admin__list-btn';
+      upBtn.dataset.action = 'up';
+      upBtn.textContent = 'Subir';
+      if (index === 0) upBtn.disabled = true;
+      moveWrap.appendChild(upBtn);
+
+      const downBtn = document.createElement('button');
+      downBtn.type = 'button';
+      downBtn.className = 'theory-admin__list-btn';
+      downBtn.dataset.action = 'down';
+      downBtn.textContent = 'Bajar';
+      if (index === state.videos.length - 1) downBtn.disabled = true;
+      moveWrap.appendChild(downBtn);
+
+      actions.appendChild(moveWrap);
+      item.appendChild(actions);
+
+      listEl.appendChild(item);
+    });
+  };
+
+  const selectVideo = (id) => {
+    state.currentId = id;
+    const video = state.videos.find((item) => item._id === id) || null;
+    if (video) {
+      fillForm(video);
+    } else {
+      clearForm();
+    }
+    renderList();
+  };
+
+  const gatherPayload = () => {
+    const title = titleInput?.value.trim() || '';
+    const embedUrl = urlInput?.value.trim() || '';
+    const description = descriptionInput?.value.trim() || '';
+    const emojiRaw = emojiInput?.value.trim() || '';
+    return {
+      title,
+      embedUrl,
+      description,
+      emoji: emojiRaw ? emojiRaw.slice(0, 4) : '\u{1F3AC}',
+    };
+  };
+
+  const setSaving = (value) => {
+    state.saving = value;
+    if (saveBtn) saveBtn.disabled = value;
+    if (newBtn) newBtn.disabled = value;
+    [titleInput, emojiInput, urlInput, descriptionInput].forEach((input) => {
+      if (input) input.disabled = value;
+    });
+  };
+
+  const persistOrder = async () => {
+    const headers = getAuthHeaders(true);
+    if (!headers) {
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
+      return;
+    }
+    try {
+      const body = JSON.stringify({ order: state.videos.map((video) => video._id) });
+      const res = await fetch(API_BASE + '/admin/videos/reorder', {
+        method: 'PATCH',
+        headers,
+        body,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'No se pudo reordenar');
+      }
+      await renderVideos();
+    } catch (error) {
+      console.error('[videos] reorder', error);
+      showFeedback(error?.message || 'No se pudo actualizar el orden', 'error');
+    }
+  };
+
+  const moveVideo = (id, direction) => {
+    const index = state.videos.findIndex((video) => video._id === id);
+    if (index < 0) return;
+    const target = index + direction;
+    if (target < 0 || target >= state.videos.length) return;
+    const [item] = state.videos.splice(index, 1);
+    state.videos.splice(target, 0, item);
+    renderList();
+    persistOrder();
+  };
+
+  const loadVideos = async (focusId) => {
+    const headers = getAuthHeaders();
+    if (!headers) {
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
+      return;
+    }
+    if (listEl) listEl.innerHTML = '<div class="theory-admin__empty">Cargando...</div>';
+    try {
+      const res = await fetch(API_BASE + '/admin/videos', { headers });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'No se pudo cargar la lista de videos');
+      }
+      const payload = await res.json();
+      state.videos = Array.isArray(payload?.videos) ? payload.videos : [];
+      if (state.videos.length) {
+        const nextId = focusId || state.currentId || state.videos[0]._id;
+        selectVideo(nextId);
+      } else {
+        state.currentId = null;
+        clearForm();
+        renderList();
+      }
+    } catch (error) {
+      console.error('[videos] load', error);
+      showFeedback(error?.message || 'Error al cargar videos', 'error');
+    }
+  };
+
+  const saveVideo = async () => {
+    if (state.saving) return;
+    const payload = gatherPayload();
+    if (!payload.title || !payload.embedUrl) {
+      showFeedback('T\u00EDtulo y URL son obligatorios.', 'error');
+      return;
+    }
+    const headers = getAuthHeaders(true);
+    if (!headers) {
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
+      return;
+    }
+    setSaving(true);
+    try {
+      const isNew = !state.currentId;
+      const url = isNew ? API_BASE + '/admin/videos' : API_BASE + '/admin/videos/' + state.currentId;
+      const res = await fetch(url, {
+        method: isNew ? 'POST' : 'PUT',
+        headers,
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'No se pudo guardar el video');
+      }
+      const data = await res.json().catch(() => ({}));
+      const updated = data?.video;
+      await loadVideos(updated?._id || state.currentId);
+      await renderVideos();
+      showFeedback('Video guardado correctamente.', 'success');
+    } catch (error) {
+      console.error('[videos] save', error);
+      showFeedback(error?.message || 'Error al guardar el video', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteVideo = async (id) => {
+    const headers = getAuthHeaders();
+    if (!headers) {
+      showFeedback('Debes iniciar sesi\u00F3n como administrador.', 'error');
+      return;
+    }
+    if (!window.confirm('\u00BFEliminar este video?')) return;
+    setSaving(true);
+    try {
+      const res = await fetch(API_BASE + '/admin/videos/' + id, {
+        method: 'DELETE',
+        headers,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'No se pudo eliminar el video');
+      }
+      await loadVideos();
+      await renderVideos();
+      showFeedback('Video eliminado.', 'success');
+    } catch (error) {
+      console.error('[videos] delete', error);
+      showFeedback(error?.message || 'Error al eliminar', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  listEl?.addEventListener('click', (event) => {
+    const actionBtn = event.target.closest('button[data-action]');
+    if (actionBtn) {
+      const item = actionBtn.closest('.theory-admin__list-item');
+      if (!item) return;
+      const id = item.dataset.id;
+      if (!id) return;
+      const action = actionBtn.dataset.action;
+      if (action === 'up') {
+        event.stopPropagation();
+        moveVideo(id, -1);
+        return;
+      }
+      if (action === 'down') {
+        event.stopPropagation();
+        moveVideo(id, 1);
+        return;
+      }
+      if (action === 'delete') {
+        event.stopPropagation();
+        deleteVideo(id);
+        return;
+      }
+    }
+    const item = event.target.closest('.theory-admin__list-item');
+    if (item && item.dataset.id) {
+      selectVideo(item.dataset.id);
+    }
+  });
+
+  newBtn?.addEventListener('click', () => {
+    state.currentId = null;
+    clearForm();
+    renderList();
+    titleInput?.focus();
+  });
+
+  saveBtn?.addEventListener('click', saveVideo);
+
+  await loadVideos();
 }
 
 async function openEditPageModal(section) {
@@ -1010,67 +1299,6 @@ async function openEditPageModal(section) {
 
   await loadPages();
 }
-function openAddVideoModal() {
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:2600;';
-  const modal = document.createElement('div');
-  modal.style.cssText = 'background:#fff;border-radius:12px;max-width:560px;width:95%;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,0.2);font-family:inherit;';
-  modal.innerHTML = `
-    <h3 style="margin:0 0 10px 0">Anadir video</h3>
-    <div style="display:grid;gap:8px;">
-      <input id="v-title" placeholder="T\u00EDtulo" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
-      <textarea id="v-desc" placeholder="Descripci\u00F3n" style="padding:8px;border:1px solid #ddd;border-radius:8px;"></textarea>
-      <input id="v-url" placeholder="URL de YouTube (embed)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
-      <input id="v-emoji" placeholder="Emoji (opcional)" style="padding:8px;border:1px solid #ddd;border-radius:8px;" />
-      <div id="v-err" style="color:#e74c3c;min-height:1rem;font-size:0.9rem;"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="v-cancel" class="option-btn" style="background:#ccc;color:#333;">Cancelar</button>
-        <button id="v-save" class="option-btn" style="background:#4ECDC4;">Guardar</button>
-      </div>
-    </div>
-  `;
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
-
-  const close = () => overlay.remove();
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) close();
-  });
-  modal.querySelector('#v-cancel')?.addEventListener('click', close);
-
-  modal.querySelector('#v-save')?.addEventListener('click', async () => {
-    const title = modal.querySelector('#v-title')?.value.trim();
-    const description = modal.querySelector('#v-desc')?.value.trim();
-    const embedUrl = modal.querySelector('#v-url')?.value.trim();
-    const emoji = modal.querySelector('#v-emoji')?.value.trim();
-    const err = modal.querySelector('#v-err');
-    if (err) err.textContent = '';
-    if (!title || !embedUrl) {
-      if (err) err.textContent = 'T\u00EDtulo y URL son obligatorios.';
-      return;
-    }
-    try {
-      const base = API_BASE;
-      const res = await fetch(`${base}/admin/videos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('abg_token') || ''}`,
-        },
-        body: JSON.stringify({ title, description, embedUrl, emoji }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || 'Error al guardar');
-      }
-      close();
-      renderVideos();
-    } catch (error) {
-      if (err) err.textContent = error?.message || 'Fallo al guardar';
-    }
-  });
-}
-
 function logThemeWarning(err) {
   console.warn('[themes] usando datos locales', err?.message || err);
 }

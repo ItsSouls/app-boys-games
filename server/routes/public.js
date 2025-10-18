@@ -8,7 +8,9 @@ const router = express.Router();
 // Public: list videos
 router.get('/videos', async (req, res) => {
   try {
-    const list = await Video.find({}, { title: 1, description: 1, embedUrl: 1, emoji: 1 }).sort({ createdAt: -1 }).limit(200);
+    const list = await Video.find({}, { title: 1, description: 1, embedUrl: 1, emoji: 1 })
+      .sort({ order: 1, createdAt: -1 })
+      .limit(200);
     res.json({ videos: list });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
