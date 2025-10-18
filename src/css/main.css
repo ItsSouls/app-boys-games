@@ -1014,11 +1014,10 @@ button {
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   background: #fff;
-  padding: 6px 12px 6px 6px;
+  padding: 6px 4px 6px 6px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  scrollbar-gutter: stable both-edges;
   box-sizing: border-box;
   scrollbar-width: thin;
 }
