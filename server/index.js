@@ -11,7 +11,6 @@ import publicRoutes from './routes/public.js';
 import { Video } from './models/Video.js';
 import { Page } from './models/Page.js';
 import { Score } from './models/Score.js';
-import { GameTheme } from './models/GameTheme.js';
 
 // Load environment variables
 dotenv.config(); // loads .env by default if present
@@ -48,7 +47,6 @@ async function start() {
     await Score.syncIndexes();
     await Video.syncIndexes();
     await Page.syncIndexes();
-    await GameTheme.syncIndexes();
     console.log('Indexes synchronized');
   } catch (e) {
     console.warn('Failed to sync indexes', e?.message || e);
