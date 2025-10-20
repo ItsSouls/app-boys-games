@@ -83,44 +83,33 @@ async function showVocabularyGames() {
       id: 'bubbles',
       title: 'Burbujas',
       icon: 'BUB',
-      description: 'Revienta las burbujas con la traduccion correcta',
-      color: '#FF9500',
+      description: 'Revienta las burbujas con la traducción correcta',
+      accentClass: 'game-card--accent-bubbles',
       count: summary.bubbles || summary.multichoice,
     },
     {
       id: 'multi',
       title: 'Multirespuesta',
       icon: 'MLT',
-      description: 'Elige una tematica y responde',
-      color: '#4ECDC4',
+      description: 'Elige una temática y responde',
+      accentClass: 'game-card--accent-multi',
       count: summary.multichoice,
     },
   ];
 
-  cards.forEach(({ id, title, icon, description, color, count }) => {
+  cards.forEach(({ id, title, icon, description, accentClass, count }) => {
     const card = document.createElement('div');
-    card.className = 'game-card';
-    card.style.cssText = `
-      background: linear-gradient(135deg, ${color}22 0%, ${color}44 100%);
-      border: 2px solid ${color};
-      border-radius: 15px;
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      margin: 10px;
-    `;
+    card.className = `game-card game-card--accent ${accentClass}`;
     card.innerHTML = `
-      <div class="game-icon" style="font-size: 3rem; margin-bottom: 10px;">${icon}</div>
-      <h3 class="game-title" style="margin: 10px 0; color: #333;">${title}</h3>
-      <p class="game-description" style="color: #666; font-size: 0.9rem; margin: 0 0 10px 0;">${description}</p>
-      <div style="margin: 10px 0; font-size: 0.8rem; color: ${color}; font-weight: bold;">
-        ${count > 0 ? `${count} tematicas disponibles` : 'Sin tematicas disponibles'}
+      <div class="game-icon">${icon}</div>
+      <h3 class="game-title">${title}</h3>
+      <p class="game-description">${description}</p>
+      <div class="game-card__count">
+        ${count > 0 ? `${count} temáticas disponibles` : 'Sin temáticas disponibles'}
       </div>
-      <button class="play-btn" data-game="${id}" style="background:${color};color:#fff;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;font-weight:bold;">Jugar</button>
+      <button class="game-card__play" data-game="${id}">Jugar</button>
     `;
-    card.querySelector('.play-btn').addEventListener('click', (event) => {
+    card.querySelector('.game-card__play').addEventListener('click', (event) => {
       event.stopPropagation();
       router.navigate(id === 'bubbles' ? '/games/bubbles' : '/games/multi');
     });
