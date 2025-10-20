@@ -1,6 +1,7 @@
 import { API_BASE } from '../../config.js';
 import { renderVideos } from '../videos.js';
 import { formatTheoryDate } from '../../utils/dates.js';
+import { createFeedbackController, getAuthHeaders } from '../../utils/adminHelpers.js';
 
 export async function openVideosAdminModal() {
   const overlay = document.createElement('div');
@@ -64,6 +65,7 @@ export async function openVideosAdminModal() {
   const saveBtn = modal.querySelector('.video-admin__save');
   const newBtn = modal.querySelector('.video-admin__new');
   const feedbackEl = modal.querySelector('#video-admin-feedback');
+  const showFeedback = createFeedbackController(feedbackEl);
 
   if (emojiInput) {
     emojiInput.removeAttribute('maxlength');
@@ -80,24 +82,6 @@ export async function openVideosAdminModal() {
     if (!value) return false;
     const source = String(value).trim();
     return /^https?:\/\//i.test(source);
-  };
-
-  const showFeedback = (message, tone = 'info') => {
-    if (!feedbackEl) return;
-    feedbackEl.textContent = message || '';
-    feedbackEl.dataset.tone = tone;
-    if (message) {
-      feedbackEl.classList.add('is-visible');
-      setTimeout(() => feedbackEl.classList.remove('is-visible'), 4000);
-    }
-  };
-
-  const getAuthHeaders = (withJson = false) => {
-    const token = localStorage.getItem('abg_token');
-    if (!token) return null;
-    const headers = { Authorization: 'Bearer ' + token };
-    if (withJson) headers['Content-Type'] = 'application/json';
-    return headers;
   };
 
   const clearForm = () => {

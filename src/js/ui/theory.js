@@ -2,6 +2,7 @@ import DOMPurify from 'dompurify';
 import 'quill/dist/quill.snow.css';
 import { API_BASE } from '../config.js';
 import { formatTheoryDate } from '../utils/dates.js';
+import { createFeedbackController, getAuthHeaders } from '../utils/adminHelpers.js';
 
 const THEORY_SANITIZE_CONFIG = {
   ADD_TAGS: ['iframe', 'video', 'source', 'figure', 'figcaption', 'section', 'article'],
@@ -280,6 +281,8 @@ export async function openEditPageModal(section) {
   const feedbackEl = modal.querySelector('#theory-feedback');
   const newBtn = modal.querySelector('.theory-admin__new');
 
+  const showFeedback = createFeedbackController(feedbackEl);
+
   const state = {
     pages: [],
     currentId: null,
@@ -297,22 +300,6 @@ export async function openEditPageModal(section) {
     ['link', 'image', 'video'],
     ['clean'],
   ];
-
-  const showFeedback = (message, tone = 'info') => {
-    if (!feedbackEl) return;
-    feedbackEl.textContent = message || '';
-    feedbackEl.dataset.tone = tone;
-    if (message) {
-      feedbackEl.classList.add('is-visible');
-      setTimeout(() => feedbackEl.classList.remove('is-visible'), 4000);
-    }
-  };
-
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('abg_token');
-    if (!token) return null;
-    return { Authorization: 'Bearer ' + token };
-  };
 
   const clearForm = () => {
     topicInput.value = '';
@@ -454,7 +441,7 @@ export async function openEditPageModal(section) {
   };
 
   const movePage = async (id, direction) => {
-    const headers = getAuthHeaders();
+    const headers = getAuthHeaders(true);
     if (!headers) {
       showFeedback('Debes iniciar sesión como administrador.', 'error');
       return;
@@ -470,7 +457,7 @@ export async function openEditPageModal(section) {
       const body = JSON.stringify({ order: state.pages.map((entry) => entry._id) });
       const res = await fetch(API_BASE + '/admin/pages/reorder', {
         method: 'PATCH',
-        headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+        headers,
         body,
       });
       if (!res.ok) {
@@ -496,26 +483,26 @@ export async function openEditPageModal(section) {
       showFeedback('El contenido no puede estar vacío.', 'error');
       return;
     }
-    const headers = getAuthHeaders();
+    const headers = getAuthHeaders(true);
     if (!headers) {
       showFeedback('Debes iniciar sesión como administrador.', 'error');
       return;
     }
     setSaving(true);
     try {
-      const body = JSON.stringify(Object.assign({}, payload, { section }));
+      const body = JSON.stringify({ ...payload, section });
       const safeId = state.currentId ? sanitizeIdForUrl(state.currentId) : null;
       let res;
       if (safeId) {
         res = await fetch(API_BASE + '/admin/pages/' + safeId, {
           method: 'PUT',
-          headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+          headers,
           body,
         });
       } else {
         res = await fetch(API_BASE + '/admin/pages', {
           method: 'POST',
-          headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+          headers,
           body,
         });
       }
