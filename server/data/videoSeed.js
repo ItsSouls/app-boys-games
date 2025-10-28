@@ -9,7 +9,7 @@ export const videoSeed = [
     title: 'Colores en español',
     description: 'Aprende los colores con ejemplos divertidos.',
     embedUrl: 'https://www.youtube.com/embed/LPn-S_QmGdA',
-    emoji: '🌈',
+    emoji: '🎨',
   },
   {
     title: 'Los números del 1 al 10',

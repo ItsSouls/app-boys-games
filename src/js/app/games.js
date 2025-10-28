@@ -6,18 +6,60 @@ const GAME_CARDS = [
   {
     id: 'bubbles',
     title: 'Burbujas',
-    icon: 'BUB',
+    icon: '🫧',
     description: 'Revienta las burbujas con la traducción correcta',
-    color: '#FF9500',
+    accent: '#FF9500',
   },
   {
     id: 'multi',
     title: 'Multirespuesta',
-    icon: 'MLT',
+    icon: '🎯',
     description: 'Elige una temática y responde',
-    color: '#4ECDC4',
+    accent: '#4ECDC4',
   },
 ];
+
+const ROUTES = {
+  bubbles: '/games/bubbles',
+  multi: '/games/multi',
+};
+
+const createGameCard = ({ id, title, icon, description, accent }, summary, onNavigate) => {
+  const available = id === 'bubbles' ? summary.bubbles || summary.multichoice : summary.multichoice;
+  const card = document.createElement('article');
+  card.className = 'game-card';
+  card.style.setProperty('--game-card-accent', accent);
+
+  const iconEl = document.createElement('div');
+  iconEl.className = 'game-card__icon';
+  iconEl.textContent = icon;
+
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'game-card__title';
+  titleEl.textContent = title;
+
+  const descEl = document.createElement('p');
+  descEl.className = 'game-card__description';
+  descEl.textContent = description;
+
+  const countEl = document.createElement('div');
+  countEl.className = 'game-card__count';
+  countEl.textContent = available > 0 ? `${available} temáticas disponibles` : 'Sin temáticas disponibles';
+
+  const buttonEl = document.createElement('button');
+  buttonEl.type = 'button';
+  buttonEl.className = 'game-card__button';
+  buttonEl.dataset.game = id;
+  buttonEl.textContent = 'Jugar';
+
+  buttonEl.addEventListener('click', (event) => {
+    event.stopPropagation();
+    onNavigate(id);
+  });
+
+  card.append(iconEl, titleEl, descEl, countEl, buttonEl);
+  return card;
+};
 
 export function createGamesController({
   router,
@@ -31,6 +73,7 @@ export function createGamesController({
     const section = document.querySelector('#vocabulary-section');
     if (!section) return;
     section.classList.remove('hidden');
+
     const grid = document.getElementById('vocabulary-games-grid');
     ensureAuthControls?.();
     if (!grid) return;
@@ -47,33 +90,10 @@ export function createGamesController({
       logThemeWarning(err);
     }
 
-    GAME_CARDS.forEach(({ id, title, icon, description, color }) => {
-      const count = id === 'bubbles' ? summary.bubbles || summary.multichoice : summary.multichoice;
-      const card = document.createElement('div');
-      card.className = 'game-card';
-      card.style.cssText = `
-        background: linear-gradient(135deg, ${color}22 0%, ${color}44 100%);
-        border: 2px solid ${color};
-        border-radius: 15px;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        margin: 10px;
-      `;
-      card.innerHTML = `
-        <div class="game-icon" style="font-size: 3rem; margin-bottom: 10px;">${icon}</div>
-        <h3 class="game-title" style="margin: 10px 0; color: #333;">${title}</h3>
-        <p class="game-description" style="color: #666; font-size: 0.9rem; margin: 0 0 10px 0;">${description}</p>
-        <div style="margin: 10px 0; font-size: 0.8rem; color: ${color}; font-weight: bold;">
-          ${count > 0 ? `${count} temáticas disponibles` : 'Sin temáticas disponibles'}
-        </div>
-        <button class="play-btn" data-game="${id}" style="background:${color};color:#fff;border:none;padding:10px 20px;border-radius:25px;cursor:pointer;font-weight:bold;">Jugar</button>
-      `;
-      card.querySelector('.play-btn').addEventListener('click', (event) => {
-        event.stopPropagation();
-        router.navigate(id === 'bubbles' ? '/games/bubbles' : '/games/multi');
+    GAME_CARDS.forEach((cardConfig) => {
+      const card = createGameCard(cardConfig, summary, (id) => {
+        const target = ROUTES[id] || '/games';
+        router.navigate(target);
       });
       grid.appendChild(card);
     });
@@ -84,13 +104,15 @@ export function createGamesController({
     if (!container) return;
     container.classList.remove('hidden');
     document.querySelector('.game-stats')?.style?.setProperty('display', 'none');
-    const titleEl = document.querySelector('#game-title');
+
+    const titleEl = document.getElementById('game-title');
     if (titleEl) {
-      titleEl.innerHTML = targetGame === 'bubbles' ? '🫧 Burbujas' : '🎯 Multirespuesta';
-      titleEl.style.color = targetGame === 'bubbles' ? '#FF9500' : '#4ECDC4';
+      const isBubbles = targetGame === 'bubbles';
+      titleEl.innerHTML = isBubbles ? '🫧 Burbujas' : '🎯 Multirespuesta';
+      titleEl.dataset.accent = isBubbles ? 'bubbles' : 'multichoice';
     }
 
-    const content = document.querySelector('#game-content') || container;
+    const content = document.getElementById('game-content') || container;
     let themes = [];
     try {
       await ensureThemesLoaded();
@@ -102,8 +124,7 @@ export function createGamesController({
     }
 
     if (!themes.length) {
-      content.innerHTML =
-        '<div style="padding:20px;color:#555;">Sin temáticas disponibles por ahora.</div>';
+      content.innerHTML = '<div class="empty-state">Sin temáticas disponibles por ahora.</div>';
       return;
     }
 
@@ -133,7 +154,7 @@ export function createGamesController({
 
     content.querySelectorAll('.theme-card').forEach((card) => {
       const slug = card.getAttribute('data-theme');
-      card.querySelector('.theme-select-btn').addEventListener('click', () => {
+      card.querySelector('.theme-select-btn')?.addEventListener('click', () => {
         const theme = vocabularyGames[slug];
         if (!theme || !gameController) return;
         if (targetGame === 'bubbles') {
@@ -168,10 +189,10 @@ export function createGamesController({
       return;
     }
 
-    const titleEl = document.querySelector('#game-title');
+    const titleEl = document.getElementById('game-title');
     if (titleEl) {
       titleEl.innerHTML = `${theme.icon || '🎲'} ${theme.title}`;
-      titleEl.style.color = '#4ECDC4';
+      titleEl.dataset.accent = 'multichoice';
     }
 
     if (gameController) {
@@ -179,16 +200,19 @@ export function createGamesController({
       return;
     }
 
-    const content = document.querySelector('#game-content') || container;
+    const content = document.getElementById('game-content') || container;
     content.innerHTML = `
-      <div style="text-align:center;padding:50px;">
-        <h3 style="color:#ff6b6b;">GameController no disponible</h3>
-        <p>No se pudo iniciar el juego</p>
-        <button onclick="window.router.navigate('/games')" style="background:#ccc;border:none;padding:10px 20px;border-radius:20px;cursor:pointer;">
+      <div class="game-fallback">
+        <h3>GameController no disponible</h3>
+        <p>No se pudo iniciar el juego.</p>
+        <button type="button" class="game-fallback__button" data-action="back-to-games">
           Volver a Juegos
         </button>
       </div>
     `;
+    content.querySelector('[data-action="back-to-games"]')?.addEventListener('click', () => {
+      router.navigate('/games');
+    });
   };
 
   return {

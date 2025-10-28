@@ -16,9 +16,12 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
     const logoutBtn = document.getElementById('header-logout');
     if (!headerUser || !nameEl || !logoutBtn) return;
 
+    const hideHeaderUser = () => headerUser.classList.add('is-hidden');
+    const showHeaderUser = () => headerUser.classList.remove('is-hidden');
+
     const token = localStorage.getItem('abg_token');
     if (!token) {
-      headerUser.style.display = 'none';
+      hideHeaderUser();
       nameEl.textContent = '';
       ensureAuthControls();
       return;
@@ -29,10 +32,10 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       const display = user?.name || user?.username || '';
       if (!display) throw new Error('Usuario sin nombre');
       nameEl.textContent = display;
-      headerUser.style.display = '';
+      showHeaderUser();
       logoutBtn.onclick = () => {
         localStorage.removeItem('abg_token');
-        headerUser.style.display = 'none';
+        hideHeaderUser();
         nameEl.textContent = '';
         ensureAuthControls();
         if (typeof onNavigateHome === 'function') onNavigateHome();
@@ -45,7 +48,7 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
     } catch (err) {
       console.warn('[auth] token inválido', err);
       localStorage.removeItem('abg_token');
-      headerUser.style.display = 'none';
+      hideHeaderUser();
       nameEl.textContent = '';
       ensureAuthControls();
     }

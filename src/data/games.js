@@ -15,13 +15,13 @@ export const vocabularyGames = {
       { spanish: 'siete', english: 'seven', number: 7 },
       { spanish: 'ocho', english: 'eight', number: 8 },
       { spanish: 'nueve', english: 'nine', number: 9 },
-      { spanish: 'diez', english: 'ten', number: 10 }
-    ]
+      { spanish: 'diez', english: 'ten', number: 10 },
+    ],
   },
   colors: {
     title: 'Colores',
     icon: '🎨',
-    description: 'Descubre todos los colores',
+    description: 'Descubre los colores más usados',
     type: 'vocabulary',
     words: [
       { spanish: 'rojo', english: 'red', color: '#FF0000' },
@@ -33,17 +33,16 @@ export const vocabularyGames = {
       { spanish: 'rosa', english: 'pink', color: '#FFC0CB' },
       { spanish: 'negro', english: 'black', color: '#000000' },
       { spanish: 'blanco', english: 'white', color: '#FFFFFF' },
-      { spanish: 'gris', english: 'gray', color: '#808080' }
-    ]
+      { spanish: 'gris', english: 'gray', color: '#808080' },
+    ],
   },
-  // ✨ JUEGO DE BURBUJAS - Animales
-  'bubbles': {
+  bubbles: {
     title: 'Burbujas',
     icon: '🫧',
     description: 'Revienta las burbujas con la traducción correcta',
     type: 'bubbles',
     words: [
-      { spanish: 'perro', english: 'dog', emoji: '🐕' },
+      { spanish: 'perro', english: 'dog', emoji: '🐶' },
       { spanish: 'gato', english: 'cat', emoji: '🐱' },
       { spanish: 'pájaro', english: 'bird', emoji: '🐦' },
       { spanish: 'pez', english: 'fish', emoji: '🐟' },
@@ -52,8 +51,8 @@ export const vocabularyGames = {
       { spanish: 'oso', english: 'bear', emoji: '🐻' },
       { spanish: 'conejo', english: 'rabbit', emoji: '🐰' },
       { spanish: 'caballo', english: 'horse', emoji: '🐴' },
-      { spanish: 'vaca', english: 'cow', emoji: '🐄' }
-    ]
+      { spanish: 'vaca', english: 'cow', emoji: '🐮' },
+    ],
   },
   animals: {
     title: 'Animales',
@@ -61,7 +60,7 @@ export const vocabularyGames = {
     description: 'Conoce diferentes animales',
     type: 'vocabulary',
     words: [
-      { spanish: 'perro', english: 'dog', emoji: '🐕' },
+      { spanish: 'perro', english: 'dog', emoji: '🐶' },
       { spanish: 'gato', english: 'cat', emoji: '🐱' },
       { spanish: 'pájaro', english: 'bird', emoji: '🐦' },
       { spanish: 'pez', english: 'fish', emoji: '🐟' },
@@ -70,13 +69,13 @@ export const vocabularyGames = {
       { spanish: 'oso', english: 'bear', emoji: '🐻' },
       { spanish: 'conejo', english: 'rabbit', emoji: '🐰' },
       { spanish: 'caballo', english: 'horse', emoji: '🐴' },
-      { spanish: 'vaca', english: 'cow', emoji: '🐄' }
-    ]
+      { spanish: 'vaca', english: 'cow', emoji: '🐮' },
+    ],
   },
   family: {
     title: 'Familia',
     icon: '👨‍👩‍👧‍👦',
-    description: 'Aprende sobre la familia',
+    description: 'Aprende vocabulario sobre la familia',
     type: 'vocabulary',
     words: [
       { spanish: 'padre', english: 'father', emoji: '👨' },
@@ -87,45 +86,45 @@ export const vocabularyGames = {
       { spanish: 'abuela', english: 'grandmother', emoji: '👵' },
       { spanish: 'hermano', english: 'brother', emoji: '👦' },
       { spanish: 'hermana', english: 'sister', emoji: '👧' },
-      { spanish: 'tío', english: 'uncle', emoji: '👨' },
-      { spanish: 'tía', english: 'aunt', emoji: '👩' }
-    ]
+      { spanish: 'tío', english: 'uncle', emoji: '👨‍🦳' },
+      { spanish: 'tía', english: 'aunt', emoji: '👩‍🦳' },
+    ],
   },
   body: {
     title: 'Cuerpo',
-    icon: '👤',
+    icon: '🧍',
     description: 'Partes del cuerpo humano',
     type: 'vocabulary',
     words: [
-      { spanish: 'cabeza', english: 'head', emoji: '👤' },
+      { spanish: 'cabeza', english: 'head', emoji: '🙂' },
       { spanish: 'ojos', english: 'eyes', emoji: '👀' },
       { spanish: 'nariz', english: 'nose', emoji: '👃' },
       { spanish: 'boca', english: 'mouth', emoji: '👄' },
-      { spanish: 'manos', english: 'hands', emoji: '🙌' },
+      { spanish: 'manos', english: 'hands', emoji: '👐' },
       { spanish: 'pies', english: 'feet', emoji: '🦶' },
       { spanish: 'brazos', english: 'arms', emoji: '💪' },
       { spanish: 'piernas', english: 'legs', emoji: '🦵' },
       { spanish: 'oídos', english: 'ears', emoji: '👂' },
-      { spanish: 'dientes', english: 'teeth', emoji: '🦷' }
-    ]
+      { spanish: 'dientes', english: 'teeth', emoji: '🦷' },
+    ],
   },
   clothes: {
     title: 'Ropa',
-    icon: '👕',
+    icon: '🧥',
     description: 'Diferentes tipos de ropa',
     type: 'vocabulary',
     words: [
-      { spanish: 'camisa', english: 'shirt', emoji: '👔' },
+      { spanish: 'camisa', english: 'shirt', emoji: '👕' },
       { spanish: 'pantalones', english: 'pants', emoji: '👖' },
       { spanish: 'zapatos', english: 'shoes', emoji: '👟' },
-      { spanish: 'sombrero', english: 'hat', emoji: '👒' },
+      { spanish: 'sombrero', english: 'hat', emoji: '🎩' },
       { spanish: 'vestido', english: 'dress', emoji: '👗' },
       { spanish: 'calcetines', english: 'socks', emoji: '🧦' },
       { spanish: 'chaqueta', english: 'jacket', emoji: '🧥' },
-      { spanish: 'falda', english: 'skirt', emoji: '👚' },
+      { spanish: 'falda', english: 'skirt', emoji: '🩳' },
       { spanish: 'guantes', english: 'gloves', emoji: '🧤' },
-      { spanish: 'bufanda', english: 'scarf', emoji: '🧣' }
-    ]
+      { spanish: 'bufanda', english: 'scarf', emoji: '🧣' },
+    ],
   },
   school: {
     title: 'Colegio',
@@ -135,15 +134,15 @@ export const vocabularyGames = {
     words: [
       { spanish: 'libro', english: 'book', emoji: '📚' },
       { spanish: 'lápiz', english: 'pencil', emoji: '✏️' },
-  { spanish: 'borrador', english: 'eraser', emoji: '🧽' },
+      { spanish: 'borrador', english: 'eraser', emoji: '🩹' },
       { spanish: 'regla', english: 'ruler', emoji: '📏' },
       { spanish: 'mochila', english: 'backpack', emoji: '🎒' },
       { spanish: 'mesa', english: 'desk', emoji: '🪑' },
       { spanish: 'silla', english: 'chair', emoji: '🪑' },
-      { spanish: 'pizarra', english: 'blackboard', emoji: '⬛' },
+      { spanish: 'pizarra', english: 'blackboard', emoji: '🖍️' },
       { spanish: 'cuaderno', english: 'notebook', emoji: '📓' },
-      { spanish: 'tijeras', english: 'scissors', emoji: '✂️' }
-    ]
+      { spanish: 'tijeras', english: 'scissors', emoji: '✂️' },
+    ],
   },
   food: {
     title: 'Comida',
@@ -160,7 +159,7 @@ export const vocabularyGames = {
       { spanish: 'huevo', english: 'egg', emoji: '🥚' },
       { spanish: 'pollo', english: 'chicken', emoji: '🍗' },
       { spanish: 'arroz', english: 'rice', emoji: '🍚' },
-      { spanish: 'agua', english: 'water', emoji: '💧' }
-    ]
-  }
+      { spanish: 'agua', english: 'water', emoji: '💧' },
+    ],
+  },
 };

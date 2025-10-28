@@ -11,7 +11,7 @@ const ADMIN_TOGGLES = [
 const hideAdminIcons = () => {
   ADMIN_TOGGLES.forEach(({ id }) => {
     const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
+    if (el) el.classList.remove('is-visible');
   });
 };
 
@@ -29,7 +29,7 @@ export async function maybeShowSectionAdminGear(sectionName) {
       const el = document.getElementById(id);
       if (!el) return;
       const active = section === sectionName;
-      el.style.display = isAdmin && active ? '' : 'none';
+      el.classList.toggle('is-visible', Boolean(isAdmin && active));
       if (isAdmin && active && !el.__wired) {
         el.__wired = true;
         el.addEventListener('click', handler);
