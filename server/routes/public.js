@@ -1,7 +1,6 @@
 import express from 'express';
 import { Video } from '../models/Video.js';
 import { Page } from '../models/Page.js';
-import { GameTheme } from '../models/GameTheme.js';
 
 const router = express.Router();
 
@@ -40,33 +39,6 @@ router.get('/pages', async (req, res) => {
       .limit(200)
       .lean();
     res.json({ pages: list });
-  } catch (e) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// Public: list dynamic game themes
-router.get('/themes', async (req, res) => {
-  try {
-    const { gameType, includeInactive } = req.query || {};
-    const query = {};
-    if (gameType) query.gameType = gameType;
-    if (!includeInactive || includeInactive === 'false') {
-      query.isActive = true;
-    }
-    const list = await GameTheme.find(query, {
-      slug: 1,
-      title: 1,
-      description: 1,
-      icon: 1,
-      gameType: 1,
-      words: 1,
-      updatedAt: 1,
-    })
-      .sort({ updatedAt: -1 })
-      .limit(200)
-      .lean();
-    res.json({ themes: list });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
   }
