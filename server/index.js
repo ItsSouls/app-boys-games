@@ -6,7 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import scoreRoutes from './routes/scores.js';
-import adminRoutes from './routes/admin.js';
+import adminRoutes from './routes/admin/index.js';
 import publicRoutes from './routes/public.js';
 import { Video } from './models/Video.js';
 import { Page } from './models/Page.js';

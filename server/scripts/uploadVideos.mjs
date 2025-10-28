@@ -1,6 +1,7 @@
 import { videoSeed } from '../data/videoSeed.js';
 
-const API_BASE = process.env.API_BASE || 'https://app-boys-games-backend.onrender.com/api';
+const API_BASE =
+  process.env.API_BASE || 'https://app-boys-games-backend.onrender.com/api';
 const TOKEN = process.env.ADMIN_TOKEN;
 
 if (!TOKEN) {
@@ -28,7 +29,11 @@ async function main() {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      console.error('Failed to create video', payload.title, err?.error || res.statusText);
+      console.error(
+        'Failed to create video',
+        payload.title,
+        err?.error || res.statusText,
+      );
       continue;
     }
 

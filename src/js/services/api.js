@@ -3,12 +3,31 @@ const BASE = (
 	import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api'
 ).replace(/\/$/, '');
 
+const TOKEN_KEY = 'abg_token';
+
 function getToken() {
-	return localStorage.getItem('abg_token') || '';
+	return localStorage.getItem(TOKEN_KEY) || '';
 }
 
 function setToken(token) {
-	localStorage.setItem('abg_token', token);
+	localStorage.setItem(TOKEN_KEY, token);
+}
+
+function authHeaders(extra = {}) {
+	const token = getToken();
+	return {
+		Authorization: `Bearer ${token}`,
+		...extra
+	};
+}
+
+async function handleResponse(res, fallbackMessage) {
+	if (!res.ok) {
+		const data = await res.json().catch(() => null);
+		const message = data?.error || fallbackMessage;
+		throw new Error(message);
+	}
+	return res.json();
 }
 
 export async function register({ name, username, password }) {
@@ -17,8 +36,7 @@ export async function register({ name, username, password }) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ name, username, password })
 	});
-	if (!res.ok) throw new Error('Registro fallido');
-	const data = await res.json();
+	const data = await handleResponse(res, 'Registro fallido');
 	setToken(data.token);
 	return data;
 }
@@ -29,53 +47,47 @@ export async function login({ username, password }) {
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ username, password })
 	});
-	if (!res.ok) throw new Error('Login fallido');
-	const data = await res.json();
+	const data = await handleResponse(res, 'Login fallido');
 	setToken(data.token);
 	return data;
 }
 
 export async function me() {
 	const res = await fetch(`${BASE}/auth/me`, {
-		headers: { Authorization: `Bearer ${getToken()}` }
+		headers: authHeaders()
 	});
-	if (!res.ok) throw new Error('No autenticado');
-	return res.json();
+	return handleResponse(res, 'No autenticado');
 }
 
-export async function saveScore({ gameId, theme, score, maxScore, percentage, lives}) {
+export async function saveScore({ gameId, theme, score, maxScore, percentage, lives }) {
 	const res = await fetch(`${BASE}/scores`, {
 		method: 'POST',
-		headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
-		body: JSON.stringify({ gameId, theme, score, maxScore, percentage, lives})
+		headers: authHeaders({ 'Content-Type': 'application/json' }),
+		body: JSON.stringify({ gameId, theme, score, maxScore, percentage, lives })
 	});
-	if (!res.ok) throw new Error('Guardar puntuación falló');
-	return res.json();
+	return handleResponse(res, 'Guardar puntuación falló');
 }
 
 export async function myScores() {
 	const res = await fetch(`${BASE}/scores/my`, {
-		headers: { Authorization: `Bearer ${getToken()}` }
+		headers: authHeaders()
 	});
-	if (!res.ok) throw new Error('No se pudieron obtener puntuaciones');
-	return res.json();
+	return handleResponse(res, 'No se pudieron obtener puntuaciones');
 }
 
 export async function lastScore({ type, theme }) {
 	const params = new URLSearchParams({ type, theme }).toString();
 	const res = await fetch(`${BASE}/scores/last?${params}`, {
-		headers: { Authorization: `Bearer ${getToken()}` }
+		headers: authHeaders()
 	});
-	if (!res.ok) throw new Error('No se pudo obtener el último score');
-	return res.json();
+	return handleResponse(res, 'No se pudo obtener el último score');
 }
 
 export async function lastScoresAll() {
 	const res = await fetch(`${BASE}/scores/last/all`, {
-		headers: { Authorization: `Bearer ${getToken()}` }
+		headers: authHeaders()
 	});
-	if (!res.ok) throw new Error('No se pudieron obtener últimos scores');
-	return res.json();
+	return handleResponse(res, 'No se pudieron obtener los últimos scores');
 }
 
 export const api = { register, login, me, saveScore, myScores, lastScore, lastScoresAll };
