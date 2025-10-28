@@ -462,14 +462,12 @@
 .theory-admin__list-item {
   width: 100%;
   box-sizing: border-box;
-  padding: 16px;
-  min-height: 60px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  background: rgba(255, 255, 255, 0.9);
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 12px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
@@ -483,6 +481,7 @@
 
 .theory-admin__list-item:hover {
   border-color: var(--color-secondary);
+  box-shadow: 0 12px 26px rgba(78, 205, 196, 0.18);
   transform: translateY(-1px);
 }
 
