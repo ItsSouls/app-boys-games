@@ -121,9 +121,35 @@
 
 .admin-gear-btn {
   display: none;
-  padding: 6px 10px;
+}
+
+.option-btn.admin-gear-btn {
+  padding: 6px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-primary);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.05rem;
+  line-height: 1;
+  box-shadow: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.option-btn.admin-gear-btn:hover {
+  background: rgba(78, 205, 196, 0.15);
+  color: var(--color-secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(78, 205, 196, 0.25);
+}
+
+.option-btn.admin-gear-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .admin-gear-btn.is-visible {
