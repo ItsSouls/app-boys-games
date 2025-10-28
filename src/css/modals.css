@@ -401,41 +401,19 @@
 .theory-admin__close-btn {
   border: none;
   background: var(--color-primary);
-  color: transparent;
   width: 34px;
   height: 34px;
-  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
-  position: relative;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .theory-admin__close-btn:hover {
-  transform: scale(1.08);
   background: var(--color-primary-dark);
-  color: #fff;
-}
-
-.theory-admin__close-btn::before,
-.theory-admin__close-btn::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 2px;
-  background: #fff;
-  transform-origin: center;
-  transition: background 0.2s ease;
-}
-
-.theory-admin__close-btn::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.theory-admin__close-btn::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.theory-admin__close-btn:hover::before,
-.theory-admin__close-btn:hover::after {
-  background: #fff;
+  transform: translateY(-1px);
 }
 
 .theory-admin__new {
@@ -456,12 +434,15 @@
 
 .theory-admin__list {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   overflow-y: auto;
   border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   background: #fff;
-  gap: 6px;
   box-sizing: border-box;
+  padding: 6px;
   scrollbar-width: thin;
 }
 
@@ -481,7 +462,8 @@
 .theory-admin__list-item {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px;
+  padding: 16px;
+  min-height: 60px;
   border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.05);
   background: rgba(255, 255, 255, 0.9);
@@ -570,6 +552,7 @@
 
 .theory-admin__editor {
   flex: 1;
+  min-height: 640px;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -658,6 +641,7 @@
 .theory-admin__quill-wrapper .ql-container {
   flex: 1 1 auto;
   overflow-y: auto;
+  min-height: 320px;
 }
 
 .theory-admin__quill .ql-container {
