@@ -87,6 +87,8 @@
   margin: 0;
   color: var(--color-muted);
   line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .video-modal__player {
