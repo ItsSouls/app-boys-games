@@ -92,7 +92,9 @@
   line-height: 1.6;
   overflow-wrap: anywhere;
   word-break: break-word;
+  word-break: break-all;
   white-space: normal;
+  display: block;
 }
 
 .video-modal__player {
