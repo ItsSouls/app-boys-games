@@ -1430,12 +1430,20 @@ button {
   margin: 0;
   font-size: 1.5rem;
   color: var(--color-primary);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .video-modal__description {
   margin: 0;
   color: var(--color-muted);
   line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  word-break: break-all;
+  white-space: normal;
+  display: block;
 }
 
 .video-modal__player {
