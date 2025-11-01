@@ -81,6 +81,9 @@
   margin: 0;
   font-size: 1.5rem;
   color: var(--color-primary);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .video-modal__description {
