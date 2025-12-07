@@ -42,5 +42,8 @@
 /* 11. Welcome screen */
 @import './welcome.css';
 
-/* 12. Responsive - Load last to override as needed */
+/* 12. Home page - Modern landing */
+@import './home.css';
+
+/* 13. Responsive - Load last to override as needed */
 @import './responsive.css';

@@ -1,225 +1,107 @@
 /**
- * Layout components (Header, Footer, Main sections)
+ * Layout components - Clean and minimal
+ * Most layout styles are now in home.css
  */
-
-/* Header */
-.header {
-	background: var(--surface-elevated);
-	backdrop-filter: blur(10px);
-	box-shadow: var(--shadow-header);
-	padding: var(--spacing-md) 0;
-	position: sticky;
-	top: 0;
-	z-index: var(--z-header);
-}
-
-.header .container {
-	position: relative;
-}
-
-.header-user {
-	position: absolute;
-	right: var(--spacing-md);
-	top: var(--spacing-md);
-	display: flex;
-	align-items: center;
-	gap: var(--spacing-sm);
-}
-
-.header-user .user-greet {
-	font-size: 0.95rem;
-	color: var(--color-text);
-}
-
-.logo {
-	font-size: 2.5rem;
-	font-weight: 700;
-	color: var(--color-primary);
-	text-align: center;
-	margin-bottom: var(--spacing-xs);
-	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.subtitle {
-	text-align: center;
-	font-size: 1.2rem;
-	color: var(--color-secondary);
-	font-weight: 600;
-}
-
-.logo-img {
-	height: 80px;
-	width: auto;
-	display: block;
-	margin: 0 auto;
-	object-fit: contain;
-}
 
 /* Main content */
 .main {
-	padding: var(--spacing-xl) 0;
+	padding: var(--spacing-8) 0;
 	flex: 1 0 auto;
 }
 
-/* Welcome section */
-.welcome-section {
-	text-align: center;
-	margin-bottom: 50px;
-	background: rgba(255, 255, 255, 0.9);
-	padding: var(--spacing-xl);
-	border-radius: var(--spacing-md);
-	box-shadow: var(--shadow-card);
-}
-
-.welcome-section h2 {
-	font-size: 2.5rem;
-	color: var(--color-primary);
-	margin-bottom: 15px;
-	font-weight: 700;
-}
-
-.welcome-section p {
-	font-size: 1.3rem;
-	color: var(--color-muted);
-	font-weight: 400;
-}
-
-/* Section headers */
+/* Section container animation */
 .section-container {
 	animation: slideIn 0.5s ease-out;
 }
 
+/* Section headers */
 .section-header {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	gap: 16px;
-	margin-bottom: var(--spacing-xl);
-	padding-bottom: var(--spacing-md);
-	border-bottom: 3px solid #f0f0f0;
+	gap: var(--spacing-4);
+	margin-bottom: var(--spacing-6);
+	padding-bottom: var(--spacing-4);
+	border-bottom: 1px solid var(--color-border-light);
 }
 
 .section-title {
-	font-size: 2.2rem;
-	color: var(--color-primary);
-	font-weight: 700;
+	font-size: clamp(1.75rem, 4vw, 2.25rem);
+	color: var(--color-text-primary);
+	font-weight: var(--font-weight-bold);
 	margin: 0;
 	flex: 1;
 	text-align: center;
 }
 
-.videos-search {
-	margin-left: auto;
-}
-
+/* Search input */
 .videos-search input[type="search"] {
-	padding: 12px 18px;
-	border: 2px solid var(--color-gray-200);
-	border-radius: var(--radius-full);
-	font-size: 1rem;
-	min-width: 240px;
+	padding: 10px 16px;
+	border: 1px solid var(--color-border-medium);
+	border-radius: var(--radius-md);
+	font-size: 0.95rem;
+	min-width: 200px;
 	outline: none;
-	background: var(--glass-white-strong);
-	backdrop-filter: var(--glass-blur);
-	-webkit-backdrop-filter: var(--glass-blur);
+	background: var(--color-white);
 	transition: all var(--transition-base);
 	font-family: var(--font-family-base);
 	color: var(--color-text-primary);
 }
 
 .videos-search input[type="search"]::placeholder {
-	color: var(--color-text-light);
+	color: var(--color-text-muted);
 }
 
 .videos-search input[type="search"]:focus {
-	border-color: var(--color-secondary);
-	box-shadow: 0 0 0 4px rgba(78, 205, 196, 0.15), var(--shadow-md);
-	transform: translateY(-2px);
+	border-color: var(--color-primary);
+	box-shadow: 0 0 0 3px rgba(0, 217, 126, 0.1);
 }
 
-/* Footer - Modern Glassmorphism */
-.footer {
-	background: var(--glass-white-strong);
-	backdrop-filter: var(--glass-blur);
-	-webkit-backdrop-filter: var(--glass-blur);
-	border-top: 1px solid var(--glass-border);
-	color: var(--color-text-secondary);
-	text-align: center;
-	padding: var(--spacing-4) 0;
-	flex-shrink: 0;
-	margin-top: auto;
-	box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.05);
-	font-size: 0.9rem;
-	font-weight: var(--font-weight-medium);
-}
-
-.footer p {
-	margin: 0;
-	background: var(--gradient-cool);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
-}
-
-/* Grid layouts */
-.menu-grid {
+/* Grid layouts - Consistent spacing */
+.games-grid,
+.videos-grid,
+.theory-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	gap: var(--spacing-xl);
-	margin-bottom: 50px;
+	gap: var(--spacing-4);
+	margin-bottom: var(--spacing-6);
 }
 
 .games-grid {
-	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	gap: var(--spacing-lg);
-	margin-bottom: 50px;
 }
 
 .videos-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-	gap: var(--spacing-lg);
-	margin-bottom: 50px;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
 .theory-grid {
-	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-	gap: 25px;
 }
 
-/* Responsive */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-	.logo {
-		font-size: 2rem;
+	.section-header {
+		flex-wrap: wrap;
 	}
 
-	.welcome-section h2 {
-		font-size: 2rem;
+	.section-title {
+		font-size: 1.5rem;
 	}
 
-	.welcome-section p {
-		font-size: 1.1rem;
-	}
-
-	.games-grid,
-	.menu-grid {
-		grid-template-columns: 1fr;
-		gap: var(--spacing-md);
+	.videos-search input[type="search"] {
+		min-width: 100%;
+		width: 100%;
 	}
 }
 
 @media (max-width: 480px) {
-	.container {
-		padding: 0 15px;
+	.main {
+		padding: var(--spacing-6) 0;
 	}
 
-	.logo-img {
-		height: 64px;
-	}
-
-	.welcome-section {
-		padding: 25px;
+	.games-grid,
+	.videos-grid,
+	.theory-grid {
+		grid-template-columns: 1fr;
 	}
 }
