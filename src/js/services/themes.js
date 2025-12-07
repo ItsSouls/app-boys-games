@@ -1,5 +1,4 @@
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
-
+import { API_BASE } from '../app/config.js';
 import { vocabularyGames } from '../../data/games.js';
 
 const FALLBACK_THEMES = Object.entries(vocabularyGames)

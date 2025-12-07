@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico CSS - El Rincón Español</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+            background: white;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .test {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        h1 { color: #667eea; }
+        h2 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Diagnóstico de CSS - El Rincón Español</h1>
+
+    <div class="test">
+        <h2>Estado del Servidor Vite</h2>
+        <div id="server-status"></div>
+        <button onclick="checkServer()">Verificar Servidor</button>
+    </div>
+
+    <div class="test">
+        <h2>Estado del CSS</h2>
+        <div id="css-status"></div>
+        <button onclick="checkCSS()">Verificar CSS</button>
+    </div>
+
+    <div class="test">
+        <h2>Console del Navegador</h2>
+        <p>Presiona <strong>F12</strong> y ve a la pestaña <strong>Console</strong>. ¿Hay errores?</p>
+        <div id="console-errors"></div>
+        <button onclick="captureConsoleErrors()">Capturar Errores</button>
+    </div>
+
+    <div class="test">
+        <h2>Recursos Cargados</h2>
+        <div id="resources-status"></div>
+        <button onclick="checkResources()">Ver Recursos</button>
+    </div>
+
+    <div class="test">
+        <h2>Soluciones Rápidas</h2>
+        <button onclick="hardRefresh()">🔄 Hard Refresh (Ctrl+Shift+R)</button>
+        <button onclick="clearCache()">🗑️ Limpiar Caché</button>
+        <button onclick="openMainApp()">🚀 Abrir App Principal</button>
+    </div>
+
+    <script>
+        const errors = [];
+
+        // Capturar errores de consola
+        window.addEventListener('error', (e) => {
+            errors.push(`Error: ${e.message} at ${e.filename}:${e.lineno}`);
+        });
+
+        async function checkServer() {
+            const statusDiv = document.getElementById('server-status');
+            try {
+                const response = await fetch('http://localhost:3000/');
+                if (response.ok) {
+                    statusDiv.innerHTML = '<div class="status">✅ Servidor Vite corriendo en http://localhost:3000</div>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Servidor respondió con error: ' + response.status + '</div>';
+                }
+            } catch (e) {
+                statusDiv.innerHTML = '<div class="status error">❌ No se puede conectar al servidor: ' + e.message + '</div>';
+            }
+        }
+
+        async function checkCSS() {
+            const statusDiv = document.getElementById('css-status');
+            try {
+                const response = await fetch('http://localhost:3000/src/css/main.css');
+                if (response.ok) {
+                    const cssText = await response.text();
+                    const hasVariables = cssText.includes(':root');
+                    const hasGradient = cssText.includes('--gradient-main');
+                    const hasBody = cssText.includes('body {');
+
+                    statusDiv.innerHTML = `
+                        <div class="status">✅ CSS cargado correctamente (${cssText.length} caracteres)</div>
+                        <div class="status">${hasVariables ? '✅' : '❌'} Contiene variables CSS</div>
+                        <div class="status">${hasGradient ? '✅' : '❌'} Contiene gradiente principal</div>
+                        <div class="status">${hasBody ? '✅' : '❌'} Contiene estilos de body</div>
+                        <pre>${cssText.substring(0, 500)}...</pre>
+                    `;
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Error al cargar CSS: ' + response.status + '</div>';
+                }
+            } catch (e) {
+                statusDiv.innerHTML = '<div class="status error">❌ Error: ' + e.message + '</div>';
+            }
+        }
+
+        function captureConsoleErrors() {
+            const div = document.getElementById('console-errors');
+            if (errors.length === 0) {
+                div.innerHTML = '<div class="status">✅ No hay errores capturados</div>';
+            } else {
+                div.innerHTML = '<div class="status error">❌ Errores encontrados:</div><pre>' + errors.join('\n') + '</pre>';
+            }
+        }
+
+        function checkResources() {
+            const div = document.getElementById('resources-status');
+            const resources = performance.getEntriesByType('resource');
+            const cssResources = resources.filter(r => r.name.includes('.css'));
+            const jsResources = resources.filter(r => r.name.includes('.js'));
+
+            div.innerHTML = `
+                <div class="status">CSS cargados: ${cssResources.length}</div>
+                <div class="status">JS cargados: ${jsResources.length}</div>
+                <pre>${JSON.stringify(cssResources.map(r => ({name: r.name, status: r.responseStatus})), null, 2)}</pre>
+            `;
+        }
+
+        function hardRefresh() {
+            alert('Presiona Ctrl+Shift+R (Windows) o Cmd+Shift+R (Mac) para hacer un hard refresh');
+            location.reload(true);
+        }
+
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            alert('Caché limpiado. Ahora presiona Ctrl+Shift+R para recargar.');
+        }
+
+        function openMainApp() {
+            window.location.href = 'http://localhost:3000/';
+        }
+
+        // Auto-check al cargar
+        window.onload = () => {
+            checkServer();
+            checkCSS();
+        };
+    </script>
+</body>
+</html>

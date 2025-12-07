@@ -1,32 +1,11 @@
 import { API_BASE } from '../../app/config.js';
 import { formatTheoryDate } from '../../app/theory.js';
 import { renderVideos } from '../videos.js';
+import { getAuthHeaders } from '../../utils/auth.js';
+import { createFeedback } from '../../utils/feedback.js';
+import { isImageUrl } from '../../utils/validators.js';
 
 const VIDEO_DEFAULT_EMOJI = '🎬';
-
-const getAuthHeaders = (withJson = false) => {
-  const token = localStorage.getItem('abg_token');
-  if (!token) return null;
-  const headers = { Authorization: 'Bearer ' + token };
-  if (withJson) headers['Content-Type'] = 'application/json';
-  return headers;
-};
-
-const isImageUrl = (value) => {
-  if (!value) return false;
-  const source = String(value).trim();
-  return /^https?:\/\//i.test(source);
-};
-
-const createFeedback = (feedbackEl) => (message, tone = 'info') => {
-  if (!feedbackEl) return;
-  feedbackEl.textContent = message || '';
-  feedbackEl.dataset.tone = tone;
-  if (message) {
-    feedbackEl.classList.add('is-visible');
-    setTimeout(() => feedbackEl.classList.remove('is-visible'), 4000);
-  }
-};
 
 export async function openVideosAdminModal() {
   const overlay = document.createElement('div');

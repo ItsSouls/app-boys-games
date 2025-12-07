@@ -1,33 +1,19 @@
 import { API_BASE } from '../../app/config.js';
 import { loadQuill } from '../../app/quillLoader.js';
 import { formatTheoryDate, renderTheory, sanitizeIdForUrl } from '../../app/theory.js';
+import { getAuthHeaders } from '../../utils/auth.js';
+import { createFeedback } from '../../utils/feedback.js';
 
 const toolbar = [
-  [{ header: [1, 2, 3, 4, false] }],
-  ['bold', 'italic', 'underline', 'strike'],
-  [{ color: [] }, { background: [] }],
-  [{ list: 'ordered' }, { list: 'bullet' }],
-  [{ align: [] }],
-  ['blockquote', 'code-block'],
-  ['link', 'image', 'video'],
-  ['clean'],
+	[{ header: [1, 2, 3, 4, false] }],
+	['bold', 'italic', 'underline', 'strike'],
+	[{ color: [] }, { background: [] }],
+	[{ list: 'ordered' }, { list: 'bullet' }],
+	[{ align: [] }],
+	['blockquote', 'code-block'],
+	['link', 'image', 'video'],
+	['clean'],
 ];
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('abg_token');
-  if (!token) return null;
-  return { Authorization: 'Bearer ' + token };
-};
-
-const showFeedback = (feedbackEl) => (message, tone = 'info') => {
-  if (!feedbackEl) return;
-  feedbackEl.textContent = message || '';
-  feedbackEl.dataset.tone = tone;
-  if (message) {
-    feedbackEl.classList.add('is-visible');
-    setTimeout(() => feedbackEl.classList.remove('is-visible'), 4000);
-  }
-};
 
 const sectionLabel = (section) => (section === 'gramatica' ? 'Gramática' : 'Vocabulario');
 
@@ -100,7 +86,7 @@ export async function openTheoryAdminModal(section) {
   const saveBtn = modal.querySelector('.theory-admin__save');
   const feedbackEl = modal.querySelector('#theory-feedback');
   const newBtn = modal.querySelector('.theory-admin__new');
-  const pushFeedback = showFeedback(feedbackEl);
+  const pushFeedback = createFeedback(feedbackEl);
 
   const state = {
     pages: [],

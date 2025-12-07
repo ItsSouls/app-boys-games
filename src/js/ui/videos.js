@@ -1,23 +1,8 @@
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+import { API_BASE } from '../app/config.js';
+import { isImageUrl } from '../utils/validators.js';
+import { escapeHtml, escapeAttribute } from '../utils/sanitize.js';
 
 let cache = [];
-
-const isImageUrl = (value) => {
-  if (!value) return false;
-  return /^https?:\/\//i.test(String(value).trim());
-};
-
-const escapeHtml = (value) =>
-  String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-
-const escapeAttribute = (value) =>
-  String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;');
 
 export async function renderVideos(filter = '') {
   const videosGrid = document.getElementById('videos-grid');

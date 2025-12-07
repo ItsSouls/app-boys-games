@@ -1,0 +1,49 @@
+/**
+ * CSS Custom Properties (Variables)
+ * Centralized design tokens for the application
+ */
+
+:root {
+	/* Typography */
+	--font-family-base: 'Fredoka', cursive;
+
+	/* Colors - Primary */
+	--color-primary: #ff6b6b;
+	--color-primary-dark: #ff5252;
+	--color-secondary: #4ecdc4;
+
+	/* Colors - Text */
+	--color-text: #333;
+	--color-muted: #666;
+
+	/* Gradients */
+	--gradient-main: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	--sheen-highlight: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+
+	/* Surfaces */
+	--surface-elevated: rgba(255, 255, 255, 0.95);
+
+	/* Shadows */
+	--shadow-header: 0 4px 20px rgba(0, 0, 0, 0.1);
+	--shadow-card: 0 10px 30px rgba(0, 0, 0, 0.1);
+	--shadow-card-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+	/* Z-index layers */
+	--z-header: 100;
+	--z-modal: 2000;
+	--z-modal-elevated: 2200;
+	--z-modal-admin: 2800;
+
+	/* Spacing */
+	--spacing-xs: 5px;
+	--spacing-sm: 10px;
+	--spacing-md: 20px;
+	--spacing-lg: 30px;
+	--spacing-xl: 40px;
+
+	/* Border radius */
+	--radius-sm: 10px;
+	--radius-md: 15px;
+	--radius-lg: 20px;
+	--radius-xl: 25px;
+}

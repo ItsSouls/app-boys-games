@@ -1,0 +1,46 @@
+/**
+ * Main CSS Entry Point (Modular Architecture)
+ * Imports all CSS modules in the correct order for optimal cascade
+ */
+
+/* 1. Variables and Design Tokens - Must load first */
+@import './variables.css';
+
+/* 2. Base styles and CSS Reset */
+@import './base.css';
+
+/* 3. Animations - Load early for use across components */
+@import './animations.css';
+
+/* 4. Layout components - Overall structure */
+@import './layout.css';
+
+/* 5. Buttons and interactive elements */
+@import './buttons.css';
+
+/* 6. Components - Reusable UI elements */
+@import './components.css';
+@import './cards.css';
+@import './header.css';
+@import './menus.css';
+
+/* 7. Theory and educational content */
+@import './theory.css';
+
+/* 8. Games - Game-specific styles */
+@import './game-container.css';
+@import './bubble-game.css';
+@import './matching-game.css';
+@import './theme-selector.css';
+
+/* 9. Modals - Overlay components */
+@import './modals.css';
+
+/* 10. Videos section */
+@import './videos.css';
+
+/* 11. Welcome screen */
+@import './welcome.css';
+
+/* 12. Responsive - Load last to override as needed */
+@import './responsive.css';

@@ -1,0 +1,51 @@
+/**
+ * Base styles and CSS Reset
+ */
+
+/* Reset */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	font-family: var(--font-family-base);
+	background: var(--gradient-main);
+	background-color: #764ba2;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	min-height: 100vh;
+	color: var(--color-text);
+	overflow-x: hidden;
+}
+
+button {
+	font-family: inherit;
+}
+
+#app {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Utility classes */
+.hidden {
+	display: none !important;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 var(--spacing-md);
+}

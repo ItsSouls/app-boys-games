@@ -1,0 +1,40 @@
+/**
+ * Main CSS Entry Point (Modular)
+ * Imports all CSS modules in the correct order
+ */
+
+/* 1. Variables and Design Tokens */
+@import './variables.css';
+
+/* 2. Base styles and Reset */
+@import './base.css';
+
+/* 3. Layout components */
+@import './layout.css';
+
+/* 4. Components */
+@import './components.css';
+@import './cards.css';
+@import './header.css';
+@import './menus.css';
+
+/* 5. Theory and content */
+@import './theory.css';
+
+/* 6. Games */
+@import './game-container.css';
+@import './bubble-game.css';
+@import './matching-game.css';
+@import './theme-selector.css';
+
+/* 7. Modals */
+@import './modals.css';
+
+/* 8. Videos */
+@import './videos.css';
+
+/* 9. Welcome */
+@import './welcome.css';
+
+/* 10. Responsive */
+@import './responsive.css';
