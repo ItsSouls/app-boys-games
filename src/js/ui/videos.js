@@ -10,7 +10,7 @@ export async function renderVideos(filter = '', forceUserView = false) {
   const token = localStorage.getItem('abg_token');
   if (token) {
     try {
-      const { user } = await (await fetch(`${API_BASE}/user/me`, {
+      const { user } = await (await fetch(`${API_BASE}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       })).json();
       isAdmin = user?.role === 'admin' || user?.role === 'moderator';
