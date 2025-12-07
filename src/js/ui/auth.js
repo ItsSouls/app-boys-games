@@ -4,13 +4,15 @@ export function setupAuthControls(options = {}) {
   const { onAuthSuccess } = options;
   const loginBtn = document.getElementById('auth-login');
   const regBtn = document.getElementById('auth-register');
-  const authBox = document.getElementById('auth-box');
+  const headerAuth = document.getElementById('header-auth');
   if (!loginBtn || !regBtn) return;
 
   const hasToken = Boolean(localStorage.getItem('abg_token'));
-  if (authBox) authBox.style.display = hasToken ? 'none' : 'flex';
-  loginBtn.style.display = hasToken ? 'none' : '';
-  regBtn.style.display = hasToken ? 'none' : '';
+
+  // Show/hide auth buttons in header
+  if (headerAuth) {
+    headerAuth.style.display = hasToken ? 'none' : 'flex';
+  }
 
   loginBtn.onclick = () => showLoginModal(onAuthSuccess);
   regBtn.onclick = () => showRegisterModal(onAuthSuccess);

@@ -39,7 +39,8 @@ export function initApp() {
       userController.refreshUserGreeting(),
       ensureThemesLoaded().catch(logThemeWarning),
     ]);
-    await games.showVocabularyGames();
+    // Navigate to home page after successful login
+    router.navigate('/');
   });
 
   userController.ensureAuthControls();

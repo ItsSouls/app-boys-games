@@ -96,17 +96,109 @@
 
           <!-- Página de Videos -->
           <div id="videos-page" class="page-view hidden">
-            <section class="section-container" id="videos-section">
-              <div class="section-header">
-                <button class="back-btn" id="videos-back-btn">← Volver al Menú</button>
-                <h2 class="section-title">🎬 Videos Educativos</h2>
-                <div class="videos-search" style="margin-left:auto; display:flex; align-items:center; gap:8px;">
-                  <input id="videos-search" type="search" placeholder="Buscar videos..." aria-label="Buscar videos por título" />
-                  <button id="videos-admin-gear" class="option-btn" title="Administrar videos" style="padding:6px 10px;display:none;">⚙️</button>
+            <section class="videos-section" id="videos-section">
+              <!-- User View -->
+              <div class="videos-user-view" id="videos-user-view">
+                <div class="videos-hero">
+                  <div class="videos-hero-content">
+                    <h1 class="videos-hero__title">Panel de Videos</h1>
+                    <p class="videos-hero__subtitle">Mira y aprende con nuestros divertidos videos educativos.</p>
+                  </div>
+                  <button class="videos-admin-toggle" id="videos-admin-toggle" style="display:none;" title="Gestión de videos">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 6V14M6 10H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Administrar
+                  </button>
+                </div>
+
+                <div class="videos-controls">
+                  <div class="videos-search-bar">
+                    <svg class="videos-search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+                      <path d="M14 14L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <input id="videos-search" type="search" placeholder="¿Qué quieres aprender hoy?" aria-label="Buscar videos por título" />
+                  </div>
+
+                  <div class="videos-filters">
+                    <div class="categories-dropdown-container">
+                      <button class="filter-dropdown" id="categories-dropdown">
+                        <span id="categories-dropdown-text">Todas las categorías</span>
+                        <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                          <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                      </button>
+                      <div class="categories-dropdown-menu hidden" id="categories-dropdown-menu">
+                        <!-- Categories will be populated dynamically -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="videos-grid" id="videos-grid">
+                  <!-- Videos se cargarán aquí -->
                 </div>
               </div>
-              <div class="videos-grid" id="videos-grid">
-                <!-- Videos se cargarán aquí -->
+
+              <!-- Admin View -->
+              <div class="videos-admin-view hidden" id="videos-admin-view">
+                <div class="admin-header">
+                  <div class="admin-header__text">
+                    <h1 class="admin-header__title">Gestión de Videos</h1>
+                    <p class="admin-header__subtitle">Añade, edita o elimina videos de la biblioteca.</p>
+                  </div>
+                  <div class="admin-header-actions">
+                    <button class="videos-user-toggle" id="videos-user-toggle" title="Vista de usuario">
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M2 9L9 2L16 9M3 8V16H7V12H11V16H15V8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Vista Usuario
+                    </button>
+                    <button class="admin-add-btn" id="videos-admin-add">
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                      </svg>
+                      Añadir Nuevo Video
+                    </button>
+                  </div>
+                </div>
+
+                <div class="admin-controls">
+                  <div class="admin-search-bar">
+                    <svg class="admin-search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
+                      <path d="M14 14L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <input id="videos-admin-search" type="search" placeholder="Buscar video por título..." />
+                  </div>
+                  <button class="admin-filter-btn" id="videos-admin-filter">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <path d="M2 4H16M5 9H13M8 14H10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Filtrar
+                  </button>
+                </div>
+
+                <div class="admin-table-container">
+                  <table class="admin-table">
+                    <thead>
+                      <tr>
+                        <th>Video</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="videos-admin-list">
+                      <!-- Admin video list se cargará aquí -->
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="admin-pagination" id="videos-pagination">
+                  <!-- Pagination will be added here -->
+                </div>
               </div>
             </section>
           </div>
