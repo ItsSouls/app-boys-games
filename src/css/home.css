@@ -208,6 +208,15 @@
   align-items: center;
   gap: var(--spacing-2);
   flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.brand:hover {
+  opacity: 0.8;
 }
 
 .logo {

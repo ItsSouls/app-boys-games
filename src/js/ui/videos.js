@@ -371,6 +371,200 @@ function wireViewToggles() {
   }
 }
 
+function openAddVideoModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'video-overlay';
+
+  const modal = document.createElement('div');
+  modal.className = 'admin-video-modal';
+  modal.innerHTML = `
+    <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
+    <header class="admin-modal__header">
+      <h3>Añadir Nuevo Video</h3>
+    </header>
+    <form class="admin-video-form" id="add-video-form">
+      <div class="form-group">
+        <label for="video-title">Título</label>
+        <input type="text" id="video-title" name="title" required />
+      </div>
+      <div class="form-group">
+        <label for="video-description">Descripción</label>
+        <textarea id="video-description" name="description" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="video-embedUrl">URL del Video (YouTube embed)</label>
+        <input type="url" id="video-embedUrl" name="embedUrl" placeholder="https://www.youtube.com/embed/..." required />
+      </div>
+      <div class="form-group">
+        <label for="video-emoji">Emoji o URL de Imagen</label>
+        <input type="text" id="video-emoji" name="emoji" placeholder="🎬 o URL de imagen" />
+      </div>
+      <div class="form-group">
+        <label for="video-category">Categoría</label>
+        <input type="text" id="video-category" name="category" value="General" required />
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel">Cancelar</button>
+        <button type="submit" class="btn-submit">Añadir Video</button>
+      </div>
+    </form>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  const close = () => {
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  };
+
+  modal.querySelector('.video-modal__close').addEventListener('click', close);
+  modal.querySelector('.btn-cancel').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+
+  const form = modal.querySelector('#add-video-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const videoData = Object.fromEntries(formData.entries());
+
+    try {
+      const token = localStorage.getItem('abg_token');
+      const res = await fetch(`${API_BASE}/videos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(videoData)
+      });
+
+      if (res.ok) {
+        close();
+        cache = [];
+        await renderAdminView('');
+        console.log('[videos] Video añadido correctamente');
+      } else {
+        alert('Error al añadir el video');
+      }
+    } catch (err) {
+      console.error('[videos] Error añadiendo video:', err);
+      alert('Error al añadir el video');
+    }
+  });
+}
+
+function openEditVideoModal(videoId) {
+  const video = cache.find(v => v.id === videoId);
+  if (!video) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'video-overlay';
+
+  const modal = document.createElement('div');
+  modal.className = 'admin-video-modal';
+  modal.innerHTML = `
+    <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
+    <header class="admin-modal__header">
+      <h3>Editar Video</h3>
+    </header>
+    <form class="admin-video-form" id="edit-video-form">
+      <div class="form-group">
+        <label for="edit-video-title">Título</label>
+        <input type="text" id="edit-video-title" name="title" value="${escapeAttribute(video.title)}" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-video-description">Descripción</label>
+        <textarea id="edit-video-description" name="description" rows="3">${escapeHtml(video.description || '')}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="edit-video-embedUrl">URL del Video (YouTube embed)</label>
+        <input type="url" id="edit-video-embedUrl" name="embedUrl" value="${escapeAttribute(video.embedUrl)}" required />
+      </div>
+      <div class="form-group">
+        <label for="edit-video-emoji">Emoji o URL de Imagen</label>
+        <input type="text" id="edit-video-emoji" name="emoji" value="${escapeAttribute(video.emoji || '')}" />
+      </div>
+      <div class="form-group">
+        <label for="edit-video-category">Categoría</label>
+        <input type="text" id="edit-video-category" name="category" value="${escapeAttribute(video.category || 'General')}" required />
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-cancel">Cancelar</button>
+        <button type="submit" class="btn-submit">Guardar Cambios</button>
+      </div>
+    </form>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  const close = () => {
+    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+  };
+
+  modal.querySelector('.video-modal__close').addEventListener('click', close);
+  modal.querySelector('.btn-cancel').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+
+  const form = modal.querySelector('#edit-video-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const videoData = Object.fromEntries(formData.entries());
+
+    try {
+      const token = localStorage.getItem('abg_token');
+      const res = await fetch(`${API_BASE}/videos/${videoId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(videoData)
+      });
+
+      if (res.ok) {
+        close();
+        cache = [];
+        await renderAdminView('');
+        console.log('[videos] Video actualizado correctamente');
+      } else {
+        alert('Error al actualizar el video');
+      }
+    } catch (err) {
+      console.error('[videos] Error actualizando video:', err);
+      alert('Error al actualizar el video');
+    }
+  });
+}
+
+async function deleteVideo(videoId) {
+  try {
+    const token = localStorage.getItem('abg_token');
+    const res = await fetch(`${API_BASE}/videos/${videoId}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (res.ok) {
+      cache = [];
+      await renderAdminView('');
+      console.log('[videos] Video eliminado correctamente');
+    } else {
+      alert('Error al eliminar el video');
+    }
+  } catch (err) {
+    console.error('[videos] Error eliminando video:', err);
+    alert('Error al eliminar el video');
+  }
+}
+
 function wireAdminActions() {
   // Wire edit buttons
   const editButtons = document.querySelectorAll('.admin-action-btn.edit');
@@ -379,8 +573,7 @@ function wireAdminActions() {
     btn.__wired = true;
     btn.addEventListener('click', () => {
       const videoId = btn.dataset.videoId;
-      console.log('[videos] Editar video:', videoId);
-      // TODO: Open edit modal
+      openEditVideoModal(videoId);
     });
   });
 
@@ -392,8 +585,7 @@ function wireAdminActions() {
     btn.addEventListener('click', async () => {
       const videoId = btn.dataset.videoId;
       if (confirm('¿Estás seguro de que quieres eliminar este video?')) {
-        console.log('[videos] Eliminar video:', videoId);
-        // TODO: Implement delete functionality
+        await deleteVideo(videoId);
       }
     });
   });
@@ -403,8 +595,7 @@ function wireAdminActions() {
   if (addBtn && !addBtn.__wired) {
     addBtn.__wired = true;
     addBtn.addEventListener('click', () => {
-      console.log('[videos] Añadir nuevo video');
-      // TODO: Open add video modal
+      openAddVideoModal();
     });
   }
 }

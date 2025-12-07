@@ -21,10 +21,10 @@
       <header class="header">
         <div class="container">
           <!-- Logo y título -->
-          <div class="brand">
+          <button class="brand" id="header-logo" type="button" aria-label="Ir a inicio">
             <img src="/logo-rincon.png" alt="El Rincón Español" class="logo-img" onerror="this.style.display='none'" />
             <h1 class="logo">Español para Niños</h1>
-          </div>
+          </button>
 
           <!-- Navegación central -->
           <nav class="header-nav">
@@ -34,13 +34,12 @@
 
           <!-- Área de usuario (derecha) -->
           <div class="header-actions">
-            <div id="header-user" class="header-user" style="display:none;">
+            <div id="header-user" class="header-user is-hidden">
               <span class="user-greet">👋 <strong id="user-name"></strong></span>
               <button id="header-logout" class="header-logout-btn">Salir</button>
             </div>
             <div id="header-auth" class="header-auth">
-              <button id="auth-login" class="header-login-btn">Entrar</button>
-              <button id="auth-register" class="header-register-btn">Crear</button>
+              <button id="auth-login" class="header-login-btn">Iniciar sesión</button>
             </div>
           </div>
         </div>
@@ -106,6 +105,12 @@
               <!-- User View -->
               <div class="videos-user-view" id="videos-user-view">
                 <div class="videos-hero">
+                  <button class="videos-back-btn" id="videos-back-btn" aria-label="Volver a inicio">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Volver
+                  </button>
                   <div class="videos-hero-content">
                     <h1 class="videos-hero__title">Panel de Videos</h1>
                     <p class="videos-hero__subtitle">Mira y aprende con nuestros divertidos videos educativos.</p>

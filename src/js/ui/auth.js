@@ -15,9 +15,8 @@ const loginFields = [
 export function setupAuthControls(options = {}) {
   const { onAuthSuccess } = options;
   const loginBtn = document.getElementById('auth-login');
-  const regBtn = document.getElementById('auth-register');
   const headerAuth = document.getElementById('header-auth');
-  if (!loginBtn || !regBtn) return;
+  if (!loginBtn) return;
 
   const hasToken = Boolean(localStorage.getItem('abg_token'));
 
@@ -27,10 +26,9 @@ export function setupAuthControls(options = {}) {
   }
 
   loginBtn.onclick = () => showLoginModal(onAuthSuccess);
-  regBtn.onclick = () => showRegisterModal(onAuthSuccess);
 }
 
-function createAuthModal({ title, helper, fields, submitLabel, onSubmit }) {
+function showLoginModal(onAuthSuccess) {
   const overlay = document.createElement('div');
   overlay.style.cssText =
     'position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:2000;padding:16px;';
@@ -38,167 +36,141 @@ function createAuthModal({ title, helper, fields, submitLabel, onSubmit }) {
   const modal = document.createElement('div');
   modal.className = 'abg-modal';
 
-  const header = document.createElement('div');
-  header.className = 'abg-modal-header';
+  let isRegisterMode = false;
 
-  const heading = document.createElement('h3');
-  heading.className = 'abg-modal-title';
-  heading.textContent = title;
+  const renderModal = () => {
+    const fields = isRegisterMode ? registerFields : loginFields;
+    const title = isRegisterMode ? 'Crear cuenta' : 'Iniciar sesión';
+    const helper = isRegisterMode
+      ? 'Usuario y contraseña para guardar tus puntos.'
+      : 'Usa tu usuario y contraseña.';
+    const submitLabel = isRegisterMode ? 'Crear cuenta' : 'Entrar';
+    const switchText = isRegisterMode
+      ? '¿Ya tienes cuenta? Inicia sesión'
+      : '¿Eres nuevo? Crea tu cuenta';
 
-  const closeBtn = document.createElement('button');
-  closeBtn.type = 'button';
-  closeBtn.className = 'abg-modal-close';
-  closeBtn.setAttribute('aria-label', 'Cerrar');
-  closeBtn.innerHTML = '&times;';
+    modal.innerHTML = `
+      <div class="abg-modal-header">
+        <h3 class="abg-modal-title">${title}</h3>
+        <button type="button" class="abg-modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      ${helper ? `<p class="abg-helper">${helper}</p>` : ''}
+      <form class="abg-form">
+        ${fields.map(field => `
+          <input
+            id="${field.id}"
+            class="abg-input"
+            placeholder="${field.placeholder}"
+            type="${field.type || 'text'}"
+            autocomplete="${field.autocomplete || 'off'}"
+            data-field="${field.key}"
+          />
+        `).join('')}
+        <div class="abg-error"></div>
+        <div class="abg-actions">
+          <button type="button" class="abg-btn abg-btn-ghost">Cancelar</button>
+          <button type="submit" class="abg-btn abg-btn-primary">${submitLabel}</button>
+        </div>
+      </form>
+      <div class="abg-switch-mode">
+        <button type="button" class="abg-switch-btn">${switchText}</button>
+      </div>
+    `;
 
-  header.appendChild(heading);
-  header.appendChild(closeBtn);
-  modal.appendChild(header);
+    // Wire up event listeners
+    const closeBtn = modal.querySelector('.abg-modal-close');
+    const cancelBtn = modal.querySelector('.abg-btn-ghost');
+    const form = modal.querySelector('.abg-form');
+    const errorEl = modal.querySelector('.abg-error');
+    const submitBtn = modal.querySelector('.abg-btn-primary');
+    const switchBtn = modal.querySelector('.abg-switch-btn');
 
-  if (helper) {
-    const helperEl = document.createElement('p');
-    helperEl.className = 'abg-helper';
-    helperEl.textContent = helper;
-    modal.appendChild(helperEl);
-  }
+    const close = () => {
+      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    };
 
-  const form = document.createElement('form');
-  form.className = 'abg-form';
+    closeBtn.addEventListener('click', close);
+    cancelBtn.addEventListener('click', close);
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay) close();
+    });
 
-  fields.forEach((field) => {
-    const input = document.createElement('input');
-    input.id = field.id;
-    input.className = 'abg-input';
-    input.placeholder = field.placeholder;
-    input.type = field.type || 'text';
-    input.autocomplete = field.autocomplete || 'off';
-    input.dataset.field = field.key;
-    form.appendChild(input);
-  });
+    switchBtn.addEventListener('click', () => {
+      isRegisterMode = !isRegisterMode;
+      renderModal();
+    });
 
-  const errorEl = document.createElement('div');
-  errorEl.className = 'abg-error';
-  form.appendChild(errorEl);
+    const getValues = () =>
+      fields.reduce((acc, field) => {
+        const input = form.querySelector(`[data-field="${field.key}"]`);
+        acc[field.key] = input?.value.trim() || '';
+        return acc;
+      }, {});
 
-  const actions = document.createElement('div');
-  actions.className = 'abg-actions';
+    const setError = (message) => {
+      errorEl.textContent = message || '';
+    };
 
-  const cancelBtn = document.createElement('button');
-  cancelBtn.type = 'button';
-  cancelBtn.className = 'abg-btn abg-btn-ghost';
-  cancelBtn.textContent = 'Cancelar';
+    const setBusy = (busy) => {
+      submitBtn.disabled = busy;
+      cancelBtn.disabled = busy;
+      fields.forEach((field) => {
+        const input = form.querySelector(`[data-field="${field.key}"]`);
+        if (input) input.disabled = busy;
+      });
+    };
 
-  const submitBtn = document.createElement('button');
-  submitBtn.type = 'submit';
-  submitBtn.className = 'abg-btn abg-btn-primary';
-  submitBtn.textContent = submitLabel;
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setError('');
+      setBusy(true);
 
-  actions.appendChild(cancelBtn);
-  actions.appendChild(submitBtn);
-  form.appendChild(actions);
-  modal.appendChild(form);
-  overlay.appendChild(modal);
-  document.body.appendChild(overlay);
+      try {
+        const values = getValues();
 
-  const close = () => {
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-  };
+        if (isRegisterMode) {
+          const { name, username, password, passwordConfirm } = values;
+          if (!name || !username || !password || !passwordConfirm) {
+            setError('Completa todos los campos.');
+            return;
+          }
+          if (password.length < 6) {
+            setError('La contraseña necesita al menos 6 caracteres.');
+            return;
+          }
+          if (password !== passwordConfirm) {
+            setError('Las contraseñas no coinciden.');
+            return;
+          }
 
-  closeBtn.addEventListener('click', close);
-  cancelBtn.addEventListener('click', close);
-  overlay.addEventListener('click', (event) => {
-    if (event.target === overlay) close();
-  });
+          await api.register({ name, username, password });
+          close();
+          if (typeof onAuthSuccess === 'function') await onAuthSuccess();
+        } else {
+          const { username, password } = values;
+          if (!username || !password) {
+            setError('Completa todos los campos.');
+            return;
+          }
 
-  const getValues = () =>
-    fields.reduce((acc, field) => {
-      const input = form.querySelector(`[data-field="${field.key}"]`);
-      acc[field.key] = input?.value.trim() || '';
-      return acc;
-    }, {});
-
-  const setError = (message) => {
-    errorEl.textContent = message || '';
-  };
-
-  const setBusy = (busy) => {
-    submitBtn.disabled = busy;
-    cancelBtn.disabled = busy;
-    fields.forEach((field) => {
-      const input = form.querySelector(`[data-field="${field.key}"]`);
-      if (input) input.disabled = busy;
+          await api.login({ username, password });
+          close();
+          if (typeof onAuthSuccess === 'function') await onAuthSuccess();
+        }
+      } catch (error) {
+        console.error('auth failed', error);
+        setError(
+          isRegisterMode
+            ? 'Registro fallido. ¿Usuario ya registrado? ¿Backend activo?'
+            : 'Login fallido. Revisa usuario/contraseña y que el backend está activo.'
+        );
+      } finally {
+        setBusy(false);
+      }
     });
   };
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    setError('');
-    setBusy(true);
-    try {
-      await onSubmit({ values: getValues(), setError, close });
-    } catch (error) {
-      console.error(error);
-      setError(error?.message || 'Ocurrió un error. Inténtalo nuevamente.');
-    } finally {
-      setBusy(false);
-    }
-  });
-}
-
-function showRegisterModal(onAuthSuccess) {
-  createAuthModal({
-    title: 'Crear cuenta',
-    helper: 'Usuario y contraseña para guardar tus puntos.',
-    fields: registerFields,
-    submitLabel: 'Crear',
-    onSubmit: async ({ values, setError, close }) => {
-      const { name, username, password, passwordConfirm } = values;
-      if (!name || !username || !password || !passwordConfirm) {
-        setError('Completa todos los campos.');
-        return;
-      }
-      if (password.length < 6) {
-        setError('La contraseña necesita al menos 6 caracteres.');
-        return;
-      }
-      if (password !== passwordConfirm) {
-        setError('Las contraseñas no coinciden.');
-        return;
-      }
-
-      try {
-        await api.register({ name, username, password });
-        close();
-        if (typeof onAuthSuccess === 'function') await onAuthSuccess();
-      } catch (error) {
-        console.error('register failed', error);
-        setError('Registro fallido. ¿Usuario ya registrado? ¿Backend activo?');
-      }
-    },
-  });
-}
-
-function showLoginModal(onAuthSuccess) {
-  createAuthModal({
-    title: 'Entrar',
-    helper: 'Usa tu usuario y contraseña.',
-    fields: loginFields,
-    submitLabel: 'Entrar',
-    onSubmit: async ({ values, setError, close }) => {
-      const { username, password } = values;
-      if (!username || !password) {
-        setError('Completa todos los campos.');
-        return;
-      }
-
-      try {
-        await api.login({ username, password });
-        close();
-        if (typeof onAuthSuccess === 'function') await onAuthSuccess();
-      } catch (error) {
-        console.error('login failed', error);
-        setError('Login fallido. Revisa usuario/contraseña y que el backend está activo.');
-      }
-    },
-  });
+  renderModal();
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
 }

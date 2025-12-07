@@ -92,9 +92,12 @@
   line-height: 1.6;
   overflow-wrap: anywhere;
   word-break: break-word;
-  word-break: break-all;
-  white-space: normal;
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 4.8em;
 }
 
 .video-modal__player {
@@ -231,6 +234,31 @@
   margin-bottom: 6px;
 }
 
+.abg-switch-mode {
+  text-align: center;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.abg-switch-btn {
+  background: none;
+  border: none;
+  color: var(--color-secondary);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-family: var(--font-family-base);
+}
+
+.abg-switch-btn:hover {
+  background: rgba(78, 205, 196, 0.1);
+  color: var(--color-primary);
+}
+
 /* Theory Modal */
 .theory-modal-overlay {
   position: fixed;
@@ -359,3 +387,131 @@
 
 /* Theory Admin Modal - Moved to main.css (will be extracted to theory-admin.css later) */
 
+/* Admin Video Modal */
+.admin-video-modal {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 600px;
+  width: min(600px, 100%);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  padding: 28px 32px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-modal__header {
+  margin: 0;
+  padding-right: 40px;
+}
+
+.admin-modal__header h3 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.admin-video-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.btn-cancel,
+.btn-submit {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-family-base);
+}
+
+.btn-cancel {
+  background: #f0f0f0;
+  color: var(--color-text-secondary);
+}
+
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+.btn-submit {
+  background: var(--color-secondary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+}
+
+.btn-submit:hover {
+  background: #66ccc1;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(78, 205, 196, 0.4);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 640px) {
+  .admin-video-modal {
+    padding: 20px 24px;
+  }
+
+  .admin-modal__header h3 {
+    font-size: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-cancel,
+  .btn-submit {
+    width: 100%;
+  }
+}

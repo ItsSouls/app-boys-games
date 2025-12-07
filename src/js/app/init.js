@@ -39,8 +39,7 @@ export function initApp() {
       userController.refreshUserGreeting(),
       ensureThemesLoaded().catch(logThemeWarning),
     ]);
-    // Navigate to home page after successful login
-    router.navigate('/');
+    // User stays on current page after login
   });
 
   userController.ensureAuthControls();
@@ -93,6 +92,13 @@ export function initApp() {
         if (!btn) return;
         router.navigate(`/${btn.dataset.section}`);
       });
+    }
+
+    // Header logo navigation
+    const headerLogo = document.getElementById('header-logo');
+    if (headerLogo && !headerLogo.__wired) {
+      headerLogo.__wired = true;
+      headerLogo.addEventListener('click', () => router.navigate('/'));
     }
 
     // Header nav links
