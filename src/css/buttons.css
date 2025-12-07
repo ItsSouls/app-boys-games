@@ -1,0 +1,121 @@
+/**
+ * Professional Button System
+ */
+
+/* Back Button - Clean Minimalist */
+.back-btn {
+	background: var(--color-white);
+	color: var(--color-primary);
+	border: 2px solid var(--color-primary);
+	padding: 12px 24px;
+	border-radius: var(--radius-full);
+	font-size: 1rem;
+	font-weight: var(--font-weight-semibold);
+	cursor: pointer;
+	transition: all var(--transition-base);
+	font-family: var(--font-family-base);
+	box-shadow: var(--shadow-sm);
+}
+
+.back-btn:hover {
+	background: var(--color-primary);
+	color: var(--color-white);
+	transform: translateX(-5px);
+	box-shadow: var(--shadow-md);
+}
+
+.back-btn:active {
+	transform: translateX(-3px);
+}
+
+/* Option Button - Versatile Action Button */
+.option-btn {
+	background: var(--color-primary);
+	color: var(--color-white);
+	border: none;
+	padding: 14px 28px;
+	border-radius: var(--radius-md);
+	font-size: 1.1rem;
+	font-weight: var(--font-weight-semibold);
+	cursor: pointer;
+	transition: all var(--transition-base);
+	font-family: var(--font-family-base);
+	position: relative;
+	overflow: hidden;
+	box-shadow: var(--shadow-md);
+}
+
+.option-btn:hover {
+	transform: translateY(-3px);
+	background: var(--color-primary-dark);
+	box-shadow: var(--shadow-lg);
+}
+
+.option-btn:active {
+	transform: translateY(-1px);
+}
+
+.option-btn.correct {
+	background: var(--color-success);
+	animation: correctAnswer 0.6s ease;
+}
+
+.option-btn.incorrect {
+	background: var(--color-error);
+	animation: shake 0.6s ease;
+}
+
+/* Pronunciation Button - Audio Play */
+.pronunciation-btn {
+	background: var(--color-primary);
+	border: none;
+	color: var(--color-white);
+	width: 56px;
+	height: 56px;
+	border-radius: var(--radius-full);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.5rem;
+	margin: var(--spacing-2) auto;
+	transition: all var(--transition-base);
+	box-shadow: var(--shadow-md);
+}
+
+.pronunciation-btn:hover {
+	transform: scale(1.1);
+	background: var(--color-primary-dark);
+	box-shadow: var(--shadow-lg);
+}
+
+.pronunciation-btn:active {
+	transform: scale(0.95);
+}
+
+/* Theme Select Button */
+.theme-select-btn {
+	background: var(--color-primary);
+	color: var(--color-white);
+	border: none;
+	padding: 14px 28px;
+	border-radius: var(--radius-lg);
+	font-size: 1.1rem;
+	font-weight: var(--font-weight-semibold);
+	cursor: pointer;
+	transition: all var(--transition-base);
+	width: 100%;
+	box-shadow: var(--shadow-md);
+	position: relative;
+	overflow: hidden;
+}
+
+.theme-select-btn:hover {
+	transform: translateY(-3px);
+	background: var(--color-primary-dark);
+	box-shadow: var(--shadow-lg);
+}
+
+.theme-select-btn:active {
+	transform: translateY(-1px);
+}

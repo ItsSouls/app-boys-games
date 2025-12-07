@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Herramienta de Edición de Gramática/Vocabulario (Moderador)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#25f46a",
+            "background-light": "#f5f8f6",
+            "background-dark": "#102216",
+          },
+          fontFamily: {
+            "display": ["Lexend", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#dbe6df] dark:border-white/10 px-10 py-3 bg-white dark:bg-background-dark/50 sticky top-0 z-20">
+<div class="flex items-center gap-4 text-[#111813] dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-[#111813] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Español para Niños - Moderador</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-9">
+<a class="text-[#111813] dark:text-white/80 text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary" href="#">Dashboard</a>
+<a class="text-primary dark:text-primary text-sm font-medium leading-normal" href="#">Contenido</a>
+<a class="text-[#111813] dark:text-white/80 text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary" href="#">Alumnos</a>
+<a class="text-[#111813] dark:text-white/80 text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary" href="#">Ajustes</a>
+</div>
+<div class="flex gap-2">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined text-xl">help</span>
+</button>
+</div>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDck98UpqCuMBcFR0gPh9ODwIoH0shXfPsvVdnw4MtlmrFkgDAgCkTF69kZZoCpg82Hp6SzwaREYEUMBekl97gAIiSgxk75ZAB2xfIexoc_lof8LKqA4U0ciSFLenJymIzAMafH-0_tiDzVf-GURZd9m6ekkyQJxkciNisw8W4qbIrvqmtjs-DVSICJjYktUdMfmO6i9twBQ6nCsqDi9CCLPoo9Kiudx0unVKr3hdpOj3UDQwwjpzsNg1dTsnLeFKWQ9uzclisJfKE");'></div>
+</div>
+</header>
+<main class="flex-1 w-full">
+<div class="grid grid-cols-12 gap-8 h-full">
+<!-- Left Panel: SideNavBar -->
+<aside class="col-span-2 border-r border-[#dbe6df] dark:border-white/10 h-full p-6">
+<div class="flex h-full flex-col justify-between">
+<div class="flex flex-col gap-4">
+<div class="flex gap-3 items-center">
+<div class="bg-primary/20 rounded-lg p-2 text-primary">
+<span class="material-symbols-outlined">topic</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-[#111813] dark:text-white text-base font-medium leading-normal">Temáticas</h1>
+<p class="text-[#608a6e] dark:text-white/60 text-sm font-normal leading-normal">Organiza el contenido</p>
+</div>
+</div>
+<div class="flex flex-col gap-2 mt-4">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/20">
+<span class="material-symbols-outlined text-[#111813] dark:text-white fill">directions_run</span>
+<p class="text-[#111813] dark:text-white text-sm font-medium leading-normal">Verbos</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f5f1] dark:hover:bg-white/10 cursor-pointer">
+<span class="material-symbols-outlined text-[#111813] dark:text-white/80">pets</span>
+<p class="text-[#111813] dark:text-white/80 text-sm font-medium leading-normal">Animales</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f5f1] dark:hover:bg-white/10 cursor-pointer">
+<span class="material-symbols-outlined text-[#111813] dark:text-white/80">palette</span>
+<p class="text-[#111813] dark:text-white/80 text-sm font-medium leading-normal">Colores</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f5f1] dark:hover:bg-white/10 cursor-pointer">
+<span class="material-symbols-outlined text-[#111813] dark:text-white/80">family_restroom</span>
+<p class="text-[#111813] dark:text-white/80 text-sm font-medium leading-normal">Familia</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#f0f5f1] dark:hover:bg-white/10 cursor-pointer">
+<span class="material-symbols-outlined text-[#111813] dark:text-white/80">restaurant</span>
+<p class="text-[#111813] dark:text-white/80 text-sm font-medium leading-normal">Comida</p>
+</div>
+</div>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="truncate">Añadir Categoría</span>
+</button>
+</div>
+</aside>
+<!-- Center Panel: Content Listing -->
+<div class="col-span-6 py-6 px-2">
+<div class="flex flex-wrap justify-between gap-3 p-4 items-center">
+<div class="flex min-w-72 flex-col gap-2">
+<p class="text-[#111813] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">Verbos</p>
+<p class="text-[#608a6e] dark:text-white/60 text-base font-normal leading-normal">Gestiona las palabras y reglas en esta categoría.</p>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] gap-2">
+<span class="material-symbols-outlined">add</span>
+<span class="truncate">Añadir Nuevo Elemento</span>
+</button>
+</div>
+<div class="px-4 py-3">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+<div class="text-[#608a6e] dark:text-white/60 flex border-none bg-[#f0f5f1] dark:bg-white/10 items-center justify-center pl-4 rounded-l-lg border-r-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111813] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f5f1] dark:bg-white/10 focus:border-none h-full placeholder:text-[#608a6e] dark:placeholder:text-white/60 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="Buscar por nombre, tipo o etiqueta..." value=""/>
+</div>
+</label>
+</div>
+<div class="px-4 py-3 @container">
+<div class="flex overflow-hidden rounded-xl border border-[#dbe6df] dark:border-white/10 bg-white dark:bg-background-dark/50">
+<table class="flex-1 w-full">
+<thead class="border-b border-[#dbe6df] dark:border-white/10">
+<tr class="bg-white dark:bg-background-dark/50">
+<th class="px-4 py-3 text-left w-12">
+<input class="h-5 w-5 rounded border-[#dbe6df] dark:border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-primary dark:focus:border-primary" type="checkbox"/>
+</th>
+<th class="px-4 py-3 text-left text-[#111813] dark:text-white/80 w-auto text-sm font-medium leading-normal">Contenido</th>
+<th class="px-4 py-3 text-left text-[#111813] dark:text-white/80 w-auto text-sm font-medium leading-normal">Tipo</th>
+<th class="px-4 py-3 text-left text-[#111813] dark:text-white/80 w-auto text-sm font-medium leading-normal">Nivel</th>
+<th class="px-4 py-3 text-left text-[#111813] dark:text-white/80 w-auto text-sm font-medium leading-normal">Estado</th>
+<th class="px-4 py-3 text-left text-[#111813] dark:text-white/80 w-auto text-sm font-medium leading-normal">Acciones</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-t border-[#dbe6df] dark:border-white/10 bg-primary/10 dark:bg-primary/20">
+<td class="h-[72px] px-4 py-2 w-12 text-center">
+<input checked="" class="h-5 w-5 rounded border-[#dbe6df] dark:border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-primary dark:focus:border-primary" type="checkbox"/>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#111813] dark:text-white text-sm font-medium leading-normal">Correr</td>
+<td class="h-[72px] px-4 py-2 text-[#608a6e] dark:text-white/60 text-sm font-normal leading-normal">Verbo</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 text-xs font-medium leading-normal">Principiante</span>
+</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-primary/30 dark:bg-primary/40 text-[#111813] dark:text-white text-xs font-medium leading-normal">Publicado</span>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#111813] dark:text-primary font-medium text-sm leading-normal tracking-[0.015em]">Editar</td>
+</tr>
+<tr class="border-t border-t-[#dbe6df] dark:border-white/10">
+<td class="h-[72px] px-4 py-2 w-12 text-center">
+<input class="h-5 w-5 rounded border-[#dbe6df] dark:border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-primary dark:focus:border-primary" type="checkbox"/>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#111813] dark:text-white text-sm font-normal leading-normal">Comer</td>
+<td class="h-[72px] px-4 py-2 text-[#608a6e] dark:text-white/60 text-sm font-normal leading-normal">Verbo</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 text-xs font-medium leading-normal">Principiante</span>
+</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-primary/30 dark:bg-primary/40 text-[#111813] dark:text-white text-xs font-medium leading-normal">Publicado</span>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#608a6e] dark:text-primary font-medium text-sm leading-normal tracking-[0.015em]">Editar</td>
+</tr>
+<tr class="border-t border-t-[#dbe6df] dark:border-white/10">
+<td class="h-[72px] px-4 py-2 w-12 text-center">
+<input class="h-5 w-5 rounded border-[#dbe6df] dark:border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-primary dark:focus:border-primary" type="checkbox"/>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#111813] dark:text-white text-sm font-normal leading-normal">Hablar</td>
+<td class="h-[72px] px-4 py-2 text-[#608a6e] dark:text-white/60 text-sm font-normal leading-normal">Verbo</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 text-xs font-medium leading-normal">Intermedio</span>
+</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 text-xs font-medium leading-normal">Borrador</span>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#608a6e] dark:text-primary font-medium text-sm leading-normal tracking-[0.015em]">Editar</td>
+</tr>
+<tr class="border-t border-t-[#dbe6df] dark:border-white/10">
+<td class="h-[72px] px-4 py-2 w-12 text-center">
+<input class="h-5 w-5 rounded border-[#dbe6df] dark:border-white/30 border-2 bg-transparent text-primary checked:bg-primary checked:border-primary checked:bg-[image:--checkbox-tick-svg] focus:ring-0 focus:ring-offset-0 focus:border-primary dark:focus:border-primary" type="checkbox"/>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#111813] dark:text-white text-sm font-normal leading-normal">Escribir</td>
+<td class="h-[72px] px-4 py-2 text-[#608a6e] dark:text-white/60 text-sm font-normal leading-normal">Verbo</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 text-xs font-medium leading-normal">Avanzado</span>
+</td>
+<td class="h-[72px] px-4 py-2">
+<span class="flex items-center justify-center overflow-hidden rounded-md h-7 px-3 bg-primary/30 dark:bg-primary/40 text-[#111813] dark:text-white text-xs font-medium leading-normal">Publicado</span>
+</td>
+<td class="h-[72px] px-4 py-2 text-[#608a6e] dark:text-primary font-medium text-sm leading-normal tracking-[0.015em]">Editar</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Panel: Editor -->
+<aside class="col-span-4 bg-white dark:bg-background-dark/50 border-l border-[#dbe6df] dark:border-white/10 h-full p-8">
+<div class="flex flex-col h-full">
+<div class="flex-1 space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-[#111813] dark:text-white">Editando: Correr</h3>
+<button class="flex items-center justify-center size-8 rounded-lg hover:bg-[#f0f5f1] dark:hover:bg-white/10">
+<span class="material-symbols-outlined text-[#608a6e] dark:text-white/60">close</span>
+</button>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-[#111813] dark:text-white/80 mb-1" for="term">Término</label>
+<input class="form-input w-full rounded-lg border-[#dbe6df] dark:border-white/20 bg-transparent dark:text-white placeholder:text-[#608a6e] dark:placeholder:text-white/60 focus:ring-primary focus:border-primary" id="term" type="text" value="Correr"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-[#111813] dark:text-white/80 mb-1" for="translation">Traducción</label>
+<input class="form-input w-full rounded-lg border-[#dbe6df] dark:border-white/20 bg-transparent dark:text-white placeholder:text-[#608a6e] dark:placeholder:text-white/60 focus:ring-primary focus:border-primary" id="translation" type="text" value="To run"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-medium text-[#111813] dark:text-white/80 mb-1" for="content-type">Tipo de Contenido</label>
+<select class="form-select w-full rounded-lg border-[#dbe6df] dark:border-white/20 bg-transparent dark:text-white focus:ring-primary focus:border-primary" id="content-type">
+<option selected="">Verbo</option>
+<option>Sustantivo</option>
+<option>Adjetivo</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium text-[#111813] dark:text-white/80 mb-1" for="difficulty">Nivel de Dificultad</label>
+<select class="form-select w-full rounded-lg border-[#dbe6df] dark:border-white/20 bg-transparent dark:text-white focus:ring-primary focus:border-primary" id="difficulty">
+<option selected="">Principiante</option>
+<option>Intermedio</option>
+<option>Avanzado</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-[#111813] dark:text-white/80 mb-1">Explicación Detallada</label>
+<div class="w-full rounded-lg border border-[#dbe6df] dark:border-white/20 bg-transparent">
+<div class="flex items-center gap-2 p-2 border-b border-[#dbe6df] dark:border-white/20">
+<button class="p-1 rounded hover:bg-[#f0f5f1] dark:hover:bg-white/10 text-[#111813] dark:text-white/80"><span class="material-symbols-outlined text-base">format_bold</span></button>
+<button class="p-1 rounded hover:bg-[#f0f5f1] dark:hover:bg-white/10 text-[#111813] dark:text-white/80"><span class="material-symbols-outlined text-base">format_italic</span></button>
+<button class="p-1 rounded hover:bg-[#f0f5f1] dark:hover:bg-white/10 text-[#111813] dark:text-white/80"><span class="material-symbols-outlined text-base">format_underlined</span></button>
+<button class="p-1 rounded hover:bg-[#f0f5f1] dark:hover:bg-white/10 text-[#111813] dark:text-white/80"><span class="material-symbols-outlined text-base">format_list_bulleted</span></button>
+</div>
+<textarea class="form-textarea w-full min-h-[120px] resize-y bg-transparent border-none focus:ring-0 text-[#111813] dark:text-white placeholder:text-[#608a6e] dark:placeholder:text-white/60" placeholder="Añade ejemplos, conjugaciones, etc."></textarea>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-[#111813] dark:text-white/80 mb-2">Media</label>
+<div class="flex items-center justify-center w-full">
+<label class="flex flex-col items-center justify-center w-full h-32 border-2 border-[#dbe6df] dark:border-white/20 border-dashed rounded-lg cursor-pointer bg-background-light dark:bg-white/5 hover:bg-primary/10 dark:hover:bg-primary/10" for="dropzone-file">
+<div class="flex flex-col items-center justify-center pt-5 pb-6">
+<span class="material-symbols-outlined text-4xl text-[#608a6e] dark:text-white/60">cloud_upload</span>
+<p class="mb-2 text-sm text-[#608a6e] dark:text-white/60"><span class="font-semibold">Click para subir</span> o arrastra y suelta</p>
+<p class="text-xs text-[#608a6e] dark:text-white/60">Imágenes o clips de audio</p>
+</div>
+<input class="hidden" id="dropzone-file" type="file"/>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 mt-8 pt-6 border-t border-[#dbe6df] dark:border-white/10">
+<button class="flex-1 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f0f5f1] dark:bg-white/10 text-[#111813] dark:text-white/80 text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Cancelar</span>
+</button>
+<button class="flex-1 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Guardar Cambios</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</div>
+</body></html>

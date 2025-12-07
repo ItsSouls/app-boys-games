@@ -16,13 +16,15 @@ export function setupAuthControls(options = {}) {
   const { onAuthSuccess } = options;
   const loginBtn = document.getElementById('auth-login');
   const regBtn = document.getElementById('auth-register');
-  const authBox = document.getElementById('auth-box');
+  const headerAuth = document.getElementById('header-auth');
   if (!loginBtn || !regBtn) return;
 
   const hasToken = Boolean(localStorage.getItem('abg_token'));
-  if (authBox) authBox.classList.toggle('hidden', hasToken);
-  loginBtn.classList.toggle('hidden', hasToken);
-  regBtn.classList.toggle('hidden', hasToken);
+
+  // Show/hide auth buttons in header
+  if (headerAuth) {
+    headerAuth.style.display = hasToken ? 'none' : 'flex';
+  }
 
   loginBtn.onclick = () => showLoginModal(onAuthSuccess);
   regBtn.onclick = () => showRegisterModal(onAuthSuccess);
@@ -30,7 +32,26 @@ export function setupAuthControls(options = {}) {
 
 function createAuthModal({ title, helper, fields, submitLabel, onSubmit }) {
   const overlay = document.createElement('div');
-  overlay.className = 'abg-modal-overlay';
+  overlay.style.cssText =
+    'position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:2000;padding:16px;';
+  const modal = document.createElement('div');
+  modal.style.cssText =
+    'background:#fff;border-radius:16px;max-width:420px;width:100%;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,0.15);font-family:inherit;border:1px solid #F0F2F5;';
+  modal.innerHTML = `
+    <h3 style="margin:0 0 8px 0;font-size:1.75rem;font-weight:700;color:#1A1D1F;">Crear cuenta</h3>
+    <p style="margin:0 0 24px 0;color:#6F767E;font-size:0.95rem;">Usuario y contraseña para guardar tus puntos.</p>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <input id="reg-name" placeholder="Nombre" style="padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:1rem;font-family:inherit;transition:all 0.2s;outline:none;" />
+      <input id="reg-username" placeholder="Usuario" style="padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:1rem;font-family:inherit;transition:all 0.2s;outline:none;" />
+      <input id="reg-pass" type="password" placeholder="Contraseña" style="padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:1rem;font-family:inherit;transition:all 0.2s;outline:none;" />
+      <input id="reg-pass2" type="password" placeholder="Repite contraseña" style="padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:1rem;font-family:inherit;transition:all 0.2s;outline:none;" />
+      <div id="reg-error" style="color:#ff6b6b;font-size:0.875rem;min-height:1.2rem;font-weight:500;"></div>
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;">
+        <button id="reg-cancel" style="background:#F0F2F5;color:#1A1D1F;border:none;padding:12px 24px;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;">Cancelar</button>
+        <button id="reg-submit" style="background:#00D97E;color:#1A1D1F;border:none;padding:12px 24px;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;">Crear</button>
+      </div>
+    </div>
+  `;
 
   const modal = document.createElement('div');
   modal.className = 'abg-modal';
@@ -176,17 +197,25 @@ function showRegisterModal(onAuthSuccess) {
 }
 
 function showLoginModal(onAuthSuccess) {
-  createAuthModal({
-    title: 'Entrar',
-    helper: 'Usa tu usuario y contraseña.',
-    fields: loginFields,
-    submitLabel: 'Entrar',
-    onSubmit: async ({ values, setError, close }) => {
-      const { username, password } = values;
-      if (!username || !password) {
-        setError('Completa usuario y contraseña.');
-        return;
-      }
+  const overlay = document.createElement('div');
+  overlay.style.cssText =
+    'position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:2000;padding:16px;';
+  const modal = document.createElement('div');
+  modal.style.cssText =
+    'background:#fff;border-radius:16px;max-width:420px;width:100%;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,0.15);font-family:inherit;border:1px solid #F0F2F5;';
+  modal.innerHTML = `
+    <h3 style="margin:0 0 8px 0;font-size:1.75rem;font-weight:700;color:#1A1D1F;">Entrar</h3>
+    <p style="margin:0 0 24px 0;color:#6F767E;font-size:0.95rem;">Usa tu usuario y contraseña.</p>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <input id="login-username" placeholder="Usuario" style="padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:1rem;font-family:inherit;transition:all 0.2s;outline:none;" />
+      <input id="login-pass" type="password" placeholder="Contraseña" style="padding:12px 16px;border:1px solid #E5E7EB;border-radius:10px;font-size:1rem;font-family:inherit;transition:all 0.2s;outline:none;" />
+      <div id="login-error" style="color:#ff6b6b;font-size:0.875rem;min-height:1.2rem;font-weight:500;"></div>
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:8px;">
+        <button id="login-cancel" style="background:#F0F2F5;color:#1A1D1F;border:none;padding:12px 24px;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;">Cancelar</button>
+        <button id="login-submit" style="background:#00D97E;color:#1A1D1F;border:none;padding:12px 24px;border-radius:10px;font-size:0.95rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.2s;">Entrar</button>
+      </div>
+    </div>
+  `;
 
       try {
         await api.login({ username, password });

@@ -1,0 +1,10 @@
+/**
+ * Header styles - Most styles moved to home.css
+ * This file kept for backward compatibility
+ */
+
+/* Navigation link active state */
+.header-nav-link.active {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}

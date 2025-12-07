@@ -1,25 +1,46 @@
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api').replace(/\/$/, '');
+import { API_BASE } from '../app/config.js';
+import { isImageUrl } from '../utils/validators.js';
+import { escapeHtml, escapeAttribute } from '../utils/sanitize.js';
 
 let cache = [];
+let isAdmin = false;
 
-const isImageUrl = (value) => {
-  if (!value) return false;
-  return /^https?:\/\//i.test(String(value).trim());
-};
+export async function renderVideos(filter = '', forceUserView = false) {
+  // Check if user is admin
+  const token = localStorage.getItem('abg_token');
+  if (token) {
+    try {
+      const { user } = await (await fetch(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })).json();
+      isAdmin = user?.role === 'admin' || user?.role === 'moderator';
+    } catch {
+      isAdmin = false;
+    }
+  }
 
-const escapeHtml = (value) =>
-  String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  // Show/hide admin toggle button
+  const adminToggle = document.getElementById('videos-admin-toggle');
+  if (adminToggle) {
+    adminToggle.style.display = isAdmin ? 'flex' : 'none';
+  }
 
-const escapeAttribute = (value) =>
-  String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;');
+  // Show appropriate view (always start with user view)
+  const userView = document.getElementById('videos-user-view');
+  const adminView = document.getElementById('videos-admin-view');
 
-export async function renderVideos(filter = '') {
+  // Always show user view first, admin can toggle manually
+  if (userView) {
+    adminView?.classList.add('hidden');
+    userView?.classList.remove('hidden');
+    await renderUserView(filter);
+  }
+
+  // Wire view toggle buttons
+  wireViewToggles();
+}
+
+async function renderUserView(filter = '') {
   const videosGrid = document.getElementById('videos-grid');
   const searchInput = document.getElementById('videos-search');
   if (!videosGrid) return;
@@ -36,6 +57,7 @@ export async function renderVideos(filter = '') {
           description: v.description,
           embedUrl: v.embedUrl,
           emoji: v.emoji,
+          category: v.category || 'General',
         }));
       } else {
         cache = [];
@@ -49,8 +71,7 @@ export async function renderVideos(filter = '') {
   const list = term ? cache.filter((video) => video.title.toLowerCase().includes(term)) : cache;
 
   if (!list.length) {
-    const hint = localStorage.getItem('abg_token') ? 'Usa la rueda para agregar nuevo contenido.' : '';
-    videosGrid.innerHTML = `<div style="padding:20px;color:#666;">No hay videos disponibles. ${hint}</div>`;
+    videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos disponibles</div>`;
   } else {
     videosGrid.innerHTML = list
       .map(
@@ -74,8 +95,8 @@ export async function renderVideos(filter = '') {
               ${thumbnailMarkup}
             </div>
             <div class="video-info">
-              <h4 class="video-title">${video.title}</h4>
-              <p class="video-description">${video.description || ''}</p>
+              <h3 class="video-title">${escapeHtml(video.title)}</h3>
+              <span class="video-category">${escapeHtml(video.category)}</span>
             </div>
           </div>
         `;
@@ -86,7 +107,101 @@ export async function renderVideos(filter = '') {
 
   ensureGridListeners(videosGrid);
   wireSearchInput(searchInput);
-  console.log(`[videos] ${list.length} videos renderizados`);
+  wireFilterButtons();
+  console.log(`[videos] ${list.length} videos renderizados en vista usuario`);
+}
+
+async function renderAdminView(filter = '') {
+  const adminList = document.getElementById('videos-admin-list');
+  const searchInput = document.getElementById('videos-admin-search');
+  if (!adminList) return;
+
+  const shouldReload = !cache.length || !filter;
+  if (shouldReload) {
+    try {
+      const token = localStorage.getItem('abg_token');
+      const res = await fetch(`${API_BASE}/public/videos`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      if (res.ok) {
+        const data = await res.json();
+        cache = (data?.videos || []).map((v) => ({
+          id: v._id,
+          title: v.title,
+          description: v.description,
+          embedUrl: v.embedUrl,
+          emoji: v.emoji,
+          category: v.category || 'General',
+          status: v.status || 'published',
+        }));
+      } else {
+        cache = [];
+      }
+    } catch {
+      cache = [];
+    }
+  }
+
+  const term = (filter || '').toString().trim().toLowerCase();
+  const list = term ? cache.filter((video) => video.title.toLowerCase().includes(term)) : cache;
+
+  if (!list.length) {
+    adminList.innerHTML = `<tr><td colspan="4" style="padding:40px;text-align:center;color:var(--color-text-muted);">No hay videos disponibles</td></tr>`;
+  } else {
+    adminList.innerHTML = list
+      .map((video) => {
+        const rawMedia = typeof video.emoji === 'string' ? video.emoji.trim() : '';
+        const normalizedMedia = rawMedia || '🎬';
+        const isMediaImage = isImageUrl(rawMedia);
+        const thumbnailMarkup = isMediaImage
+          ? `<img src="${escapeAttribute(rawMedia)}" alt="" loading="lazy" />`
+          : `<span>${escapeHtml(normalizedMedia)}</span>`;
+
+        const statusClass = video.status === 'published' ? 'published' : 'draft';
+        const statusText = video.status === 'published' ? 'Publicado' : 'Borrador';
+
+        return `
+          <tr>
+            <td>
+              <div class="admin-video-cell">
+                <div class="admin-video-thumb">
+                  ${thumbnailMarkup}
+                </div>
+                <div class="admin-video-info">
+                  <p class="admin-video-title">${escapeHtml(video.title)}</p>
+                  <p class="admin-video-desc">${escapeHtml(video.description || '')}</p>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="admin-category-badge">${escapeHtml(video.category)}</span>
+            </td>
+            <td>
+              <span class="admin-status-badge ${statusClass}">${statusText}</span>
+            </td>
+            <td>
+              <div class="admin-actions">
+                <button class="admin-action-btn edit" data-video-id="${video.id}" title="Editar">
+                  <svg viewBox="0 0 18 18" fill="none">
+                    <path d="M13 3L15 5L6 14H4V12L13 3Z" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
+                <button class="admin-action-btn delete" data-video-id="${video.id}" title="Eliminar">
+                  <svg viewBox="0 0 18 18" fill="none">
+                    <path d="M4 5H14M7 8V12M11 8V12M5 5L6 15H12L13 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      })
+      .join('');
+  }
+
+  wireAdminSearchInput(searchInput);
+  wireAdminActions();
+  console.log(`[videos] ${list.length} videos renderizados en vista admin`);
 }
 
 function ensureGridListeners(videosGrid) {
@@ -109,8 +224,189 @@ function wireSearchInput(searchInput) {
   if (!searchInput || searchInput.__wired) return;
   searchInput.__wired = true;
   searchInput.addEventListener('input', (event) => {
-    renderVideos(event.target.value);
+    renderUserView(event.target.value);
   });
+}
+
+function wireAdminSearchInput(searchInput) {
+  if (!searchInput || searchInput.__wired) return;
+  searchInput.__wired = true;
+  searchInput.addEventListener('input', (event) => {
+    renderAdminView(event.target.value);
+  });
+}
+
+function wireFilterButtons() {
+  // Get unique categories from cache
+  const uniqueCategories = [...new Set(cache.map(v => v.category))].sort();
+
+  // Populate categories dropdown
+  const dropdownMenu = document.getElementById('categories-dropdown-menu');
+  const dropdownText = document.getElementById('categories-dropdown-text');
+  const dropdown = document.getElementById('categories-dropdown');
+
+  if (dropdownMenu && uniqueCategories.length > 0) {
+    // Add "All" option
+    let menuHTML = `<button class="category-item active" data-category="">Todas las categorías</button>`;
+
+    // Add each category
+    uniqueCategories.forEach(category => {
+      menuHTML += `<button class="category-item" data-category="${escapeAttribute(category)}">${escapeHtml(category)}</button>`;
+    });
+
+    dropdownMenu.innerHTML = menuHTML;
+
+    // Wire dropdown toggle
+    if (dropdown && !dropdown.__wired) {
+      dropdown.__wired = true;
+      dropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('active');
+        dropdownMenu.classList.toggle('hidden');
+      });
+    }
+
+    // Wire category items
+    const categoryItems = dropdownMenu.querySelectorAll('.category-item');
+    categoryItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const category = item.dataset.category;
+
+        // Update active state
+        categoryItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+
+        // Update dropdown text
+        if (dropdownText) {
+          dropdownText.textContent = category || 'Todas las categorías';
+        }
+
+        // Close dropdown
+        dropdown.classList.remove('active');
+        dropdownMenu.classList.add('hidden');
+
+        // Filter videos
+        filterVideosByCategory(category);
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!dropdown.contains(e.target)) {
+        dropdown.classList.remove('active');
+        dropdownMenu.classList.add('hidden');
+      }
+    });
+  }
+}
+
+function filterVideosByCategory(category) {
+  const filtered = category ? cache.filter(v => v.category === category) : cache;
+  const videosGrid = document.getElementById('videos-grid');
+
+  if (videosGrid) {
+    if (filtered.length === 0) {
+      videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos en esta categoría</div>`;
+    } else {
+      videosGrid.innerHTML = filtered
+        .map(video => {
+          const rawMedia = typeof video.emoji === 'string' ? video.emoji.trim() : '';
+          const normalizedMedia = rawMedia || '🎬';
+          const mediaAttr = escapeAttribute(rawMedia || normalizedMedia);
+          const isMediaImage = isImageUrl(rawMedia);
+          const thumbnailMarkup = isMediaImage
+            ? `<img class="video-thumbnail__image" src="${escapeAttribute(rawMedia)}" alt="" loading="lazy" />`
+            : `<span class="video-thumbnail__emoji">${escapeHtml(normalizedMedia)}</span>`;
+          return `
+            <div class="video-card"
+                 data-video="${video.id || ''}"
+                 data-title="${(video.title || '').replace(/"/g, '&quot;')}"
+                 data-description="${(video.description || '').replace(/"/g, '&quot;')}"
+                 data-embed="${(video.embedUrl || '').replace(/"/g, '&quot;')}"
+                 data-emoji="${mediaAttr}">
+              <div class="video-thumbnail" aria-hidden="true">
+                ${thumbnailMarkup}
+              </div>
+              <div class="video-info">
+                <h3 class="video-title">${escapeHtml(video.title)}</h3>
+                <span class="video-category">${escapeHtml(video.category)}</span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    // Re-wire grid listeners after updating content
+    ensureGridListeners(videosGrid);
+  }
+}
+
+function wireViewToggles() {
+  // Wire admin toggle (user view -> admin view)
+  const adminToggle = document.getElementById('videos-admin-toggle');
+  if (adminToggle && !adminToggle.__wired) {
+    adminToggle.__wired = true;
+    adminToggle.addEventListener('click', () => {
+      const userView = document.getElementById('videos-user-view');
+      const adminView = document.getElementById('videos-admin-view');
+      userView?.classList.add('hidden');
+      adminView?.classList.remove('hidden');
+      renderAdminView('');
+    });
+  }
+
+  // Wire user toggle (admin view -> user view)
+  const userToggle = document.getElementById('videos-user-toggle');
+  if (userToggle && !userToggle.__wired) {
+    userToggle.__wired = true;
+    userToggle.addEventListener('click', () => {
+      const userView = document.getElementById('videos-user-view');
+      const adminView = document.getElementById('videos-admin-view');
+      adminView?.classList.add('hidden');
+      userView?.classList.remove('hidden');
+      renderUserView('');
+    });
+  }
+}
+
+function wireAdminActions() {
+  // Wire edit buttons
+  const editButtons = document.querySelectorAll('.admin-action-btn.edit');
+  editButtons.forEach(btn => {
+    if (btn.__wired) return;
+    btn.__wired = true;
+    btn.addEventListener('click', () => {
+      const videoId = btn.dataset.videoId;
+      console.log('[videos] Editar video:', videoId);
+      // TODO: Open edit modal
+    });
+  });
+
+  // Wire delete buttons
+  const deleteButtons = document.querySelectorAll('.admin-action-btn.delete');
+  deleteButtons.forEach(btn => {
+    if (btn.__wired) return;
+    btn.__wired = true;
+    btn.addEventListener('click', async () => {
+      const videoId = btn.dataset.videoId;
+      if (confirm('¿Estás seguro de que quieres eliminar este video?')) {
+        console.log('[videos] Eliminar video:', videoId);
+        // TODO: Implement delete functionality
+      }
+    });
+  });
+
+  // Wire add button
+  const addBtn = document.getElementById('videos-admin-add');
+  if (addBtn && !addBtn.__wired) {
+    addBtn.__wired = true;
+    addBtn.addEventListener('click', () => {
+      console.log('[videos] Añadir nuevo video');
+      // TODO: Open add video modal
+    });
+  }
 }
 
 export function openVideoModal(video) {

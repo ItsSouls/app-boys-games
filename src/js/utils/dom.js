@@ -1,47 +1,49 @@
-// Utilidades DOM para manipular elementos
+/**
+ * DOM manipulation utilities
+ * @module utils/dom
+ */
+
+/**
+ * Hide all main sections of the app
+ */
 export function hideAllSections() {
-  const sections = [
-    '.welcome-section',
-    '#main-menu',
-    '#videos-section',
-    '#vocabulary-section',
-  '#game-container',
-  '#vocab-theory-section',
-  '#grammar-section'
-  ];
-  
-  sections.forEach(selector => {
-    const element = document.querySelector(selector);
-    if (element) {
-      element.classList.add('hidden');
-    }
-  });
+	const sections = [
+		'.welcome-section',
+		'#main-menu',
+		'#videos-section',
+		'#vocabulary-section',
+		'#game-container',
+		'#vocabulario-section',
+		'#gramatica-section'
+	];
+
+	sections.forEach(selector => {
+		const element = document.querySelector(selector);
+		if (element) {
+			element.classList.add('hidden');
+		}
+	});
 }
 
+/**
+ * Show an element by removing the 'hidden' class
+ * @param {string} selector - CSS selector
+ */
 export function showElement(selector) {
-  const element = document.querySelector(selector);
-  if (element) {
-    element.classList.remove('hidden');
-  }
+	const element = document.querySelector(selector);
+	if (element) {
+		element.classList.remove('hidden');
+	}
 }
 
-export function hideElement(selector) {
-  const element = document.querySelector(selector);
-  if (element) {
-    element.classList.add('hidden');
-  }
-}
-
-export function createElement(tag, className, content) {
-  const element = document.createElement(tag);
-  if (className) element.className = className;
-  if (content) element.innerHTML = content;
-  return element;
-}
-
+/**
+ * Update the text content of an element
+ * @param {string} selector - CSS selector
+ * @param {string} text - Text content to set
+ */
 export function updateElementText(selector, text) {
-  const element = document.querySelector(selector);
-  if (element) {
-    element.textContent = text;
-  }
+	const element = document.querySelector(selector);
+	if (element) {
+		element.textContent = text;
+	}
 }

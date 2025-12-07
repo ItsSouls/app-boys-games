@@ -2,129 +2,146 @@
 .games-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-  margin-bottom: 50px;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
+  animation: fadeIn 0.6s ease-out;
 }
 
 /* Main Menu */
 .main-menu {
-  margin-bottom: 50px;
+  margin-bottom: var(--spacing-8);
 }
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 40px;
-  margin-bottom: 50px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
 }
 
+/* Menu Card - Clean Minimalist Design */
 .menu-card {
-  background: var(--surface-elevated);
+  background: var(--color-white);
   text-align: center;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-}
-
-.menu-card {
-  border-radius: 25px;
-  padding: 40px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  border: 3px solid transparent;
-}
-
-.menu-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: var(--sheen-highlight);
-  transition: left 0.6s;
-}
-
-.menu-card:hover::before {
-  left: 100%;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-6);
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border-light);
 }
 
 .menu-card:hover {
-  transform: translateY(-15px) scale(1.03);
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-card-hover);
   border-color: var(--color-primary);
+}
+
+/* Keep content above overlays */
+.menu-card > * {
+  position: relative;
+  z-index: 2;
 }
 
 .menu-icon {
   font-size: 5rem;
-  margin-bottom: 25px;
+  margin-bottom: var(--spacing-3);
   display: block;
   animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
 
 /* Image icon for menu cards */
 .menu-icon-img {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
-  margin: 0 auto 25px auto;
+  margin: 0 auto var(--spacing-3) auto;
   display: block;
-  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+  filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.2));
   animation: float 3s ease-in-out infinite;
+  transition: transform var(--transition-slow);
+}
+
+.menu-card:hover .menu-icon-img {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .menu-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 15px;
-  color: var(--color-text);
+  font-size: clamp(1.5rem, 3vw, 1.8rem);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-2);
+  color: var(--color-text-primary);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  transition: color var(--transition-base);
+}
+
+.menu-card:hover .menu-title {
+  color: var(--color-primary);
 }
 
 .menu-description {
-  font-size: 1.2rem;
-  color: var(--color-muted);
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: var(--color-text-secondary);
   line-height: 1.6;
+  font-weight: var(--font-weight-regular);
 }
 
 /* Theory sections */
 .theory-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-4);
+  animation: fadeIn 0.6s ease-out;
 }
 
 .theory-card {
-  background: var(--surface-elevated);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-3);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.theory-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--color-primary);
 }
 
 .theory-loading,
 .theory-empty,
 .theory-error {
-  padding: 16px;
+  padding: var(--spacing-3);
   text-align: center;
-  font-weight: 600;
-  border-radius: 16px;
-  margin-bottom: 24px;
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-4);
+  border: 1px solid;
 }
 
 .theory-loading {
-  background: rgba(255, 255, 255, 0.85);
-  color: var(--color-muted);
+  background: var(--color-white);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border-medium);
 }
 
 .theory-empty {
-  background: rgba(78, 205, 196, 0.12);
-  color: var(--color-secondary);
+  background: var(--color-category-bg);
+  color: var(--color-category-text);
+  border-color: var(--color-primary-light);
 }
 
 .theory-error {
-  background: rgba(231, 76, 60, 0.12);
-  color: #c0392b;
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--color-error);
+  border-color: rgba(255, 107, 107, 0.3);
 }
 
 .theory-card--rich {
@@ -223,8 +240,8 @@
 }
 
 .theory-card__resources {
-  background: linear-gradient(135deg, rgba(78, 205, 196, 0.14), rgba(102, 126, 234, 0.14));
-  border-left: 4px solid var(--color-secondary);
+  background: var(--color-category-bg);
+  border-left: 4px solid var(--color-primary);
   padding: 14px 18px;
   border-radius: 16px;
 }
@@ -232,7 +249,7 @@
 .theory-card__resources h5 {
   margin: 0 0 8px;
   font-size: 1rem;
-  color: var(--color-secondary);
+  color: var(--color-category-text);
 }
 
 .theory-card__resources ul {
@@ -280,109 +297,35 @@
 
 .theory-card__open {
   border: none;
-  background: var(--color-secondary);
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-white);
   padding: 8px 16px;
   border-radius: 20px;
   cursor: pointer;
   font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .theory-card__open:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(78, 205, 196, 0.25);
+  transform: translateY(-2px);
+  background: var(--color-primary-dark);
+  box-shadow: var(--shadow-md);
 }
 
 .theory-card__index {
-  background: var(--color-secondary);
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-white);
   padding: 4px 12px;
   border-radius: 999px;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
-/* Videos Grid */
-.videos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 30px;
-  margin-bottom: 50px;
-}
-
-.videos-search {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.video-card,
+/* Game Container - Clean Minimalist Design */
 .game-container {
-  background: var(--surface-elevated);
-  border-radius: 20px;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-}
-
-.video-card {
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-}
-
-.video-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-card-hover);
-}
-
-.video-thumbnail {
-  width: 100%;
-  height: 200px;
-  background: var(--gradient-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.video-thumbnail__image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.video-thumbnail__emoji {
-  font-size: clamp(2.5rem, 7vw, 3.8rem);
-  line-height: 1;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
-}
-
-.video-info {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  text-align: center;
-}
-.video-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--color-text);
-}
-
-.video-description {
-  font-size: 1rem;
-  color: var(--color-muted);
-  line-height: 1.4;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  border: 1px solid var(--color-border-light);
 }
 

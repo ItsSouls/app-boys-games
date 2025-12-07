@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestión de Videos (Moderador)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#25f46a",
+            "background-light": "#f5f8f6",
+            "background-dark": "#102216",
+          },
+          fontFamily: {
+            "display": ["Lexend", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root">
+<div class="layout-container flex h-full grow flex-col">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200/80 dark:border-slate-800/80 px-4 sm:px-6 md:px-8 py-3 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm sticky top-0 z-10">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_6_543)">
+<path d="M42.1739 20.1739L27.8261 5.82609C29.1366 7.13663 28.3989 10.1876 26.2002 13.7654C24.8538 15.9564 22.9595 18.3449 20.6522 20.6522C18.3449 22.9595 15.9564 24.8538 13.7654 26.2002C10.1876 28.3989 7.13663 29.1366 5.82609 27.8261L20.1739 42.1739C21.4845 43.4845 24.5355 42.7467 28.1133 40.548C30.3042 39.2016 32.6927 37.3073 35 35C37.3073 32.6927 39.2016 30.3042 40.548 28.1133C42.7467 24.5355 43.4845 21.4845 42.1739 20.1739Z" fill="currentColor"></path>
+<path clip-rule="evenodd" d="M7.24189 26.4066C7.31369 26.4411 7.64204 26.5637 8.52504 26.3738C9.59462 26.1438 11.0343 25.5311 12.7183 24.4963C14.7583 23.2426 17.0256 21.4503 19.238 19.238C21.4503 17.0256 23.2426 14.7583 24.4963 12.7183C25.5311 11.0343 26.1438 9.59463 26.3738 8.52504C26.5637 7.64204 26.4411 7.31369 26.4066 7.24189C26.345 7.21246 26.143 7.14535 25.6664 7.1918C24.9745 7.25925 23.9954 7.5498 22.7699 8.14278C20.3369 9.32007 17.3369 11.4915 14.4142 14.4142C11.4915 17.3369 9.32007 20.3369 8.14278 22.7699C7.5498 23.9954 7.25925 24.9745 7.1918 25.6664C7.14534 26.143 7.21246 26.345 7.24189 26.4066ZM29.9001 10.7285C29.4519 12.0322 28.7617 13.4172 27.9042 14.8126C26.465 17.1544 24.4686 19.6641 22.0664 22.0664C19.6641 24.4686 17.1544 26.465 14.8126 27.9042C13.4172 28.7617 12.0322 29.4519 10.7285 29.9001L21.5754 40.747C21.6001 40.7606 21.8995 40.931 22.8729 40.7217C23.9424 40.4916 25.3821 39.879 27.0661 38.8441C29.1062 37.5904 31.3734 35.7982 33.5858 33.5858C35.7982 31.3734 37.5904 29.1062 38.8441 27.0661C39.879 25.3821 40.4916 23.9425 40.7216 22.8729C40.931 21.8995 40.7606 21.6001 40.747 21.5754L29.9001 10.7285ZM29.2403 4.41187L43.5881 18.7597C44.9757 20.1473 44.9743 22.1235 44.6322 23.7139C44.2714 25.3919 43.4158 27.2666 42.252 29.1604C40.8128 31.5022 38.8165 34.012 36.4142 36.4142C34.012 38.8165 31.5022 40.8128 29.1604 42.252C27.2666 43.4158 25.3919 44.2714 23.7139 44.6322C22.1235 44.9743 20.1473 44.9757 18.7597 43.5881L4.41187 29.2403C3.29027 28.1187 3.08209 26.5973 3.21067 25.2783C3.34099 23.9415 3.8369 22.4852 4.54214 21.0277C5.96129 18.0948 8.43335 14.7382 11.5858 11.5858C14.7382 8.43335 18.0948 5.9613 21.0277 4.54214C22.4852 3.8369 23.9415 3.34099 25.2783 3.21067C26.5973 3.08209 28.1187 3.29028 29.2403 4.41187Z" fill="currentColor" fill-rule="evenodd"></path>
+</g>
+<defs>
+<clippath id="clip0_6_543">
+<rect fill="white" height="48" width="48"></rect>
+</clippath>
+</defs>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">App Didáctica</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 sm:gap-6 md:gap-8">
+<nav class="hidden sm:flex items-center gap-6 md:gap-9">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal" href="#">Dashboard</a>
+<a class="text-primary text-sm font-bold leading-normal border-b-2 border-primary pb-1" href="#">Videos</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal" href="#">Usuarios</a>
+</nav>
+<div class="flex items-center gap-2">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-background-light dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-2xl">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Moderator profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACXyAPEMivYjmyGbDnaHIbF0giNQZ68dFr07jSEY5pjgFcJIxpChO4-CmYf3H2gcaVJvqrFy255a2bbOITO5tqWdktnuKJU5ewzdUYoxKimmUImX_6cM7xGj8rgQFir3l247p26WclZWU0r-Men4r4b_sqNhduFxlWsOh_VMDI1fVE2VAfIdRY1KhmqdVH6B4YDal_JJPamAruTopwsE-ru2A2Ah8UVyE5lzoWtdV4GwVwhRoI9ko0erBiaxsASP4OPg16vW0ZzNM");'></div>
+</div>
+</div>
+</header>
+<main class="flex-1 px-4 sm:px-6 md:px-8 py-8 lg:py-10">
+<div class="layout-content-container flex flex-col max-w-7xl mx-auto flex-1 gap-8">
+<!-- PageHeading -->
+<div class="flex flex-wrap justify-between items-center gap-4">
+<div class="flex min-w-72 flex-col gap-2">
+<p class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Gestión de Videos</p>
+<p class="text-slate-500 dark:text-slate-400 text-base font-normal leading-normal">Añade, edita o elimina videos de la biblioteca.</p>
+</div>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-primary text-slate-900 text-sm font-bold leading-normal tracking-[0.015em] gap-2 shadow-sm hover:brightness-110 active:scale-95 transition-all duration-150">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="truncate">Añadir Nuevo Video</span>
+</button>
+</div>
+<div class="flex flex-col gap-4">
+<!-- ToolBar -->
+<div class="flex justify-between items-center gap-2 p-2 rounded-xl bg-white dark:bg-background-dark/50 border border-slate-200/80 dark:border-slate-800/80">
+<div class="flex items-center gap-2 flex-1">
+<button class="p-2.5 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined">search</span>
+</button>
+<input class="flex-1 bg-transparent border-0 p-0 focus:ring-0 text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500" placeholder="Buscar video por título..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-2 p-2.5 rounded-lg text-slate-600 dark:text-slate-300 bg-background-light dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+<span class="material-symbols-outlined text-xl">filter_list</span>
+<span class="text-sm font-medium hidden sm:inline">Filtrar</span>
+</button>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto @container">
+<div class="flex overflow-hidden rounded-xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-background-dark/50">
+<table class="w-full text-left">
+<thead class="bg-background-light dark:bg-slate-800/50">
+<tr class="border-b border-b-slate-200/80 dark:border-b-slate-800/80">
+<th class="px-4 py-3 text-left text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal w-[45%]">Video</th>
+<th class="px-4 py-3 text-left text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal w-[20%]">Categoría</th>
+<th class="px-4 py-3 text-left text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal w-[15%]">Estado</th>
+<th class="px-4 py-3 text-left text-slate-600 dark:text-slate-300 text-sm font-medium leading-normal w-[20%] text-right">Acciones</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-t border-t-slate-200/80 dark:border-t-slate-800/80">
+<td class="px-4 py-2">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-video bg-cover rounded w-24 h-14" data-alt="Thumbnail of a video about colors" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAE6YyfYw15atsnUWmJpbKk9VyBdFOoCvE5j1Hv12Sw840e7JI_Dr43Uqn0DFx_qWnYre9FJs6182dIuPXRGn-wmfMNTDBa0kiIC88dOOrP67SDkG7WLBCKMQo46wpL1YMnQPGnVE6wle_75j3YKx5gF4QDWaBpL5S3I-_CGdEGCI37p0Stx77rpcDSZXykvOx2oVpK8nsWOZfiB38Afoejh_Von05SH-d_ca5Bmit5TosFZVK77BIYnT23yc87rmpCjMZA_zWKq28");'></div>
+<div class="flex flex-col">
+<p class="font-semibold text-slate-800 dark:text-slate-100">Los Colores Primarios</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal truncate max-w-xs">Un video divertido sobre los colores primarios y secundarios.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="inline-flex items-center justify-center rounded-full py-1 px-3 bg-primary/20 text-slate-800 dark:text-primary-100 text-xs font-medium">
+                          Colores
+                        </div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="flex items-center gap-2">
+<span class="inline-block size-2 rounded-full bg-green-500"></span>
+<span class="text-slate-600 dark:text-slate-300">Publicado</span>
+</div>
+</td>
+<td class="px-4 py-2 text-right">
+<button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-background-light dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined">edit</span></button>
+<button class="p-2 rounded-lg text-red-500 hover:bg-red-500/10 dark:hover:bg-red-500/20 transition-colors"><span class="material-symbols-outlined">delete</span></button>
+</td>
+</tr>
+<tr class="border-t border-t-slate-200/80 dark:border-t-slate-800/80">
+<td class="px-4 py-2">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-video bg-cover rounded w-24 h-14" data-alt="Thumbnail of a video about farm animals" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBl39x4G4YFj8zEOfbCucRVwRyzmzZBP8W7ankZDGTWF91xLpWmaLh04in6673n_DYw0DjzweR78KPz9HwME5mZAGYVCK7eJxcoEVi7ApAZHiy6Fx_-SF5nkt1RmU8lssTHVTSFuOhdaplU-1UwQV1G6f7tgURPWjunJazmjvT4XqTiyxYf6RYh7O1B_DMS30-FMOyNnf-qnVOuW-tGV3Qa3j1_M5KNfE4ONuLMja4whbbwKULH79rwZAkEkNG1tjzbDfYMwFUcEEk");'></div>
+<div class="flex flex-col">
+<p class="font-semibold text-slate-800 dark:text-slate-100">Sonidos de la Granja</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal truncate max-w-xs">Conoce los sonidos que hacen los animales de la granja.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="inline-flex items-center justify-center rounded-full py-1 px-3 bg-primary/20 text-slate-800 dark:text-primary-100 text-xs font-medium">
+                          Animales
+                        </div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="flex items-center gap-2">
+<span class="inline-block size-2 rounded-full bg-green-500"></span>
+<span class="text-slate-600 dark:text-slate-300">Publicado</span>
+</div>
+</td>
+<td class="px-4 py-2 text-right">
+<button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-background-light dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined">edit</span></button>
+<button class="p-2 rounded-lg text-red-500 hover:bg-red-500/10 dark:hover:bg-red-500/20 transition-colors"><span class="material-symbols-outlined">delete</span></button>
+</td>
+</tr>
+<tr class="border-t border-t-slate-200/80 dark:border-t-slate-800/80">
+<td class="px-4 py-2">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-video bg-cover rounded w-24 h-14" data-alt="Thumbnail of a video about counting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDWAiFyTEs9PG33SoarCIWmBAl5ARD23BQ4Oyah40tUBXBhRkWqBXxZ9SBCsUOalqd7LM1BrAkklD62yFJ7GzfYkk-BiFGT30DVcfkfqKypKHb8OIzNczSlDIlfQhwDwBsy2gPtV8HXxIjn0kFG9TB1_0e0eOb9mRY2mAn3du_xzbGQtI38lDdE8MAI9RrYK0xcuEldLpPWphCMFnbvLou-62elEtqGgCvfazVwpOL3oI0NATtnyXGUgXSaZqWpM1y4F2Y7y4mDuvw");'></div>
+<div class="flex flex-col">
+<p class="font-semibold text-slate-800 dark:text-slate-100">Contando del 1 al 10</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal truncate max-w-xs">Canta y aprende a contar del 1 al 10.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="inline-flex items-center justify-center rounded-full py-1 px-3 bg-primary/20 text-slate-800 dark:text-primary-100 text-xs font-medium">
+                          Canciones
+                        </div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="flex items-center gap-2">
+<span class="inline-block size-2 rounded-full bg-slate-400"></span>
+<span class="text-slate-600 dark:text-slate-300">Borrador</span>
+</div>
+</td>
+<td class="px-4 py-2 text-right">
+<button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-background-light dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined">edit</span></button>
+<button class="p-2 rounded-lg text-red-500 hover:bg-red-500/10 dark:hover:bg-red-500/20 transition-colors"><span class="material-symbols-outlined">delete</span></button>
+</td>
+</tr>
+<tr class="border-t border-t-slate-200/80 dark:border-t-slate-800/80">
+<td class="px-4 py-2">
+<div class="flex items-center gap-4">
+<div class="bg-center bg-no-repeat aspect-video bg-cover rounded w-24 h-14" data-alt="Thumbnail of a video about seasons" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCQAySSQvFy1RWmGmCrSBabU5e5hNsiwZF75aM6FJXc0bbZ3A9a0RQUSJpilm36ruq4hqdfbvvGDuEUj0x9_5FQT7_QfxvSynO193u4mNev1RlBu2o6ssY6fdRCx8EOLc8oQ-CVJXSGgj7d06Z0UpFtRquzcWbVlMWcRtvjttrJW-aJuWWjjGv2MQ91gmVhUJ9mZQer-aGI7rU73kFuQAkSS5L-RQrauMykblpwIiBHxF9JXBFSNWUSK0Qt1YIzo9ql4P9Y-KhEDyk");'></div>
+<div class="flex flex-col">
+<p class="font-semibold text-slate-800 dark:text-slate-100">Las Estaciones del Año</p>
+<p class="text-slate-500 dark:text-slate-400 text-sm font-normal leading-normal truncate max-w-xs">Explora cómo cambia el clima en primavera, verano, otoño e invierno.</p>
+</div>
+</div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="inline-flex items-center justify-center rounded-full py-1 px-3 bg-primary/20 text-slate-800 dark:text-primary-100 text-xs font-medium">
+                          Naturaleza
+                        </div>
+</td>
+<td class="px-4 py-2 text-sm font-normal leading-normal">
+<div class="flex items-center gap-2">
+<span class="inline-block size-2 rounded-full bg-green-500"></span>
+<span class="text-slate-600 dark:text-slate-300">Publicado</span>
+</div>
+</td>
+<td class="px-4 py-2 text-right">
+<button class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-background-light dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined">edit</span></button>
+<button class="p-2 rounded-lg text-red-500 hover:bg-red-500/10 dark:hover:bg-red-500/20 transition-colors"><span class="material-symbols-outlined">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Pagination -->
+<div class="flex items-center justify-center p-4">
+<a class="flex size-10 items-center justify-center text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary" href="#">
+<span class="material-symbols-outlined">chevron_left</span>
+</a>
+<a class="text-sm font-bold leading-normal tracking-[0.015em] flex size-10 items-center justify-center text-slate-900 bg-primary rounded-full" href="#">1</a>
+<a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-slate-600 dark:text-slate-300 rounded-full hover:bg-primary/20 dark:hover:bg-primary/20" href="#">2</a>
+<a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-slate-600 dark:text-slate-300 rounded-full hover:bg-primary/20 dark:hover:bg-primary/20" href="#">3</a>
+<span class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-slate-500 dark:text-slate-400 rounded-full">...</span>
+<a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-slate-600 dark:text-slate-300 rounded-full hover:bg-primary/20 dark:hover:bg-primary/20" href="#">8</a>
+<a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-slate-600 dark:text-slate-300 rounded-full hover:bg-primary/20 dark:hover:bg-primary/20" href="#">9</a>
+<a class="text-sm font-normal leading-normal flex size-10 items-center justify-center text-slate-600 dark:text-slate-300 rounded-full hover:bg-primary/20 dark:hover:bg-primary/20" href="#">10</a>
+<a class="flex size-10 items-center justify-center text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary" href="#">
+<span class="material-symbols-outlined">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

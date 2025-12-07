@@ -3,27 +3,27 @@ import { ensureThemesLoaded } from '../services/themes.js';
 import { renderTheory } from './theory.js';
 import { logThemeWarning } from './themes.js';
 
-const SECTION_SELECTORS = [
-  '.welcome-section',
-  '#main-menu',
-  '#videos-section',
-  '#vocabulary-section',
-  '#vocabulario-section',
-  '#gramatica-section',
+const PAGE_SELECTORS = [
+  '#home-page',
+  '#videos-page',
+  '#games-page',
+  '#vocabulario-page',
+  '#gramatica-page',
   '#game-container',
 ];
 
 export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear }) {
-  const hideAllSections = () => {
-    SECTION_SELECTORS.forEach((selector) => {
+  const hideAllPages = () => {
+    PAGE_SELECTORS.forEach((selector) => {
       document.querySelector(selector)?.classList.add('hidden');
     });
   };
 
+  const hideAllSections = hideAllPages;
+
   const showMainMenu = async () => {
-    hideAllSections();
-    document.querySelector('.welcome-section')?.classList.remove('hidden');
-    document.querySelector('#main-menu')?.classList.remove('hidden');
+    hideAllPages();
+    document.querySelector('#home-page')?.classList.remove('hidden');
     if (typeof refreshUserGreeting === 'function') {
       await refreshUserGreeting();
     }
@@ -31,15 +31,29 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
   };
 
   const showSection = async (sectionName) => {
-    hideAllSections();
-    const section = document.querySelector(`#${sectionName}-section`);
-    if (!section) return;
-    section.classList.remove('hidden');
+    hideAllPages();
+
+    // Map section names to page IDs
+    const pageMap = {
+      'videos': 'videos-page',
+      'games': 'games-page',
+      'vocabulario': 'vocabulario-page',
+      'gramatica': 'gramatica-page',
+    };
+
+    const pageId = pageMap[sectionName];
+    const page = document.querySelector(`#${pageId}`);
+
+    if (!page) return;
+
+    page.classList.remove('hidden');
+
     if (sectionName === 'videos') {
       await renderVideos();
     } else if (sectionName === 'vocabulario' || sectionName === 'gramatica') {
       await renderTheory(sectionName);
     }
+
     if (typeof maybeShowAdminGear === 'function') {
       maybeShowAdminGear(sectionName);
     }

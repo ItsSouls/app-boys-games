@@ -1,7 +1,7 @@
 // Frontend API client for Auth + Scores
-const BASE = (
-	import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api'
-).replace(/\/$/, '');
+import { API_BASE } from '../app/config.js';
+
+const BASE = API_BASE;
 
 const TOKEN_KEY = 'abg_token';
 

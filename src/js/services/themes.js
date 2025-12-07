@@ -1,3 +1,4 @@
+import { API_BASE } from '../app/config.js';
 import { vocabularyGames } from '../../data/games.js';
 
 let loaded = false;

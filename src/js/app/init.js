@@ -39,7 +39,8 @@ export function initApp() {
       userController.refreshUserGreeting(),
       ensureThemesLoaded().catch(logThemeWarning),
     ]);
-    await games.showVocabularyGames();
+    // Navigate to home page after successful login
+    router.navigate('/');
   });
 
   userController.ensureAuthControls();
@@ -69,6 +70,40 @@ export function initApp() {
         const card = event.target.closest('.menu-card');
         if (!card) return;
         router.navigate(`/${card.dataset.section}`);
+      });
+    }
+
+    // Adventure cards navigation
+    const adventureSection = document.querySelector('.adventure-section');
+    if (adventureSection && !adventureSection.__wired) {
+      adventureSection.__wired = true;
+      adventureSection.addEventListener('click', (event) => {
+        const card = event.target.closest('.adventure-card');
+        if (!card || !card.dataset.section) return;
+        router.navigate(`/${card.dataset.section}`);
+      });
+    }
+
+    // Hero buttons navigation
+    const heroSection = document.querySelector('.hero-section');
+    if (heroSection && !heroSection.__wired) {
+      heroSection.__wired = true;
+      heroSection.addEventListener('click', (event) => {
+        const btn = event.target.closest('[data-section]');
+        if (!btn) return;
+        router.navigate(`/${btn.dataset.section}`);
+      });
+    }
+
+    // Header nav links
+    const headerNav = document.querySelector('.header-nav');
+    if (headerNav && !headerNav.__wired) {
+      headerNav.__wired = true;
+      headerNav.addEventListener('click', (event) => {
+        const link = event.target.closest('[data-section]');
+        if (!link) return;
+        event.preventDefault();
+        router.navigate(`/${link.dataset.section}`);
       });
     }
 
