@@ -7,7 +7,9 @@
       "Bash(rm:*)",
       "Bash(ls:*)",
       "Bash(curl:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []
