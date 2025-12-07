@@ -15,14 +15,12 @@ html {
 
 body {
 	font-family: var(--font-family-base);
-	background: var(--gradient-main);
-	background-color: #764ba2;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
-	background-size: cover;
+	background: var(--color-bg-secondary);
 	min-height: 100vh;
-	color: var(--color-text);
+	color: var(--color-text-primary);
 	overflow-x: hidden;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 button {

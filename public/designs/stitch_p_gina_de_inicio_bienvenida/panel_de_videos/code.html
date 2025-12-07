@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Panel de Videos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#25f46a",
+            "background-light": "#f5f8f6",
+            "background-dark": "#102216",
+          },
+          fontFamily: {
+            "display": ["Lexend", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111813] dark:text-background-light">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center py-5 sm:px-4 md:px-8 lg:px-20 xl:px-40">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/20 dark:border-primary/30 px-4 sm:px-6 lg:px-10 py-3">
+<div class="flex items-center gap-4">
+<div class="text-primary size-8">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-[#111813] dark:text-background-light text-xl font-bold leading-tight tracking-[-0.015em]">Español para Niños</h2>
+</div>
+<div class="flex items-center gap-4 sm:gap-6 md:gap-8">
+<div class="hidden md:flex items-center gap-6 lg:gap-9">
+<a class="text-[#111813] dark:text-background-light text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary transition-colors" href="#">Videos</a>
+<a class="text-[#111813] dark:text-background-light text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary transition-colors" href="#">Juegos</a>
+<a class="text-[#111813] dark:text-background-light text-sm font-medium leading-normal hover:text-primary dark:hover:text-primary transition-colors" href="#">Lecciones</a>
+</div>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-primary/20 text-[#111813] dark:text-background-light dark:bg-primary/30 hover:bg-primary/40 dark:hover:bg-primary/50 transition-colors">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</header>
+<main class="flex flex-col gap-6 px-4 py-8 sm:px-6 lg:px-10">
+<div class="flex min-w-72 flex-col gap-2">
+<p class="text-[#111813] dark:text-background-light text-4xl sm:text-5xl font-black leading-tight tracking-[-0.033em]">Panel de Videos</p>
+<p class="text-primary/90 dark:text-primary/80 text-base font-normal leading-normal">Mira y aprende con nuestros divertidos videos educativos.</p>
+</div>
+<div class="flex flex-col sm:flex-row gap-4">
+<div class="flex-grow">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full">
+<div class="text-[#111813] dark:text-background-light flex border-none bg-primary/20 dark:bg-primary/30 items-center justify-center pl-4 rounded-l-xl border-r-0">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-r-xl text-[#111813] dark:text-background-light focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-primary/20 dark:bg-primary/30 h-full placeholder:text-[#111813]/70 dark:placeholder:text-background-light/70 px-4 text-base font-normal leading-normal" placeholder="¿Qué quieres aprender hoy?" value=""/>
+</div>
+</label>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2">
+<button class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/20 dark:bg-primary/30 px-4 hover:bg-primary/30 dark:hover:bg-primary/40 transition-colors">
+<p class="text-[#111813] dark:text-background-light text-sm font-medium leading-normal">Categorías</p>
+<span class="material-symbols-outlined text-[#111813] dark:text-background-light">expand_more</span>
+</button>
+<button class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/20 dark:bg-primary/30 px-4 hover:bg-primary/30 dark:hover:bg-primary/40 transition-colors">
+<p class="text-[#111813] dark:text-background-light text-sm font-medium leading-normal">Animales</p>
+</button>
+<button class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/20 dark:bg-primary/30 px-4 hover:bg-primary/30 dark:hover:bg-primary/40 transition-colors">
+<p class="text-[#111813] dark:text-background-light text-sm font-medium leading-normal">Colores</p>
+</button>
+<button class="flex h-12 shrink-0 items-center justify-center gap-x-2 rounded-xl bg-primary/20 dark:bg-primary/30 px-4 hover:bg-primary/30 dark:hover:bg-primary/40 transition-colors">
+<p class="text-[#111813] dark:text-background-light text-sm font-medium leading-normal">Canciones</p>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6 py-4">
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Cartoon rainbow with smiling clouds" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCb4QctMYi7YlgrHzZ2AHtQyHSvHLd_Rp-puAXxKbqzP3tmUc6Md8Oqt5bDLHPShY6a9dr8gnLH8KGyIiER23TN_tGFsKHzRTRWlJnLxBpoa7RS8vNBDwjYc8M6L-2n35Toimd23mv0_MEGDewp-9Ss4qhHXToIPFKcZ78iWJns2kRQA8B07uNx3daxDQ_3ULrj1gUXUXY4B2nzyZkgeijumJXKSKX25mBIv-n8MIsMGxcMSkkN1vm8pduCj1GNRRIQ8aWhqQ87CEo");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">Los Colores del Arcoíris</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Vocabulario</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Animated farm animals singing" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCdCl0dKCvknHs5LZi_UlV6DSGrgq7yr-UB3Lt13fEo2cO71o_JL_kK1q3FXAY68ZXm9vIM0FtKnqj8V095vyz-U6j97-LKJ_nr0StNP4MdXV4iJJrXsQwyU6FW0rVJ0MWFP9IS4zDiUTBhdcP1tJHMCHIFOZVXcFkN4Hvy5kMZk42TIFMmutQPQmpkq4T-F7F4wYSofMn9F_QvGBXChBRpcLAEdYfgyDqCV7lW4Gp-cx6n-RCh9H6jgVZXiBTyG7_NbHCYQcWVISk");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">Animales de la Granja</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Naturaleza</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Colorful numbers jumping on a screen" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuANtK1z3NRtYdejOz8KQSS02xjy7g26KIdPuSLQH-YZg_JPtn0DuvkcA2hohNUD8yk2w-ybHXO3YO7BbsDv8LivGaPHDRM9_-ZxRVi46YaQ_aXhv8hEH7Q8O7OY-7f4soXI0jlX-nH_ncF3lBPBFEpCjAx-LpYTKG1ImSsSmFseXKEz6OMW_X9Gezd3preWRJ1nZ5JCo2vgdvp20Fdno0pt6SLN3S09_Y5IJZ3p4DBNsCdTq3xYNGPv024ZImqaLYy7k5fgqMSkuLk");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">Canción de los Números</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Canción</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Geometric shapes with faces playing" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDBSrhVf461bGZ2IuS9cgitqBTlYhvgVHePDrEGeiAwb0s9kz6oH-BtFexaj0pZhNo9KgY5P-LPAMrc0g5943HurfFCT-5R2laKTeNj8m_dj3CofG8aF4hgNLOlrfpNE5JYxwBsOyp99fMCzuTMvdgHl_dbkiizV1aljcvpCZKhPwXBBCv9NEkyfSPoGSPfDacNbALvWWS1HhIA_kgClXRouAgpo2hzXPiM-OkcpzLuokkgqurPazKDU12wyh8-_do1_JQEfcHbt1Y");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">Las Formas Divertidas</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Vocabulario</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Animated alphabet letters singing and dancing" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBSeTPS7mwfPW14gWXh2ogrzd1PxpTUZBL4rprizPcoPZIDS3jIqit99rWyb7Dq4XpwzxwtsHGWIY3WptgOYPtX-7bOYx0mZzKewDXCNT3cNJvPwCVrw068s6nWzP5qOc48wT0fzfx9PHH_NWDmYrl0eFWbo5dBFzTaHTKydWMduISDUnr02zl0FcERHAIdYdgjTPrrWnPJ_Qgu9pFgyg_puh1wOpk8Vy2bNkQMkKPdUrDDe3DGhg9AYHlwpBwVp7E-G5bbS3zSiDo");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">El Abecedario Cantado</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Canción</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Cartoon fruits and vegetables with happy faces" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAgtE4t9tpXSkRTwbzesgqeP195KyvIkBWbqs0xAQQyy5ZshQA7A2qCs3dXuI_RGBS-R2yuuWvNPOSBp7_5cfhUnN_NIQi0DgDEGV6wMzxCl80SP2fXah85uoe9SROUm0LBCghdFEVvsFKXCrqe4c4vnwPMzxbWWa-eTtn440_3COAx-sgTebHOe5lrpC2z1BnSWvyOwLaHvDM7Rh2-4586DmCFk7HHaKZDTkviHjeNekvP1MScfR7gn_b6sz4YLuRzp-3OhY8X8nA");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">Frutas y Verduras</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Comida</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Lush cartoon jungle with various animals peeking out" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCq-9_bAIOnf_Mm7Ai9Yr5qFS5LVBpun_mc29fRwXK6AD_JOo1p8wGd6qHgK_WMmtIYMvmfjF25Fni13UH2wtG9LB1irNGI_2gsNXmXIFG4zJzYOaIrV1BPm4YiHbHolNcpZybTJSIElGBtkGGgB50N1oD_t3vnZoFgmkg7rRAQV2ChWIqpFPYIDE_xP1HmcT0PIYJJECkqX1jYONU2Xtk6DdbaXhMawYYBQIEL8ueCjuhJLRgVpRT3fVhBZqx_iOmHj-PXK0t7DMQ");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">Los Sonidos de la Selva</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Naturaleza</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 group">
+<div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl overflow-hidden relative group-hover:shadow-lg group-hover:shadow-primary/20 transition-shadow">
+<div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white !text-6xl">play_circle</span>
+</div>
+<div class="w-full h-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="A child astronaut floating in space with planets and stars" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBKP3kRtoH5WNaifKYE7TjWIY6mIWT5b93fL6UcgleyCdM1Ubmt_U6Y-XEphKwE9GdbS6AvLVlTgum-bhMbr5WaACaNbmS3GGp7UvAY_6SzqM0G9r6MiAK0SKRa7XYmbl6sBdMaVAwAXZEPqCjeRvzPzDHMnsea2Q8xDL-1YiS886gg8bpo52qcxTow1PhZJ5uhwGse2cFr1XoRu-x6jXz2gYE_jBIJyGDysMcfqUEOKqOlm5FdeKKgLicr8GKLQw5egV-q58msxMI");'></div>
+</div>
+<div>
+<p class="text-[#111813] dark:text-background-light text-base font-medium leading-normal">Viaje por el Espacio</p>
+<p class="text-primary/90 dark:text-primary/80 text-sm font-normal leading-normal">Ciencia</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+</body></html>

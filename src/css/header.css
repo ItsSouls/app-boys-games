@@ -1,34 +1,116 @@
-/* Header */
+/* Header - Clean Minimalist Design */
 .header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 20px 0;
+  background: var(--color-white);
+  box-shadow: var(--shadow-header);
+  padding: var(--spacing-2) 0;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-header);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+}
+
+/* Logo con icono verde */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-shrink: 0;
+}
+
+.logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .logo {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #ff6b6b;
-  text-align: center;
-  margin-bottom: 5px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  white-space: nowrap;
 }
 
 .subtitle {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #4ecdc4;
-  font-weight: 600;
+  display: none;
 }
 
-/* Branding image */
-.logo-img {
-  width: 120px;
-  height: auto;
-  object-fit: contain;
-  display: block;
+/* Navegación horizontal */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  flex: 1;
+  justify-content: center;
+}
+
+.header-nav-link {
+  font-size: 1rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.header-nav-link:hover {
+  color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+}
+
+.header-nav-link.active {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Header user section */
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  flex-shrink: 0;
+}
+
+.user-greet {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .user-greet {
+    display: inline;
+  }
+}
+
+.user-greet strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Avatar placeholder */
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.user-avatar:hover {
+  background: var(--color-gray-200);
 }

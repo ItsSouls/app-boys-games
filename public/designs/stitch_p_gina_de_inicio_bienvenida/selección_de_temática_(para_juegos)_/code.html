@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Selección de Temática (para Juegos)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+    /* Add a subtle shadow and scale effect on hover for the theme cards */
+    .theme-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    /* Add a border to the selected theme card */
+    .theme-card.selected {
+        border: 4px solid #25f46a;
+    }
+    /* Smooth transition for hover and selection effects */
+    .theme-card {
+        transition: all 0.2s ease-in-out;
+    }
+  </style>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#25f46a",
+            "background-light": "#f5f8f6",
+            "background-dark": "#102216",
+          },
+          fontFamily: {
+            "display": ["Lexend", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 md:px-20 lg:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 px-4 sm:px-10 py-3">
+<div class="flex items-center gap-4 text-gray-800 dark:text-gray-200">
+<div class="size-6">
+<svg class="text-primary" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path></svg>
+</div>
+<h2 class="text-gray-800 dark:text-gray-200 text-lg font-bold leading-tight tracking-[-0.015em]">Juego de Memoria</h2>
+</div>
+<div class="flex flex-1 justify-end gap-4 sm:gap-8">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar with a colorful background" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCBCcDgz7p7U2dVae34uxPUngzOJNMx9SU0ouALgOOEeDwIWTNcDc-SjP8AoRU5_9WtNc5ssPsYMphk8RmzV6sr0AzaT_gpch242mW0RTo-I4w85stNteRe6WUClXlJIAhrbmG8h6DwjMHLF2oUmEqlGXrUJWpthMCialacFXhoOmmpoltLbcHzcwELgRUev3xSLkKL52yqueNYR3wPRsiU59mB-lxTnP9MZgwm2Xyf40qBL0g-pxkPNh2r5ym-Wb8KSHIeJRT4PP0");'></div>
+</div>
+</header>
+<main class="flex-grow">
+<!-- PageHeading -->
+<div class="flex flex-wrap justify-between gap-3 p-4 sm:p-6 md:p-8">
+<p class="text-gray-900 dark:text-gray-50 text-4xl font-black leading-tight tracking-[-0.033em] min-w-72">¿Sobre qué quieres jugar?</p>
+</div>
+<!-- ImageGrid -->
+<div class="grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4 sm:gap-6 p-4 sm:p-6 md:p-8">
+<div class="flex flex-col gap-3 pb-3 cursor-pointer theme-card rounded-xl">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A cartoon illustration of various animals like a lion, monkey, and elephant." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAcqJOQklEZ9Ye5PerLomIejiXkTv3jOKz4_aHeaGkZLsrEVF6oGqg3XWJHPZo5nq1rgdmnDybBojbQEqBfpFrcouti2Uhz8JNKC8QAc-I3FescgtyQahK5D1Hoy96bjC-HpC08sBfBPJokRCXqYgQmsAEp5cOB0SNXKjH2CIRR-sl2T9VLhkeuAIuSTIC8Gljeosd_2SW60VRFghLLG5GdJaWrTuoksj64JQ35pD6iiy3MZcAspGBHK1ymePWaQuPJmyvVZtIiHhw");'></div>
+<p class="text-gray-800 dark:text-gray-200 text-center text-lg font-medium leading-normal">Animales</p>
+</div>
+<div class="flex flex-col gap-3 pb-3 cursor-pointer theme-card rounded-xl">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="An abstract image of colorful paint splatters." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD1yU5YefnXnC4fJXoZYLAdTOEkoj6vuwbH1n7jEvin_otx-hizDEsc6wViv5IBDEDPFKm1dKsPsgI0mvBUpszJRLjcFijR-KA9uvUVPY7myXt9MdttFJwIv3-srA6y2QVsVT44qEirqwJHRAIGjAXHJsaqaSoJKBejfm9NAUWEf4t0HrR15N-gie2KxQJ9fFyg8vPkr_yH_5BFFakF_OQ2HvXYQKSpm2vn9FD1vsUkkJAv0G9cgjGrQnGu8qMO0_0FlrxRJddV-ms");'></div>
+<p class="text-gray-800 dark:text-gray-200 text-center text-lg font-medium leading-normal">Colores</p>
+</div>
+<div class="flex flex-col gap-3 pb-3 cursor-pointer theme-card rounded-xl selected">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A vibrant collection of fresh fruits and vegetables." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCUCaCgsG1wJBwn3R8no2Qc3MkLi2Udloh2SRkaDj5LomV-FohxlU7HOpWeaBRmmuVXehLtob4pGPfIzWCdK9cmwUaOIPmrFgIGbHjavvNFDpTUMzURvRP2GHSYFsqhyjBw_OGBE4t_fYpBbpYu7SHxjKFyCGTMyGw7ytnu9cIvae0dMLko3JEZBXA5qjk-wzI949yFxRYyI2WQ_VV7kYyvOY6HAF6gOxSnBbEH0HsV_9nvI3OObAKcMsSG5QSw10jRDBeljCR0c0w");'></div>
+<p class="text-gray-800 dark:text-gray-200 text-center text-lg font-medium leading-normal">Comida</p>
+</div>
+<div class="flex flex-col gap-3 pb-3 cursor-pointer theme-card rounded-xl">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="A serene nature scene with green trees and a clear sky." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB669ldy0gBFWLEzrVE-JLy7g7kAVP_IMf7OFxSreFw451-xsN7m9OEeut8RPm2u7ExiUlMEqCsUEeJdnaX17Ryn8xSCR5kO0H2mzh2iaMGKwqNtbNxv6rqE79ThiQC0ZiYBq8bv2CbAOUaL-x55-d26Nv4SOvNqozRxY3jggfN6PPcij7RkJG3PNOzLsYHdzBKiY2CD4Dmt_f2cvckrQRsri-b0anpj2vfoWEidDIh5dYNTLauoRqNLTBEh5oTSpxnlDtBKD39HpU");'></div>
+<p class="text-gray-800 dark:text-gray-200 text-center text-lg font-medium leading-normal">Naturaleza</p>
+</div>
+<div class="flex flex-col gap-3 pb-3 cursor-pointer theme-card rounded-xl">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl" data-alt="Colorful folded t-shirts and clothes on a shelf." style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDS8szo8Lb_SKOFKZ3Eubo9ZMEUk8kh83guesrERGGMQmlCcv_FoBjWPH795gXS9SuwhuAppbXKHV2S4_2durzNWPM_k6SojHVTy7k-YmiIdkQhy1fZplDhYleBmitJHMjxnKDlqukJTGphJsny0AwOGolSYxhXjm9NnBhK3QQbtd2Zk3KH9Z0Ksq1ETnvczhBP9BFEQMWDyBRNetF9irpL-rgtjdf2mwaSvvnwgNox9G7_MNvhVlk3cSEbF0gINY64QMB8KQzRiPU");'></div>
+<p class="text-gray-800 dark:text-gray-200 text-center text-lg font-medium leading-normal">Ropa</p>
+</div>
+</div>
+<!-- SingleButton -->
+<div class="flex px-4 py-8 sm:px-6 md:px-8 justify-center">
+<button class="flex min-w-[84px] w-full max-w-sm cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-5 bg-primary text-gray-900 text-lg font-bold leading-normal tracking-[0.015em] shadow-lg hover:bg-opacity-90 transition-colors">
+<span class="truncate">¡A Jugar!</span>
+</button>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+</body></html>

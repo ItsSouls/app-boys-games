@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Selección de Juegos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#25f46a",
+                        "background-light": "#f5f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-[#111813] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="flex flex-1 justify-center py-5 md:px-10 lg:px-20 xl:px-40">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[#f0f5f1] dark:border-primary/20 px-4 sm:px-10 py-3">
+<div class="flex items-center gap-4">
+<div class="text-primary size-7">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H6V17.3333V30.6667H24V44H42V30.6667V17.3333H24V4Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-[#111813] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Español para Niños</h2>
+</div>
+<div class="flex flex-1 justify-end items-center gap-4 sm:gap-6">
+<div class="hidden sm:flex items-center gap-2">
+<span class="material-symbols-outlined text-xl text-yellow-500">star</span>
+<a class="text-[#111813] dark:text-white text-sm font-medium leading-normal" href="#">Puntos: 125</a>
+</div>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 w-10 bg-background-light dark:bg-background-dark text-[#111813] dark:text-white border border-[#f0f5f1] dark:border-primary/20 hover:bg-primary/10 dark:hover:bg-primary/20">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar image" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD-vsbIjzIfqI14PdpHufUxEDuePzNlHWjupSu0114J6GZmJlOsy3mLgFAlEdo6bLy__zSF505CwQlsnwW7AXfpwj5Z7DZk7mt6dEGBiZpsqTvtCI-V4NPirYqz8gcfxfX3EsYiQh1anMTn90FgaImoHQyquezrYp5cUs0emERNgBMt9veAhhEd-_0C_Z1AFwgnWKU2o_kbE8vRe2BlsvjCMmN17LuSt0QEej9d6tOJnHgjNo-6fCR30u6hwc6Nuslh0KjlqJN_ZbI");'></div>
+</div>
+</header>
+<main>
+<h1 class="text-[#111813] dark:text-white tracking-tight text-[32px] sm:text-4xl font-bold leading-tight px-4 text-center pb-3 pt-8 sm:pt-12">Selección de Juegos</h1>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4">
+<div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Illustration of four colorful answer options labeled A, B, C, D" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAzj3NuBZMIvXPdQxp0LLtq59SZN2sAOozihFJr9ig7Ad28vvzKr5xJ8fxeDpx6hYF_FqVYwlAvEN5Mm5pClkTf0eZruTCcFDjSy2obM7Sj9M3FV1oiL4qdYdVVD6AMEQafMfzhyZtDbF_H_Ha-gYdYIHXgm1RHipiGvFlkfsXvBHix0J519HSJPXS87yqDPc0vUUdeSqXJPdb8BmJFxRjWJu-eunguUtaVkNsg1qjSzgo5h8fNhLRQ0J4Q2pmvwxBDWKyW7OjiCc8");'></div>
+<div>
+<p class="text-[#111813] dark:text-white text-base sm:text-lg font-medium leading-normal">Juego de Multi-respuesta</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal">Elige la respuesta correcta</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Illustration of colorful bubbles floating upwards" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBXXfWBDXQR-R_FEQnrS4u3IiEscqPbyjHToxrzJThfOpk6Najv7FnCNaukwEFw3e-Fyh-WWPvCZzFei8MHLp2RaOctJui0TpQP5KZbardDykPrMpUdXi0RIOAffZ-1Y2spJCyY-_Ab2iq3_f0SDPgYNMvsDuulNKM83pAl7K90bhcNhCC6cTppbLHP8c4WS33pNs_gxmratJDN6TGfEQ9zdaap0Ub2tav2HxTXsUt8-sge1g73GvvB-wPqUsS7SUWZVvA2DQ9OLQg");'></div>
+<div>
+<p class="text-[#111813] dark:text-white text-base sm:text-lg font-medium leading-normal">Juego de Explotar Burbujas</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal">¡Explota las burbujas correctas!</p>
+</div>
+</div>
+<div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl transition-transform duration-300 group-hover:scale-105" data-alt="Illustration of matching pairs of cards with symbols like stars and hearts" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAO0mL1Rnu7aYcfA6sCXAH_ircQ0kS8sx1Zjd6Rk4g6w1eq8BrDcSXRoevHH99h5yPo-BAfHKDQZqdXVqrnptXBB1Irp2sODhEav2JGFp1n3rTwCf4oR_FhAWJHB1-jtq5eT9QYuVbKCXZSUgfhs3zrEihpb2jiO2f_RPJCPMiTngLyQHmM_ly0FDlYG6AahUcDn7YJozyf085DofsKNgUxNcwvkVSZOg8oukrp9LNBBkFfuEAbKUoCgP0Z7ektwUbN9O3sZh8Ux04");'></div>
+<div>
+<p class="text-[#111813] dark:text-white text-base sm:text-lg font-medium leading-normal">Juego de Unir Parejas</p>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal">Encuentra las parejas iguales</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>
