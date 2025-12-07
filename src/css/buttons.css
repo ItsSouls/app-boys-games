@@ -2,30 +2,30 @@
  * Professional Button System
  */
 
-/* Back Button - Clean Minimalist */
+/* Back Button - Clean Minimalist (matching videos style) */
 .back-btn {
-	background: var(--color-white);
-	color: var(--color-primary);
-	border: 2px solid var(--color-primary);
-	padding: 12px 24px;
-	border-radius: var(--radius-full);
-	font-size: 1rem;
-	font-weight: var(--font-weight-semibold);
+	display: inline-flex;
+	align-items: center;
+	gap: var(--spacing-1);
+	background: none;
+	border: none;
+	padding: var(--spacing-2) var(--spacing-3);
+	color: var(--color-text-secondary);
+	font-size: 0.95rem;
+	font-weight: var(--font-weight-medium);
 	cursor: pointer;
-	transition: all var(--transition-base);
+	transition: all 0.2s ease;
+	border-radius: 8px;
 	font-family: var(--font-family-base);
-	box-shadow: var(--shadow-sm);
 }
 
 .back-btn:hover {
-	background: var(--color-primary);
-	color: var(--color-white);
-	transform: translateX(-5px);
-	box-shadow: var(--shadow-md);
+	background: rgba(0, 0, 0, 0.05);
+	color: var(--color-text-primary);
 }
 
 .back-btn:active {
-	transform: translateX(-3px);
+	transform: scale(0.98);
 }
 
 /* Option Button - Versatile Action Button */

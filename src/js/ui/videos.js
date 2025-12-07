@@ -444,13 +444,17 @@ function openAddVideoModal() {
         close();
         cache = [];
         await renderAdminView('');
+        alert('Video añadido correctamente');
         console.log('[videos] Video añadido correctamente');
       } else {
-        alert('Error al añadir el video');
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage = errorData.message || errorData.error || `Error ${res.status}: ${res.statusText}`;
+        alert(`Error al añadir el video: ${errorMessage}`);
+        console.error('[videos] Error del servidor:', errorData);
       }
     } catch (err) {
       console.error('[videos] Error añadiendo video:', err);
-      alert('Error al añadir el video');
+      alert(`Error al añadir el video: ${err.message}`);
     }
   });
 }
@@ -531,13 +535,17 @@ function openEditVideoModal(videoId) {
         close();
         cache = [];
         await renderAdminView('');
+        alert('Video actualizado correctamente');
         console.log('[videos] Video actualizado correctamente');
       } else {
-        alert('Error al actualizar el video');
+        const errorData = await res.json().catch(() => ({}));
+        const errorMessage = errorData.message || errorData.error || `Error ${res.status}: ${res.statusText}`;
+        alert(`Error al actualizar el video: ${errorMessage}`);
+        console.error('[videos] Error del servidor:', errorData);
       }
     } catch (err) {
       console.error('[videos] Error actualizando video:', err);
-      alert('Error al actualizar el video');
+      alert(`Error al actualizar el video: ${err.message}`);
     }
   });
 }
@@ -555,13 +563,17 @@ async function deleteVideo(videoId) {
     if (res.ok) {
       cache = [];
       await renderAdminView('');
+      alert('Video eliminado correctamente');
       console.log('[videos] Video eliminado correctamente');
     } else {
-      alert('Error al eliminar el video');
+      const errorData = await res.json().catch(() => ({}));
+      const errorMessage = errorData.message || errorData.error || `Error ${res.status}: ${res.statusText}`;
+      alert(`Error al eliminar el video: ${errorMessage}`);
+      console.error('[videos] Error del servidor:', errorData);
     }
   } catch (err) {
     console.error('[videos] Error eliminando video:', err);
-    alert('Error al eliminar el video');
+    alert(`Error al eliminar el video: ${err.message}`);
   }
 }
 
