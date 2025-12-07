@@ -38,6 +38,13 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
         hideHeaderUser();
         nameEl.textContent = '';
         ensureAuthControls();
+
+        // Hide all admin buttons on logout
+        const adminButtons = document.querySelectorAll('[id$="-admin-toggle"], [id$="-admin-gear"]');
+        adminButtons.forEach(btn => {
+          btn.classList.remove('is-visible');
+        });
+
         if (typeof onNavigateHome === 'function') onNavigateHome();
       };
       ensureAuthControls();

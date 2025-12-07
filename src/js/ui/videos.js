@@ -160,6 +160,11 @@ async function renderAdminView(filter = '') {
         const statusClass = video.status === 'published' ? 'published' : 'draft';
         const statusText = video.status === 'published' ? 'Publicado' : 'Borrador';
 
+        // Truncate description to 50 characters
+        const truncatedDesc = video.description && video.description.length > 50
+          ? video.description.substring(0, 50) + '...'
+          : video.description || '';
+
         return `
           <tr>
             <td>
@@ -169,7 +174,7 @@ async function renderAdminView(filter = '') {
                 </div>
                 <div class="admin-video-info">
                   <p class="admin-video-title">${escapeHtml(video.title)}</p>
-                  <p class="admin-video-desc">${escapeHtml(video.description || '')}</p>
+                  <p class="admin-video-desc">${escapeHtml(truncatedDesc)}</p>
                 </div>
               </div>
             </td>
@@ -431,7 +436,7 @@ function openAddVideoModal() {
 
     try {
       const token = localStorage.getItem('abg_token');
-      const res = await fetch(`${API_BASE}/videos`, {
+      const res = await fetch(`${API_BASE}/admin/videos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -522,7 +527,7 @@ function openEditVideoModal(videoId) {
 
     try {
       const token = localStorage.getItem('abg_token');
-      const res = await fetch(`${API_BASE}/videos/${videoId}`, {
+      const res = await fetch(`${API_BASE}/admin/videos/${videoId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -553,7 +558,7 @@ function openEditVideoModal(videoId) {
 async function deleteVideo(videoId) {
   try {
     const token = localStorage.getItem('abg_token');
-    const res = await fetch(`${API_BASE}/videos/${videoId}`, {
+    const res = await fetch(`${API_BASE}/admin/videos/${videoId}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`
@@ -620,14 +625,20 @@ export function openVideoModal(video) {
 
   const modal = document.createElement('div');
   modal.className = 'video-modal';
+
+  // Truncate description to 50 characters
+  const truncatedDescription = video.description && video.description.length > 50
+    ? video.description.substring(0, 50) + '...'
+    : video.description;
+
   modal.innerHTML = `
     <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="video-modal__header">
       <h3>${video.title || 'Video'}</h3>
     </header>
     ${
-      video.description
-        ? `<p class="video-modal__description">${video.description}</p>`
+      truncatedDescription
+        ? `<p class="video-modal__description">${truncatedDescription}</p>`
         : ''
     }
     <div class="video-modal__player">

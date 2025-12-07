@@ -40,6 +40,11 @@ export function initApp() {
       ensureThemesLoaded().catch(logThemeWarning),
     ]);
     // User stays on current page after login
+    // Show admin button if applicable
+    const current = window.location.pathname.replace(/^\/+/, '').split('/')[0] || '';
+    if (current) {
+      maybeShowSectionAdminGear(current);
+    }
   });
 
   userController.ensureAuthControls();
