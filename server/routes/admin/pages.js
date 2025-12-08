@@ -118,9 +118,7 @@ pagesRouter.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Invalid section' });
     }
 
-    console.log('[POST /admin/pages] req.body:', JSON.stringify(req.body, null, 2));
     const payload = extractPageFields(req.body);
-    console.log('[POST /admin/pages] extracted payload:', JSON.stringify(payload, null, 2));
     if (!payload.topic) {
       return res.status(400).json({ error: 'Topic is required' });
     }
@@ -141,9 +139,7 @@ pagesRouter.post('/', async (req, res) => {
 pagesRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log('[PUT /admin/pages] req.body:', JSON.stringify(req.body, null, 2));
     const payload = extractPageFields(req.body);
-    console.log('[PUT /admin/pages] extracted payload:', JSON.stringify(payload, null, 2));
     if (payload.topic !== undefined && !payload.topic) {
       return res.status(400).json({ error: 'Topic cannot be empty' });
     }

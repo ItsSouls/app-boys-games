@@ -73,9 +73,11 @@ export async function openTheoryAdminModal(section) {
           </div>
 
           <div class="vocabulario-admin__field">
-            <label for="theory-category">Bloque/Categoría</label>
-            <input id="theory-category" type="text" placeholder="Ej: Bloque 1" list="category-suggestions" />
-            <datalist id="category-suggestions"></datalist>
+            <label for="theory-category">Número de Bloque</label>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-weight: 500;">Bloque</span>
+              <input id="theory-category-number" type="number" min="1" max="99" placeholder="1" style="width: 80px;" />
+            </div>
           </div>
 
           <div class="vocabulario-admin__field">
@@ -95,13 +97,16 @@ export async function openTheoryAdminModal(section) {
           <div id="theory-quill" style="min-height:300px;background:white;border-radius:var(--radius-sm);"></div>
         </div>
 
-        <!-- Botón guardar -->
-        <button type="button" class="vocabulario-admin__save-btn" id="theory-admin-save">
-          Guardar cambios
-        </button>
+        <!-- Contenedor de acciones (feedback + botón guardar) -->
+        <div class="vocabulario-admin__actions-container">
+          <!-- Feedback -->
+          <div class="vocabulario-admin__feedback" id="theory-feedback"></div>
 
-        <!-- Feedback -->
-        <div class="vocabulario-admin__feedback" id="theory-feedback"></div>
+          <!-- Botón guardar -->
+          <button type="button" class="vocabulario-admin__save-btn" id="theory-admin-save">
+            Guardar cambios
+          </button>
+        </div>
       </main>
     </div>
   `;
@@ -138,8 +143,7 @@ export async function openTheoryAdminModal(section) {
 
   const listEl = modal.querySelector('#theory-admin-list');
   const topicInput = modal.querySelector('#theory-topic');
-  const categoryInput = modal.querySelector('#theory-category');
-  const categorySuggestions = modal.querySelector('#category-suggestions');
+  const categoryNumberInput = modal.querySelector('#theory-category-number');
   const summaryInput = modal.querySelector('#theory-summary');
   const coverInput = modal.querySelector('#theory-cover');
   const publishedToggle = modal.querySelector('#theory-published-toggle');
@@ -147,8 +151,6 @@ export async function openTheoryAdminModal(section) {
   const feedbackEl = modal.querySelector('#theory-feedback');
   const newBtn = modal.querySelector('#theory-admin-new');
 
-  console.log('[theoryModal] categoryInput encontrado:', categoryInput);
-  console.log('[theoryModal] topicInput encontrado:', topicInput);
   const editorTitle = modal.querySelector('#theory-editor-title');
   const editorSubtitle = modal.querySelector('#theory-editor-subtitle');
   const pushFeedback = createFeedback(feedbackEl);
@@ -177,7 +179,7 @@ export async function openTheoryAdminModal(section) {
 
   const clearForm = () => {
     topicInput.value = '';
-    categoryInput.value = 'Bloque 1';
+    categoryNumberInput.value = '1';
     summaryInput.value = '';
     coverInput.value = '';
     updateToggle(true);
@@ -188,7 +190,9 @@ export async function openTheoryAdminModal(section) {
 
   const fillForm = (page) => {
     topicInput.value = page?.topic || '';
-    categoryInput.value = page?.category || 'Bloque 1';
+    // Extraer el número del bloque (ej: "Bloque 7" -> "7")
+    const categoryNumber = (page?.category || 'Bloque 1').replace(/\D/g, '') || '1';
+    categoryNumberInput.value = categoryNumber;
     summaryInput.value = page?.summary || '';
     coverInput.value = page?.coverImage || '';
     updateToggle(page?.isPublished !== false);
@@ -315,25 +319,14 @@ export async function openTheoryAdminModal(section) {
     persistOrder();
   };
 
-  const updateCategorySuggestions = () => {
-    if (!categorySuggestions) return;
-    // Extraer categorías únicas de las páginas existentes
-    const categories = [...new Set(state.pages.map(p => p.category || 'Bloque 1'))].sort();
-    categorySuggestions.innerHTML = categories.map(cat => `<option value="${cat}">`).join('');
-  };
-
   const gatherPayload = () => {
     const topic = topicInput.value.trim();
-    console.log('[gatherPayload] categoryInput:', categoryInput);
-    console.log('[gatherPayload] categoryInput.value:', categoryInput?.value);
-    const category = categoryInput.value.trim() || 'Bloque 1';
-    console.log('[gatherPayload] category final:', category);
+    const blockNumber = categoryNumberInput.value.trim() || '1';
+    const category = `Bloque ${blockNumber}`;
     const summary = summaryInput.value.trim();
     const coverImage = coverInput.value.trim();
     const content = state.quill ? state.quill.root.innerHTML : '';
-    const payload = { topic, category, summary, coverImage, content, isPublished: state.isPublished };
-    console.log('[gatherPayload] payload completo:', payload);
-    return payload;
+    return { topic, category, summary, coverImage, content, isPublished: state.isPublished };
   };
 
   const loadPages = async (focusId) => {
@@ -352,9 +345,6 @@ export async function openTheoryAdminModal(section) {
       }
       const payload = await res.json();
       state.pages = Array.isArray(payload?.pages) ? payload.pages : [];
-
-      // Actualizar sugerencias de categorías
-      updateCategorySuggestions();
 
       if (state.pages.length) {
         const nextId = focusId || state.currentId || state.pages[0]._id;
@@ -390,10 +380,7 @@ export async function openTheoryAdminModal(section) {
     }
     setSaving(true);
     try {
-      const bodyData = Object.assign({ section }, payload);
-      console.log('[saveCurrentPage] Datos a enviar:', bodyData);
-      const body = JSON.stringify(bodyData);
-      console.log('[saveCurrentPage] JSON body:', body);
+      const body = JSON.stringify(Object.assign({ section }, payload));
       let res;
       if (state.currentId) {
         const safeId = sanitizeIdForUrl(state.currentId);
