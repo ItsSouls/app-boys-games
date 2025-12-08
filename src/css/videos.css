@@ -161,6 +161,7 @@
   gap: var(--spacing-2);
   flex: 1;
   flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .categories-dropdown-container {
@@ -357,7 +358,6 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  min-height: 2.8em;
 }
 
 .video-description {
