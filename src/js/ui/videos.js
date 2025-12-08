@@ -160,11 +160,6 @@ async function renderAdminView(filter = '') {
         const statusClass = video.status === 'published' ? 'published' : 'draft';
         const statusText = video.status === 'published' ? 'Publicado' : 'Borrador';
 
-        // Truncate description to 50 characters
-        const truncatedDesc = video.description && video.description.length > 50
-          ? video.description.substring(0, 50) + '...'
-          : video.description || '';
-
         return `
           <tr>
             <td>
@@ -174,7 +169,6 @@ async function renderAdminView(filter = '') {
                 </div>
                 <div class="admin-video-info">
                   <p class="admin-video-title">${escapeHtml(video.title)}</p>
-                  <p class="admin-video-desc">${escapeHtml(truncatedDesc)}</p>
                 </div>
               </div>
             </td>
