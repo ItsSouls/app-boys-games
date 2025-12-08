@@ -111,7 +111,7 @@ async function renderUserView(filter = '') {
   console.log(`[videos] ${list.length} videos renderizados en vista usuario`);
 }
 
-async function renderAdminView(filter = '') {
+export async function renderAdminView(filter = '') {
   const adminList = document.getElementById('videos-admin-list');
   const searchInput = document.getElementById('videos-admin-search');
   if (!adminList) return;

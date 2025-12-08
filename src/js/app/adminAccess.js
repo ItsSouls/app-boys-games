@@ -1,9 +1,26 @@
 import { api } from '../services/api.js';
-import { openVideosAdminModal } from '../ui/admin/videosModal.js';
 import { openTheoryAdminModal } from '../ui/admin/theoryModal.js';
 
+// Handler for videos admin view (toggles to admin view)
+function toggleVideosAdminView() {
+  const userView = document.getElementById('videos-user-view');
+  const adminView = document.getElementById('videos-admin-view');
+
+  if (userView && adminView) {
+    userView.classList.add('hidden');
+    adminView.classList.remove('hidden');
+
+    // Import and call renderAdminView dynamically
+    import('../ui/videos.js').then(module => {
+      if (module.renderAdminView) {
+        module.renderAdminView('');
+      }
+    });
+  }
+}
+
 const ADMIN_TOGGLES = [
-  { id: 'videos-admin-gear', section: 'videos', handler: openVideosAdminModal },
+  { id: 'videos-admin-gear', section: 'videos', handler: toggleVideosAdminView },
   { id: 'vocabulario-admin-gear', section: 'vocabulario', handler: () => openTheoryAdminModal('vocabulario') },
   { id: 'gramatica-admin-gear', section: 'gramatica', handler: () => openTheoryAdminModal('gramatica') },
 ];
