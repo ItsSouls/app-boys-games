@@ -27,12 +27,14 @@ const state = {
     pages: [],
     filteredPages: [],
     currentFilter: 'all',
+    searchTerm: '',
     isAdmin: false,
   },
   gramatica: {
     pages: [],
     filteredPages: [],
     currentFilter: 'all',
+    searchTerm: '',
     isAdmin: false,
   },
 };
@@ -136,50 +138,110 @@ function renderFilters(sectionName) {
   if (!filtersContainer) return;
 
   const pages = state[sectionName].pages;
-  const categories = [...new Set(pages.map(p => p.category))].sort();
+  const categories = [...new Set(pages.map(p => p.category))].sort((a, b) => {
+    // Ordenar por número de bloque
+    const numA = parseInt(a.replace(/\D/g, '')) || 0;
+    const numB = parseInt(b.replace(/\D/g, '')) || 0;
+    return numA - numB;
+  });
+
+  const currentFilterText = state[sectionName].currentFilter === 'all'
+    ? 'Todos los bloques'
+    : state[sectionName].currentFilter;
 
   filtersContainer.innerHTML = `
-    <button class="vocabulario-filter-chip ${state[sectionName].currentFilter === 'all' ? 'is-active' : ''}"
-            data-filter="all">
-      Todos los bloques
-    </button>
-    ${categories.map(cat => `
-      <button class="vocabulario-filter-chip ${state[sectionName].currentFilter === cat ? 'is-active' : ''}"
-              data-filter="${cat}">
-        ${cat}
+    <div class="vocabulario-dropdown" id="${sectionName}-blocks-dropdown">
+      <button class="vocabulario-dropdown__toggle">
+        <span id="${sectionName}-dropdown-text">${currentFilterText}</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
-    `).join('')}
+      <div class="vocabulario-dropdown__menu hidden" id="${sectionName}-dropdown-menu">
+        <button class="vocabulario-dropdown__item ${state[sectionName].currentFilter === 'all' ? 'active' : ''}" data-filter="all">
+          Todos los bloques
+        </button>
+        ${categories.map(cat => `
+          <button class="vocabulario-dropdown__item ${state[sectionName].currentFilter === cat ? 'active' : ''}" data-filter="${cat}">
+            ${cat}
+          </button>
+        `).join('')}
+      </div>
+    </div>
   `;
 
-  // Event listeners para filtros
-  filtersContainer.querySelectorAll('.vocabulario-filter-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const filter = chip.dataset.filter;
+  // Wire dropdown
+  const dropdown = document.getElementById(`${sectionName}-blocks-dropdown`);
+  const dropdownMenu = document.getElementById(`${sectionName}-dropdown-menu`);
+  const dropdownText = document.getElementById(`${sectionName}-dropdown-text`);
+
+  if (dropdown && !dropdown.__wired) {
+    dropdown.__wired = true;
+    dropdown.querySelector('.vocabulario-dropdown__toggle').addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('active');
+      dropdownMenu.classList.toggle('hidden');
+    });
+  }
+
+  // Wire dropdown items
+  const dropdownItems = dropdownMenu.querySelectorAll('.vocabulario-dropdown__item');
+  dropdownItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const filter = item.dataset.filter;
       state[sectionName].currentFilter = filter;
 
-      // Actualizar clases activas
-      filtersContainer.querySelectorAll('.vocabulario-filter-chip').forEach(c => {
-        c.classList.remove('is-active');
-      });
-      chip.classList.add('is-active');
+      // Update active state
+      dropdownItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
 
-      // Filtrar y renderizar
+      // Update dropdown text
+      if (dropdownText) {
+        dropdownText.textContent = filter === 'all' ? 'Todos los bloques' : filter;
+      }
+
+      // Close dropdown
+      dropdown.classList.remove('active');
+      dropdownMenu.classList.add('hidden');
+
+      // Filter and render
       filterPages(sectionName);
       renderUserView(sectionName);
     });
   });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (dropdown && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('active');
+      dropdownMenu.classList.add('hidden');
+    }
+  });
 }
 
-// Filtrar páginas según la categoría seleccionada
+// Filtrar páginas según la categoría seleccionada y término de búsqueda
 function filterPages(sectionName) {
   const filter = state[sectionName].currentFilter;
-  const pages = state[sectionName].pages;
+  const searchTerm = (state[sectionName].searchTerm || '').toLowerCase().trim();
+  let pages = state[sectionName].pages;
 
-  if (filter === 'all') {
-    state[sectionName].filteredPages = [...pages];
-  } else {
-    state[sectionName].filteredPages = pages.filter(p => p.category === filter);
+  // Filtrar por categoría
+  if (filter !== 'all') {
+    pages = pages.filter(p => p.category === filter);
   }
+
+  // Filtrar por término de búsqueda
+  if (searchTerm) {
+    pages = pages.filter(p => {
+      const topic = (p.topic || '').toLowerCase();
+      const summary = (p.summary || '').toLowerCase();
+      const category = (p.category || '').toLowerCase();
+      return topic.includes(searchTerm) || summary.includes(searchTerm) || category.includes(searchTerm);
+    });
+  }
+
+  state[sectionName].filteredPages = pages;
 }
 
 // Renderizar vista de usuario (cards)
@@ -282,6 +344,7 @@ export async function renderTheory(sectionName) {
   const userView = document.getElementById(`${sectionName}-user-view`);
   const adminToggle = document.getElementById(`${sectionName}-admin-gear`);
   const gridContainer = document.getElementById(`${sectionName}-grid`);
+  const searchInput = document.getElementById(`${sectionName}-search`);
 
   if (!userView || !gridContainer) return;
 
@@ -306,6 +369,16 @@ export async function renderTheory(sectionName) {
   // Renderizar filtros y vista de usuario
   renderFilters(sectionName);
   renderUserView(sectionName);
+
+  // Wire search input (solo una vez)
+  if (searchInput && !searchInput.__wired) {
+    searchInput.__wired = true;
+    searchInput.addEventListener('input', (e) => {
+      state[sectionName].searchTerm = e.target.value;
+      filterPages(sectionName);
+      renderUserView(sectionName);
+    });
+  }
 
   // Wire admin toggle (solo una vez)
   if (adminToggle && state[sectionName].isAdmin && !adminToggle.__wired) {

@@ -54,6 +54,7 @@ export function initApp() {
   router.route('/games', () => games.showVocabularyGames());
   router.route('/vocabulario', () => navigation.showSection('vocabulario'));
   router.route('/gramatica', () => navigation.showSection('gramatica'));
+  router.route('/parents', () => navigation.showSection('parents'));
   router.route('/games/:gameId', (params) =>
     games.showGame(params.gameId).catch((err) => {
       console.error('[router] error al cargar juego', err);
@@ -106,15 +107,13 @@ export function initApp() {
       headerLogo.addEventListener('click', () => router.navigate('/'));
     }
 
-    // Header nav links
-    const headerNav = document.querySelector('.header-nav');
-    if (headerNav && !headerNav.__wired) {
-      headerNav.__wired = true;
-      headerNav.addEventListener('click', (event) => {
-        const link = event.target.closest('[data-section]');
-        if (!link) return;
+    // Para Padres link
+    const parentsLink = document.getElementById('nav-parents');
+    if (parentsLink && !parentsLink.__wired) {
+      parentsLink.__wired = true;
+      parentsLink.addEventListener('click', (event) => {
         event.preventDefault();
-        router.navigate(`/${link.dataset.section}`);
+        router.navigate('/parents');
       });
     }
 

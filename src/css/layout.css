@@ -5,7 +5,6 @@
 
 /* Main content */
 .main {
-	padding: var(--spacing-8) 0;
 	flex: 1 0 auto;
 }
 

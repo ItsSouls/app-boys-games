@@ -107,13 +107,63 @@
 }
 
 /* Filters / Chips */
+.vocabulario-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Search Bar */
+.vocabulario-search-bar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 400px;
+}
+
+.vocabulario-search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.vocabulario-search-bar input {
+  width: 100%;
+  padding: 14px 20px 14px 52px;
+  border: 2px solid var(--color-border-medium);
+  border-radius: 50px;
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background: rgba(0, 217, 126, 0.05);
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+.vocabulario-search-bar input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.vocabulario-search-bar input:focus {
+  border-color: var(--color-primary);
+  background: var(--color-white);
+  box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
+}
+
 .vocabulario-filters {
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
   gap: var(--spacing-2);
-  margin-bottom: var(--spacing-6);
-  padding: var(--spacing-3) 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  flex: 1;
+  flex-wrap: wrap;
 }
 
 .vocabulario-filters::-webkit-scrollbar {
@@ -148,6 +198,107 @@
   font-weight: var(--font-weight-semibold);
 }
 
+/* Dropdown para filtros de bloques (cuando hay más de 5) */
+.vocabulario-dropdown {
+  position: relative;
+  margin-left: auto;
+}
+
+.vocabulario-dropdown__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 12px 20px;
+  background: rgba(0, 217, 126, 0.08);
+  border: 2px solid transparent;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+  min-width: 200px;
+  justify-content: space-between;
+}
+
+.vocabulario-dropdown__toggle:hover {
+  background: rgba(0, 217, 126, 0.12);
+  border-color: var(--color-primary);
+}
+
+.vocabulario-dropdown.active .vocabulario-dropdown__toggle {
+  border-color: var(--color-primary);
+  background: rgba(0, 217, 126, 0.12);
+}
+
+.vocabulario-dropdown__toggle svg {
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-base);
+}
+
+.vocabulario-dropdown.active .vocabulario-dropdown__toggle svg {
+  transform: rotate(180deg);
+}
+
+.vocabulario-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 100%;
+  background: var(--color-white);
+  border: 2px solid var(--color-border-light);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-2);
+  z-index: 100;
+  max-height: 400px;
+  overflow-y: auto;
+  animation: slideDown 0.2s ease-out;
+}
+
+.vocabulario-dropdown__menu.hidden {
+  display: none;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.vocabulario-dropdown__item {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+  text-align: left;
+}
+
+.vocabulario-dropdown__item:hover {
+  background: rgba(0, 217, 126, 0.08);
+  color: var(--color-primary);
+}
+
+.vocabulario-dropdown__item.active {
+  background: rgba(0, 217, 126, 0.12);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
 /* Vocabulario Grid */
 .vocabulario-grid {
   display: grid;
@@ -160,7 +311,7 @@
 .vocabulario-card {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-4);
+  gap: var(--spacing-3);
   background: var(--color-white);
   border: 1px solid var(--color-border-medium);
   border-radius: var(--radius-md);
@@ -168,6 +319,9 @@
   transition: all var(--transition-base);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
+  /* Altura fija para que todas las tarjetas sean iguales */
+  height: 300px;
+  overflow: hidden;
 }
 
 .vocabulario-card:hover {
@@ -179,11 +333,14 @@
 /* Card Cover Image */
 .vocabulario-card__cover {
   width: 100%;
-  aspect-ratio: 4/3;
+  height: 120px;
+  min-height: 120px;
+  max-height: 120px;
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--color-gray-100);
   position: relative;
+  flex-shrink: 0;
 }
 
 .vocabulario-card__cover img {
@@ -201,10 +358,12 @@
 .vocabulario-card__content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2);
-  flex-grow: 1;
+  gap: var(--spacing-1);
+  flex: 1;
   min-width: 0;
+  min-height: 0;
   overflow: hidden;
+  justify-content: flex-start;
 }
 
 /* Badge de Bloque/Categoría */
@@ -250,10 +409,8 @@
   line-height: 1.4;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  word-break: break-word;
+  white-space: nowrap;
+  max-width: 100%;
 }
 
 /* Card Description */
@@ -266,10 +423,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   word-break: break-word;
+  max-height: 2.8em;
 }
 
 /* Card Hint */
@@ -299,6 +457,8 @@
   cursor: pointer;
   transition: all var(--transition-base);
   font-family: var(--font-family-base);
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .vocabulario-card__button:hover {
@@ -314,10 +474,16 @@
 
 /* Empty State */
 .vocabulario-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: var(--spacing-8) var(--spacing-4);
+  padding: var(--spacing-16) var(--spacing-4);
   color: var(--color-text-muted);
   font-size: 1.125rem;
+  min-height: 300px;
+  width: 100%;
+  grid-column: 1 / -1;
 }
 
 /* Loading State */
@@ -453,6 +619,33 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing-2);
+  /* Optimizaciones de rendimiento para scroll */
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 217, 126, 0.3) transparent;
+}
+
+/* Scrollbar personalizada - Estilo minimalista verde */
+.vocabulario-admin__list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vocabulario-admin__list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.vocabulario-admin__list::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 126, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.vocabulario-admin__list::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 126, 0.5);
 }
 
 .vocabulario-admin__list-item {
@@ -462,7 +655,12 @@
   border: 1px solid var(--color-border-medium);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  /* Optimización de rendimiento */
+  contain: layout style;
+  /* Forzar tamaño fijo */
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .vocabulario-admin__list-item:hover {
@@ -480,6 +678,7 @@
   margin-bottom: var(--spacing-2);
   min-width: 0;
   overflow: hidden;
+  width: 100%;
 }
 
 .vocabulario-admin__list-info strong {
@@ -490,16 +689,22 @@
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap !important;
+  max-width: 100%;
+  word-break: break-all;
 }
 
 .vocabulario-admin__list-info span {
   font-size: 0.75rem;
   color: var(--color-text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  display: block;
+  max-width: 100%;
+  line-height: 1.4;
+  word-break: break-all;
 }
 
 /* Botones de acción (subir, bajar, eliminar) */
@@ -576,8 +781,36 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: var(--spacing-6);
-  padding-top: var(--spacing-8);
+  padding: var(--spacing-4);
+  padding-top: var(--spacing-6);
+  padding-bottom: var(--spacing-4);
+  /* Optimizaciones de rendimiento para scroll */
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 217, 126, 0.3) transparent;
+}
+
+/* Scrollbar personalizada para el editor */
+.vocabulario-admin__editor::-webkit-scrollbar {
+  width: 8px;
+}
+
+.vocabulario-admin__editor::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.vocabulario-admin__editor::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 126, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.vocabulario-admin__editor::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 126, 0.5);
 }
 
 .vocabulario-admin__editor-header {
@@ -715,6 +948,27 @@
   margin-bottom: var(--spacing-2);
 }
 
+/* Quill Editor - esquinas superiores rectas, inferiores redondeadas */
+.ql-editor {
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+}
+
+.ql-container {
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+}
+
+.ql-container.ql-snow {
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
+}
+
+.ql-toolbar {
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
+}
+
+.ql-toolbar.ql-snow {
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
+}
+
 /* Contenedor de acciones (botón guardar + feedback) */
 .vocabulario-admin__actions-container {
   display: flex;
@@ -738,6 +992,7 @@
   transition: all var(--transition-base);
   font-family: var(--font-family-base);
   margin-left: auto;
+  margin-top: 10px;
 }
 
 .vocabulario-admin__save-btn:hover:not(:disabled) {

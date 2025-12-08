@@ -9,6 +9,7 @@ const PAGE_SELECTORS = [
   '#games-page',
   '#vocabulario-page',
   '#gramatica-page',
+  '#parents-page',
   '#game-container',
 ];
 
@@ -39,6 +40,7 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
       'games': 'games-page',
       'vocabulario': 'vocabulario-page',
       'gramatica': 'gramatica-page',
+      'parents': 'parents-page',
     };
 
     const pageId = pageMap[sectionName];
