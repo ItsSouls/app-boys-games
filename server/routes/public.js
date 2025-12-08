@@ -28,6 +28,7 @@ router.get('/pages', async (req, res) => {
     const list = await Page.find(q, {
       section: 1,
       topic: 1,
+      category: 1,
       summary: 1,
       coverImage: 1,
       content: 1,

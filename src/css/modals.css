@@ -429,7 +429,39 @@
   }
 }
 
-/* Theory Admin Modal - Moved to main.css (will be extracted to theory-admin.css later) */
+/* Theory Admin Modal */
+.theory-admin-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-4);
+  z-index: var(--z-modal-admin);
+  animation: fadeIn 0.2s ease;
+}
+
+.theory-admin-modal {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  width: 95%;
+  max-width: 1400px;
+  max-height: 90vh;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  animation: popIn 0.25s ease;
+}
+
+/* Estilos de feedback admin */
+.vocabulario-admin__feedback.is-visible.vocabulario-admin__feedback--success {
+  display: block;
+}
+
+.vocabulario-admin__feedback.is-visible.vocabulario-admin__feedback--error {
+  display: block;
+}
 
 /* Admin Video Modal */
 .admin-video-modal {

@@ -69,6 +69,7 @@ const normalizeResource = (resource = {}) => {
 const extractPageFields = (body = {}) => {
   const fields = {};
   if (body.topic !== undefined) fields.topic = String(body.topic || '').trim();
+  if (body.category !== undefined) fields.category = String(body.category || 'Bloque 1').trim();
   if (body.summary !== undefined) fields.summary = String(body.summary || '').trim();
   if (body.coverImage !== undefined) fields.coverImage = String(body.coverImage || '').trim();
   if (body.content !== undefined) fields.content = sanitizePageContent(body.content || '');
@@ -91,6 +92,7 @@ pagesRouter.get('/', async (req, res) => {
     const pages = await Page.find(filter, {
       section: 1,
       topic: 1,
+      category: 1,
       summary: 1,
       coverImage: 1,
       content: 1,
@@ -116,7 +118,9 @@ pagesRouter.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Invalid section' });
     }
 
+    console.log('[POST /admin/pages] req.body:', JSON.stringify(req.body, null, 2));
     const payload = extractPageFields(req.body);
+    console.log('[POST /admin/pages] extracted payload:', JSON.stringify(payload, null, 2));
     if (!payload.topic) {
       return res.status(400).json({ error: 'Topic is required' });
     }
@@ -137,7 +141,9 @@ pagesRouter.post('/', async (req, res) => {
 pagesRouter.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
+    console.log('[PUT /admin/pages] req.body:', JSON.stringify(req.body, null, 2));
     const payload = extractPageFields(req.body);
+    console.log('[PUT /admin/pages] extracted payload:', JSON.stringify(payload, null, 2));
     if (payload.topic !== undefined && !payload.topic) {
       return res.status(400).json({ error: 'Topic cannot be empty' });
     }

@@ -34,7 +34,10 @@
 /* 10. Videos section */
 @import './videos.css';
 
-/* 11. Welcome screen */
+/* 11. Vocabulario section */
+@import './vocabulario.css';
+
+/* 12. Welcome screen */
 @import './welcome.css';
 
 /* 12. Home page - Modern landing */

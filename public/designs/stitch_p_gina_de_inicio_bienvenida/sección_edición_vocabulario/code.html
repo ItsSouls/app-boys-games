@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Editor de Contenido de Vocabulario (Admin)</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#005A9C",
+            "background-light": "#F0F2F5",
+            "background-dark": "#101828",
+            "text-light": "#333333",
+            "text-dark": "#E0E0E0",
+            "surface-light": "#FFFFFF",
+            "surface-dark": "#1D2939",
+            "border-light": "#D0D5DD",
+            "border-dark": "#344054",
+            "success": "#28a745",
+            "error": "#dc3545",
+          },
+          fontFamily: {
+            "display": ["Spline Sans", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.75rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .ql-toolbar {
+        border-top-left-radius: 0.75rem;
+        border-top-right-radius: 0.75rem;
+        border-color: #D0D5DD;
+    }
+    .dark .ql-toolbar {
+        border-color: #344054;
+    }
+    .ql-container {
+        border-bottom-left-radius: 0.75rem;
+        border-bottom-right-radius: 0.75rem;
+        border-color: #D0D5DD;
+    }
+    .dark .ql-container {
+        border-color: #344054;
+    }
+    .dark .ql-snow .ql-stroke {
+        stroke: #E0E0E0;
+    }
+    .dark .ql-snow .ql-fill {
+        fill: #E0E0E0;
+    }
+    .dark .ql-picker-label {
+        color: #E0E0E0 !important;
+    }
+  </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+<!-- Top Nav Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-border-light dark:border-border-dark px-6 py-3 bg-surface-light dark:bg-surface-dark sticky top-0 z-10">
+<div class="flex items-center gap-4 text-text-light dark:text-text-dark">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor"></path>
+<path d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold tracking-tight">El Rincón Español</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em]">
+<span class="truncate">Guardar cambios</span>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="User avatar" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBZmR-DgMlYa0TiqrfIJkweXSbK0xVe9LPvq8la9wwxYm02gpez44xkOyOjpkPrP9HnplF-m_i5c7THQqEnDUwK3D29x1m4kXnu-x__mx-MNbQL-iKkQvZPA-vi5oVVb9k_x_HxlUfsJIPfqlELyRtTdUMv_mvriTPrdCxbQmLVF6mePYcPE_XY-WVhF8WLdyTVGD7KuCQu8Gg1lCKZNpe0p3UNX6KUrg25mdyP9IXOQYxkOBBR7Hl_e14U8-JwoCVCKShJPJJZUL22");'></div>
+</div>
+</header>
+<div class="flex h-full grow">
+<!-- Left Sidebar -->
+<aside class="w-1/4 max-w-sm flex-shrink-0 border-r border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark p-6">
+<div class="flex h-full flex-col">
+<h3 class="text-xl font-bold mb-6">Índice de Vocabulario</h3>
+<div class="flex-grow space-y-2 overflow-y-auto">
+<!-- Active List Item -->
+<div class="relative cursor-pointer rounded-lg border-2 border-primary bg-primary/10 p-4">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-text-light dark:text-text-dark">Animales de la Granja</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">15 de Octubre, 2023</p>
+</div>
+<div class="flex gap-1">
+<button class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
+<button class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-lg">arrow_downward</span>
+</button>
+<button class="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-error">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Inactive List Item -->
+<div class="relative cursor-pointer rounded-lg border border-border-light dark:border-border-dark p-4 hover:bg-gray-50 dark:hover:bg-white/5">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-text-light dark:text-text-dark">Frutas y Verduras</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">12 de Septiembre, 2023</p>
+</div>
+<div class="flex gap-1">
+<button class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
+<button class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-lg">arrow_downward</span>
+</button>
+<button class="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-error">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Inactive List Item -->
+<div class="relative cursor-pointer rounded-lg border border-border-light dark:border-border-dark p-4 hover:bg-gray-50 dark:hover:bg-white/5">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-text-light dark:text-text-dark">Los Colores</h4>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">5 de Agosto, 2023</p>
+</div>
+<div class="flex gap-1">
+<button class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-lg">arrow_upward</span>
+</button>
+<button class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined text-lg">arrow_downward</span>
+</button>
+<button class="p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-error">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<button class="mt-6 flex w-full min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-12 px-4 bg-primary/20 text-primary dark:bg-primary/30 dark:text-white text-sm font-bold leading-normal tracking-[0.015em] gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="truncate">Nueva página</span>
+</button>
+</div>
+</aside>
+<!-- Right Editor Panel -->
+<main class="w-3/4 flex-grow p-10 overflow-y-auto">
+<div class="mx-auto max-w-4xl">
+<!-- Page Heading -->
+<div class="flex flex-wrap justify-between gap-4 items-center mb-8">
+<div class="flex min-w-72 flex-col gap-1">
+<p class="text-4xl font-black leading-tight tracking-tight text-text-light dark:text-text-dark">Animales de la Granja</p>
+<p class="text-base font-normal leading-normal text-gray-500 dark:text-gray-400">Última actualización: 15 de Octubre, 2023</p>
+</div>
+<div class="flex items-center gap-4">
+<p class="text-sm font-medium">Visible para el alumnado</p>
+<button aria-checked="true" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-primary transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark" role="switch">
+<span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-5"></span>
+</button>
+</div>
+</div>
+<!-- Form Fields -->
+<div class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<label class="flex flex-col flex-1">
+<p class="text-base font-medium pb-2 text-text-light dark:text-text-dark">Tema/Título</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark h-12 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 text-base font-normal leading-normal" placeholder="Ej: Animales de la Granja" value="Animales de la Granja"/>
+</label>
+<label class="flex flex-col flex-1">
+<p class="text-base font-medium pb-2 text-text-light dark:text-text-dark">URL de imagen de portada</p>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark h-12 placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 text-base font-normal leading-normal" placeholder="https://..." value="https://images.unsplash.com/photo-1564750239242-b3b3a39e91b5"/>
+</label>
+</div>
+<div>
+<label class="flex flex-col flex-1">
+<p class="text-base font-medium pb-2 text-text-light dark:text-text-dark">Resumen/descripción breve</p>
+<textarea class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark min-h-24 placeholder:text-gray-400 dark:placeholder:text-gray-500 p-4 text-base font-normal leading-normal" placeholder="Una breve descripción del tema...">En esta lección, aprenderemos sobre los animales que viven en la granja, cómo se llaman y qué sonidos hacen. ¡Vamos a divertirnos!</textarea>
+</label>
+</div>
+<div>
+<p class="text-base font-medium pb-2 text-text-light dark:text-text-dark">Contenido Principal</p>
+<div class="bg-surface-light dark:bg-surface-dark rounded-lg">
+<div id="toolbar-container">
+<span class="ql-formats">
+<select class="ql-font"></select>
+<select class="ql-size"></select>
+</span>
+<span class="ql-formats">
+<button class="ql-bold"></button>
+<button class="ql-italic"></button>
+<button class="ql-underline"></button>
+<button class="ql-strike"></button>
+</span>
+<span class="ql-formats">
+<select class="ql-color"></select>
+<select class="ql-background"></select>
+</span>
+<span class="ql-formats">
+<button class="ql-script" value="sub"></button>
+<button class="ql-script" value="super"></button>
+</span>
+<span class="ql-formats">
+<button class="ql-header" value="1"></button>
+<button class="ql-header" value="2"></button>
+<button class="ql-blockquote"></button>
+<button class="ql-code-block"></button>
+</span>
+<span class="ql-formats">
+<button class="ql-list" value="ordered"></button>
+<button class="ql-list" value="bullet"></button>
+<button class="ql-indent" value="-1"></button>
+<button class="ql-indent" value="+1"></button>
+</span>
+<span class="ql-formats">
+<button class="ql-direction" value="rtl"></button>
+<select class="ql-align"></select>
+</span>
+<span class="ql-formats">
+<button class="ql-link"></button>
+<button class="ql-image"></button>
+<button class="ql-video"></button>
+</span>
+<span class="ql-formats">
+<button class="ql-clean"></button>
+</span>
+</div>
+<div class="min-h-80 p-4 text-base" id="editor">
+<h2>¡Hola, granjeros!</h2><p><br/></p><p>Hoy vamos a conocer a nuestros amigos de la granja.</p><ul><li><strong>La Vaca</strong> - Hace "¡Muuuu!" y nos da leche.</li><li><strong>El Cerdo</strong> - Le encanta el barro y hace "¡Oinc, oinc!".</li><li><strong>La Gallina</strong> - Pone huevos y hace "Pío, pío".</li></ul>
+</div>
+</div>
+</div>
+<div class="fixed bottom-6 right-6">
+<div class="flex items-center gap-2 rounded-full bg-success text-white px-4 py-2 shadow-lg">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+<span class="text-sm font-medium">Cambios guardados con éxito</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
+<script>
+    const quill = new Quill('#editor', {
+      modules: {
+        toolbar: '#toolbar-container'
+      },
+      theme: 'snow',
+      placeholder: 'Escribe el contenido de la lección aquí...',
+    });
+  </script>
+</body></html>

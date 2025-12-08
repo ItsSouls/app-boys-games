@@ -1,5 +1,6 @@
 import DOMPurify from 'dompurify';
 import { API_BASE } from './config.js';
+import { openTheoryAdminModal } from '../ui/admin/theoryModal.js';
 
 const THEORY_SANITIZE_CONFIG = {
   ADD_TAGS: ['iframe', 'video', 'source', 'figure', 'figcaption', 'section', 'article'],
@@ -19,6 +20,22 @@ const THEORY_SANITIZE_CONFIG = {
 };
 
 const HTML_TAG_REGEX = /<([a-z][\s\S]*?)>/i;
+
+// Estado global para cada sección
+const state = {
+  vocabulario: {
+    pages: [],
+    filteredPages: [],
+    currentFilter: 'all',
+    isAdmin: false,
+  },
+  gramatica: {
+    pages: [],
+    filteredPages: [],
+    currentFilter: 'all',
+    isAdmin: false,
+  },
+};
 
 export const formatTheoryDate = (value) => {
   if (!value) return '';
@@ -42,97 +59,274 @@ const prepareTheoryHtml = (raw = '') => {
 export const sanitizeTheoryHtml = (raw = '') =>
   DOMPurify.sanitize(prepareTheoryHtml(raw), THEORY_SANITIZE_CONFIG);
 
-export async function renderTheory(sectionName) {
-  const container = document.getElementById(sectionName + '-content');
-  if (!container) return;
-  container.innerHTML = "<div class='theory-loading'>Cargando...</div>";
-  try {
-    const res = await fetch(API_BASE + '/public/pages?section=' + encodeURIComponent(sectionName));
-    if (!res.ok) throw new Error('Sin contenido');
-    const data = await res.json();
-    const pages = Array.isArray(data?.pages) ? data.pages : [];
-    if (!pages.length) {
-      container.innerHTML = "<div class='theory-empty'>No hay contenido todavía.</div>";
-      return;
-    }
-
-    const createExcerpt = (page) => {
-      if (page.summary) return page.summary;
-      const raw = page.content || '';
-      const temp = document.createElement('div');
-      temp.innerHTML = sanitizeTheoryHtml(raw);
-      const text = temp.textContent || '';
-      return text.length > 220 ? text.slice(0, 220).trim() + '…' : text;
-    };
-
-    container.innerHTML = '';
-    pages.forEach((page, index) => {
-      const card = document.createElement('article');
-      card.className = 'theory-card theory-card--rich';
-
-      if (page.coverImage) {
-        const figure = document.createElement('figure');
-        figure.className = 'theory-card__cover';
-        const img = document.createElement('img');
-        img.src = page.coverImage;
-        img.alt = 'Portada para ' + page.topic;
-        img.loading = 'lazy';
-        img.addEventListener('error', () => figure.remove());
-        figure.appendChild(img);
-        card.appendChild(figure);
-      }
-
-      const header = document.createElement('header');
-      header.className = 'theory-card__header';
-      const title = document.createElement('h4');
-      title.textContent = page.topic;
-      header.appendChild(title);
-      if (page.summary) {
-        const summary = document.createElement('p');
-        summary.className = 'theory-card__summary';
-        summary.textContent = page.summary;
-        header.appendChild(summary);
-      }
-      card.appendChild(header);
-
-      const excerpt = document.createElement('p');
-      excerpt.className = 'theory-card__excerpt';
-      excerpt.textContent = createExcerpt(page);
-      card.appendChild(excerpt);
-
-      const meta = document.createElement('footer');
-      meta.className = 'theory-card__meta theory-card__meta--actions';
-      const blockTag = document.createElement('span');
-      blockTag.className = 'theory-card__index';
-      blockTag.textContent = 'Bloque ' + (index + 1);
-      meta.appendChild(blockTag);
-      const openBtn = document.createElement('button');
-      openBtn.type = 'button';
-      openBtn.className = 'theory-card__open';
-      openBtn.textContent = 'Ver contenido';
-      meta.appendChild(openBtn);
-      card.appendChild(meta);
-
-      const openModal = () => openTheoryModal(page, sectionName);
-      card.addEventListener('click', openModal);
-      openBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        openModal();
-      });
-
-      container.appendChild(card);
-    });
-  } catch (err) {
-    console.error('[theory]', err);
-    container.innerHTML = "<div class='theory-error'>Error al cargar contenido.</div>";
-  }
-}
-
 export const sanitizeIdForUrl = (id) => {
   const trimmed = String(id ?? '').trim();
   return encodeURIComponent(trimmed).replace(/\(/g, '%28').replace(/\)/g, '%29');
 };
 
+// Determina el badge de bloque basado en el índice o categoría
+function getBadgeClass(index, category) {
+  if (category && category.toLowerCase().includes('bloque 1')) return 'bloque-1';
+  if (category && category.toLowerCase().includes('bloque 2')) return 'bloque-2';
+  if (category && category.toLowerCase().includes('bloque 3')) return 'bloque-3';
+
+  // Si no hay categoría, usar el índice
+  const bloqueNum = (index % 3) + 1;
+  return `bloque-${bloqueNum}`;
+}
+
+// Extraer categoría/bloque del campo category o fallback al texto
+function extractCategory(page, index) {
+  // Si la página ya tiene category del backend, usarla
+  if (page.category) return page.category;
+
+  // Buscar en el topic o summary referencias a bloques
+  const text = `${page.topic || ''} ${page.summary || ''}`.toLowerCase();
+  if (text.includes('bloque 1')) return 'Bloque 1';
+  if (text.includes('bloque 2')) return 'Bloque 2';
+  if (text.includes('bloque 3')) return 'Bloque 3';
+
+  // Por defecto, asignar basado en el índice
+  const bloqueNum = (index % 3) + 1;
+  return `Bloque ${bloqueNum}`;
+}
+
+// Cargar páginas desde el backend
+async function loadPages(sectionName) {
+  try {
+    const res = await fetch(API_BASE + '/public/pages?section=' + encodeURIComponent(sectionName));
+    if (!res.ok) throw new Error('Sin contenido');
+    const data = await res.json();
+    const pages = Array.isArray(data?.pages) ? data.pages : [];
+
+    // Agregar categoría a cada página
+    state[sectionName].pages = pages.map((page, index) => ({
+      ...page,
+      category: extractCategory(page, index),
+    }));
+
+    state[sectionName].filteredPages = [...state[sectionName].pages];
+    return true;
+  } catch (err) {
+    console.error('[theory]', err);
+    return false;
+  }
+}
+
+// Verificar si el usuario es admin
+async function checkAdminStatus() {
+  const token = localStorage.getItem('abg_token');
+  if (!token) return false;
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok) return false;
+    const { user } = await res.json();
+    return user?.role === 'admin' || user?.role === 'moderator';
+  } catch {
+    return false;
+  }
+}
+
+// Renderizar filtros
+function renderFilters(sectionName) {
+  const filtersContainer = document.getElementById(`${sectionName}-filters`);
+  if (!filtersContainer) return;
+
+  const pages = state[sectionName].pages;
+  const categories = [...new Set(pages.map(p => p.category))].sort();
+
+  filtersContainer.innerHTML = `
+    <button class="vocabulario-filter-chip ${state[sectionName].currentFilter === 'all' ? 'is-active' : ''}"
+            data-filter="all">
+      Todos los bloques
+    </button>
+    ${categories.map(cat => `
+      <button class="vocabulario-filter-chip ${state[sectionName].currentFilter === cat ? 'is-active' : ''}"
+              data-filter="${cat}">
+        ${cat}
+      </button>
+    `).join('')}
+  `;
+
+  // Event listeners para filtros
+  filtersContainer.querySelectorAll('.vocabulario-filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const filter = chip.dataset.filter;
+      state[sectionName].currentFilter = filter;
+
+      // Actualizar clases activas
+      filtersContainer.querySelectorAll('.vocabulario-filter-chip').forEach(c => {
+        c.classList.remove('is-active');
+      });
+      chip.classList.add('is-active');
+
+      // Filtrar y renderizar
+      filterPages(sectionName);
+      renderUserView(sectionName);
+    });
+  });
+}
+
+// Filtrar páginas según la categoría seleccionada
+function filterPages(sectionName) {
+  const filter = state[sectionName].currentFilter;
+  const pages = state[sectionName].pages;
+
+  if (filter === 'all') {
+    state[sectionName].filteredPages = [...pages];
+  } else {
+    state[sectionName].filteredPages = pages.filter(p => p.category === filter);
+  }
+}
+
+// Renderizar vista de usuario (cards)
+function renderUserView(sectionName) {
+  const gridContainer = document.getElementById(`${sectionName}-grid`);
+  if (!gridContainer) return;
+
+  const pages = state[sectionName].filteredPages;
+
+  if (!pages.length) {
+    gridContainer.innerHTML = '<div class="vocabulario-empty">No hay contenido disponible para este filtro.</div>';
+    return;
+  }
+
+  gridContainer.innerHTML = pages.map((page, index) => {
+    const badgeClass = getBadgeClass(index, page.category);
+    const hint = extractHint(page);
+
+    return `
+      <div class="vocabulario-card" data-page-id="${page._id}">
+        ${page.coverImage ? `
+          <div class="vocabulario-card__cover">
+            <img src="${escapeHtml(page.coverImage)}"
+                 alt="${escapeHtml(page.topic)}"
+                 loading="lazy"
+                 onerror="this.parentElement.style.display='none'">
+          </div>
+        ` : ''}
+
+        <div class="vocabulario-card__content">
+          <span class="vocabulario-card__badge vocabulario-card__badge--${badgeClass}">
+            ${escapeHtml(page.category || 'General')}
+          </span>
+
+          <h3 class="vocabulario-card__title">${escapeHtml(page.topic)}</h3>
+
+          ${page.summary ? `
+            <p class="vocabulario-card__description">${escapeHtml(page.summary)}</p>
+          ` : ''}
+
+          ${hint ? `
+            <p class="vocabulario-card__hint">"${escapeHtml(hint)}"</p>
+          ` : ''}
+        </div>
+
+        <button class="vocabulario-card__button" aria-label="Ver contenido de ${escapeHtml(page.topic)}">
+          <span>Ver contenido</span>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  // Event listeners para abrir modales
+  gridContainer.querySelectorAll('.vocabulario-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      const pageId = card.dataset.pageId;
+      const page = pages.find(p => p._id === pageId);
+      if (page) {
+        openTheoryModal(page, sectionName);
+      }
+    });
+  });
+}
+
+// Extraer hint/ejemplo del contenido
+function extractHint(page) {
+  // Buscar en el contenido HTML algo que parezca un ejemplo
+  if (!page.content) return '';
+
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = sanitizeTheoryHtml(page.content);
+
+  // Buscar citas o texto en cursiva
+  const quote = tempDiv.querySelector('blockquote, em, i');
+  if (quote) {
+    const text = quote.textContent.trim();
+    return text.length > 50 ? text.slice(0, 50) + '...' : text;
+  }
+
+  return '';
+}
+
+// Escape HTML para prevenir XSS
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Renderizar vista de administrador
+export function openAdminView(sectionName) {
+  openTheoryAdminModal(sectionName);
+}
+
+// Renderizar teoría completa (main function)
+export async function renderTheory(sectionName) {
+  const userView = document.getElementById(`${sectionName}-user-view`);
+  const adminToggle = document.getElementById(`${sectionName}-admin-gear`);
+  const gridContainer = document.getElementById(`${sectionName}-grid`);
+
+  if (!userView || !gridContainer) return;
+
+  // Mostrar loading
+  gridContainer.innerHTML = '<div class="vocabulario-loading">Cargando...</div>';
+
+  // Verificar permisos de admin
+  state[sectionName].isAdmin = await checkAdminStatus();
+
+  if (adminToggle) {
+    adminToggle.classList.toggle('is-visible', state[sectionName].isAdmin);
+  }
+
+  // Cargar páginas
+  const success = await loadPages(sectionName);
+
+  if (!success) {
+    gridContainer.innerHTML = '<div class="vocabulario-error">Error al cargar contenido.</div>';
+    return;
+  }
+
+  // Renderizar filtros y vista de usuario
+  renderFilters(sectionName);
+  renderUserView(sectionName);
+
+  // Wire admin toggle (solo una vez)
+  if (adminToggle && state[sectionName].isAdmin && !adminToggle.__wired) {
+    adminToggle.__wired = true;
+    adminToggle.addEventListener('click', () => {
+      openAdminView(sectionName);
+    });
+  }
+
+  // Wire back button (solo una vez)
+  const backBtn = document.getElementById(`${sectionName}-back-btn`);
+  if (backBtn && !backBtn.__wired) {
+    backBtn.__wired = true;
+    backBtn.addEventListener('click', () => {
+      document.getElementById(`${sectionName}-page`).classList.add('hidden');
+      document.getElementById('home-page').classList.remove('hidden');
+    });
+  }
+}
+
+// Modal de visualización de contenido
 export function openTheoryModal(page, sectionName) {
   const overlay = document.createElement('div');
   overlay.className = 'theory-modal-overlay';

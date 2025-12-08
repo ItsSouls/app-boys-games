@@ -216,36 +216,85 @@
 
           <!-- Página de Vocabulario -->
           <div id="vocabulario-page" class="page-view hidden">
-            <section class="section-container" id="vocabulario-section">
-              <div class="section-header">
-                <button class="back-btn" id="vocabulario-back-btn">← Volver al Menú</button>
-                <h2 class="section-title">📚 Teoría de Vocabulario</h2>
-                <button id="vocabulario-admin-gear" class="option-btn" title="Editar páginas de vocabulario" style="margin-left:auto;padding:6px 10px;">⚙️</button>
+            <section class="vocabulario-section" id="vocabulario-section">
+              <!-- Vista de Usuario -->
+              <div class="vocabulario-user-view" id="vocabulario-user-view">
+                <div class="vocabulario-hero">
+                  <button class="vocabulario-back-btn" id="vocabulario-back-btn" aria-label="Volver a inicio">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Volver
+                  </button>
+                  <div class="vocabulario-hero-content">
+                    <h1 class="vocabulario-hero__title">Selección de Temas de Vocabulario</h1>
+                    <p class="vocabulario-hero__subtitle">Aprende nuevas palabras por temas y practica con ejemplos.</p>
+                  </div>
+                  <button class="vocabulario-admin-toggle" id="vocabulario-admin-gear" title="Gestión de vocabulario">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 6V14M6 10H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Administrar
+                  </button>
+                </div>
+
+                <!-- Filtros por Bloque -->
+                <div class="vocabulario-filters" id="vocabulario-filters">
+                  <button class="vocabulario-filter-chip is-active" data-filter="all">Todos los bloques</button>
+                  <!-- Los filtros se cargarán dinámicamente -->
+                </div>
+
+                <!-- Grid de Cards -->
+                <div class="vocabulario-grid" id="vocabulario-grid">
+                  <!-- Las tarjetas se cargarán aquí -->
+                </div>
               </div>
-              <div class="theory-grid" id="vocabulario-content">
-                <!-- Contenido teórico de vocabulario -->
-                <article class="theory-card">
-                  <h4>Introducción</h4>
-                  <p>Aprende nuevas palabras por temas y practica con ejemplos.</p>
-                </article>
+
+              <!-- Vista de Admin -->
+              <div class="vocabulario-admin-view" id="vocabulario-admin-view">
+                <!-- El contenido admin se generará dinámicamente desde theoryModal.js -->
               </div>
             </section>
           </div>
 
           <!-- Página de Gramática -->
           <div id="gramatica-page" class="page-view hidden">
-            <section class="section-container" id="gramatica-section">
-              <div class="section-header">
-                <button class="back-btn" id="gramatica-back-btn">← Volver al Menú</button>
-                <h2 class="section-title">🧠 Gramática</h2>
-                <button id="gramatica-admin-gear" class="option-btn" title="Editar páginas de gramática" style="margin-left:auto;padding:6px 10px;">⚙️</button>
+            <section class="vocabulario-section" id="gramatica-section">
+              <!-- Vista de Usuario -->
+              <div class="vocabulario-user-view" id="gramatica-user-view">
+                <div class="vocabulario-hero">
+                  <button class="vocabulario-back-btn" id="gramatica-back-btn" aria-label="Volver a inicio">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Volver
+                  </button>
+                  <div class="vocabulario-hero-content">
+                    <h1 class="vocabulario-hero__title">Gramática</h1>
+                    <p class="vocabulario-hero__subtitle">Reglas y ejemplos para hablar y escribir mejor.</p>
+                  </div>
+                  <button class="vocabulario-admin-toggle" id="gramatica-admin-gear" title="Gestión de gramática">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M10 6V14M6 10H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Administrar
+                  </button>
+                </div>
+
+                <!-- Filtros por Bloque -->
+                <div class="vocabulario-filters" id="gramatica-filters">
+                  <button class="vocabulario-filter-chip is-active" data-filter="all">Todos los bloques</button>
+                </div>
+
+                <!-- Grid de Cards -->
+                <div class="vocabulario-grid" id="gramatica-grid">
+                  <!-- Las tarjetas se cargarán aquí -->
+                </div>
               </div>
-              <div class="theory-grid" id="gramatica-content">
-                <!-- Contenido teórico de gramática -->
-                <article class="theory-card">
-                  <h4>¿Qué es la gramática?</h4>
-                  <p>Reglas y ejemplos para hablar y escribir mejor.</p>
-                </article>
+
+              <!-- Vista de Admin -->
+              <div class="vocabulario-admin-view" id="gramatica-admin-view">
+                <!-- El contenido admin se generará dinámicamente desde theoryModal.js -->
               </div>
             </section>
           </div>

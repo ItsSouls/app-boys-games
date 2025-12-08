@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Selección de Temas de Vocabulario - El Rincón Español</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13ec25",
+            "background-light": "#f6f8f6",
+            "background-dark": "#102212",
+          },
+          fontFamily: {
+            "display": ["Spline Sans", "sans-serif"]
+          },
+          borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings:
+      'FILL' 0,
+      'wght' 400,
+      'GRAD' 0,
+      'opsz' 24
+    }
+  </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 sm:px-8 md:px-16 lg:px-24 xl:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 px-6 sm:px-10 py-3">
+<div class="flex items-center gap-4 text-gray-900 dark:text-gray-100">
+<div class="size-6 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill-rule="evenodd"></path>
+<path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">El Rincón Español</h2>
+</div>
+</header>
+<!-- PageHeading -->
+<div class="flex flex-wrap justify-between gap-3 p-4 pt-10">
+<p class="text-4xl font-black leading-tight tracking-[-0.033em] min-w-72 text-gray-900 dark:text-gray-100">Selección de Temas de Vocabulario</p>
+</div>
+<!-- Chips / Filters -->
+<div class="flex gap-2 sm:gap-3 p-3 overflow-x-auto">
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-primary/20 dark:bg-primary/30 px-4 text-gray-900 dark:text-gray-100">
+<p class="text-sm font-medium leading-normal">Todos los bloques</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-100 dark:bg-gray-800 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<p class="text-sm font-medium leading-normal text-gray-700 dark:text-gray-300">Bloque 1</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-100 dark:bg-gray-800 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<p class="text-sm font-medium leading-normal text-gray-700 dark:text-gray-300">Bloque 2</p>
+</button>
+<button class="flex h-10 shrink-0 items-center justify-center gap-x-2 rounded-full bg-gray-100 dark:bg-gray-800 px-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+<p class="text-sm font-medium leading-normal text-gray-700 dark:text-gray-300">Bloque 3</p>
+</button>
+</div>
+<!-- ImageGrid as Theory Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
+<!-- Card 1: Los Colores -->
+<div class="flex flex-col gap-4 p-4 bg-white dark:bg-background-dark/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-800">
+<div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover rounded" data-alt="A vibrant rainbow arching across a blue sky" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCLmH3odp2i7Q2IoL8OAYWs6DW-wC7cuN9K_lTgyylY3zgiXdbzHQ4v0beDxRBplmG418Uw28CMi1TauHIn_My9UNM2SxYkYBcfOX9oPnzfm6vNgBDYfDwRoNvdbx_Dj0g3MSKnEKQGy6N-fUurplc4jxbHNOmaEQrO8ns_5KONq8qhO0QMeg86egCL-NSNsKyG3ZYTfcY3zjWE9BQJZ3-zxBqCoxNxO5UwkPGhvB_4kpo16c1Yl0kc9SXwu6DFbX34LVSbAK3UrOp1");'></div>
+<div class="flex flex-col gap-2 flex-grow">
+<span class="text-xs font-semibold uppercase tracking-wider text-green-600 dark:text-green-400">Bloque 1</span>
+<p class="text-lg font-bold text-gray-900 dark:text-gray-50">Los Colores</p>
+<p class="text-sm text-gray-600 dark:text-gray-400 flex-grow">Aprende los nombres de todos los colores.</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 italic">"Rojo, Azul, Verde..."</p>
+</div>
+<button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full h-12 px-5 bg-primary text-gray-900 text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Ver contenido</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 2: Los Animales de la Granja -->
+<div class="flex flex-col gap-4 p-4 bg-white dark:bg-background-dark/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-800">
+<div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover rounded" data-alt="A collection of friendly cartoon farm animals" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD0702hIhZIl7voVfcNgAqbuQwe6KrLySENi6yGEnbwm1Nrm3xiicdLgII4FtIcgVP3cV0XXJkRSzNqVs8hRBI_P1FYzGbMK3I7XrLUsmm0wJcteEufMwtjFXB0GSg6w7Z9icxS9-mvq9vJdHQ4HtbPLVeDiSSMeBzHVxDGb8Def952CEpZf-EQXhJbX3c8Xc5JqSfi8L1dIIi9Y1VLhcIV0ZVtrGGZLNRKbSDH02VZGSH7mMG4prbK9xB8AAiLaveB1Uw-fhE35eBu");'></div>
+<div class="flex flex-col gap-2 flex-grow">
+<span class="text-xs font-semibold uppercase tracking-wider text-green-600 dark:text-green-400">Bloque 1</span>
+<p class="text-lg font-bold text-gray-900 dark:text-gray-50">Los Animales de la Granja</p>
+<p class="text-sm text-gray-600 dark:text-gray-400 flex-grow">Conoce a los animales que viven en la granja.</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 italic">"Vaca, Cerdo, Pollo..."</p>
+</div>
+<button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full h-12 px-5 bg-primary text-gray-900 text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Ver contenido</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 3: Mi Familia -->
+<div class="flex flex-col gap-4 p-4 bg-white dark:bg-background-dark/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-800">
+<div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover rounded" data-alt="A stick figure drawing of a happy family holding hands" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDmsYg_OBAzqvKY6IjN7VIrgB8IFHkS6D94kX9Mh3bkcNuQxjym4dGPJepvF_PFqfg6aPgmwM__fE1efudurP6KZAV-bQC5dj0g17vhIk8Z1CTsnzJ46og72saanJKKW29ZZlhjZsG_mgl161xJPUGjjs6m4xqpCvO_CwzInMcxsCRyGGDI3JggWubM4EHgB2g4Zc3KWlghzICVRER9JkhXQ79JvKdEa1NRZYftdSIc4r6UtelW7CeHelrr96cEeA6qMqE5yQzrR4JH");'></div>
+<div class="flex flex-col gap-2 flex-grow">
+<span class="text-xs font-semibold uppercase tracking-wider text-yellow-600 dark:text-yellow-400">Bloque 2</span>
+<p class="text-lg font-bold text-gray-900 dark:text-gray-50">Mi Familia</p>
+<p class="text-sm text-gray-600 dark:text-gray-400 flex-grow">Aprende a hablar de los miembros de tu familia.</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 italic">"Madre, Padre, Hermano..."</p>
+</div>
+<button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full h-12 px-5 bg-primary text-gray-900 text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Ver contenido</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 4: Las Frutas -->
+<div class="flex flex-col gap-4 p-4 bg-white dark:bg-background-dark/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-800">
+<div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover rounded" data-alt="A colorful assortment of fresh fruits like apples, bananas, and oranges" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBWZRGg68AYRDGV8aHwej2MWAGm1MIcy8mEOvnLiGbBHnGmYs9XKWgiu3ZhKWLYas7m2LmDBoUc1UUZ-ReKKvEwpFpyqELkixxJnrcuXyMJk4bIxHOkoHTp731sc0PfPoMZdtqvQRjZ47qnk6yLmKy3FkSTk_c3OkH2O2TWPRp9es8aUYKf7VGBo6srmXxHKeVE9x8d-i118dgwx6JsjsnGmNQaxlO7fN7wYYB4dBhgrmH4pJX44G4dYGmMhkgxdnNK7_25_jwdLMjV");'></div>
+<div class="flex flex-col gap-2 flex-grow">
+<span class="text-xs font-semibold uppercase tracking-wider text-yellow-600 dark:text-yellow-400">Bloque 2</span>
+<p class="text-lg font-bold text-gray-900 dark:text-gray-50">Las Frutas</p>
+<p class="text-sm text-gray-600 dark:text-gray-400 flex-grow">Descubre diferentes tipos de fruta.</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 italic">"Manzana, Plátano, Naranja..."</p>
+</div>
+<button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full h-12 px-5 bg-primary text-gray-900 text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Ver contenido</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 5: Los Números -->
+<div class="flex flex-col gap-4 p-4 bg-white dark:bg-background-dark/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-800">
+<div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover rounded" data-alt="Colorful wooden blocks with numbers on them" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGiUwTCfO8xNLZmApxy3leAd6QGhII6YEpUv4mkAbQanJ7UzL0vw0LgDuu7JVdJKT6BBg2JuwdTtqsYNHWZxppET4jWSrAHbLZjV5EN1XusJSuWsLaph5afSBEMP99LXnQGZoexSmCJNxxWoCK8jhZCCENP5DHhYmsR7L6WljTPLu4TjYavLT9JVopjxBBQJT5Zs6FEenUTEc2mRH9_dNazsA_cFgoZEX8N1r39weWwjpZ1364pXH9Q-QYekEEnFIwVG11TMlGf6qi");'></div>
+<div class="flex flex-col gap-2 flex-grow">
+<span class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">Bloque 3</span>
+<p class="text-lg font-bold text-gray-900 dark:text-gray-50">Los Números</p>
+<p class="text-sm text-gray-600 dark:text-gray-400 flex-grow">Aprende a contar del uno al diez.</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 italic">"Uno, Dos, Tres..."</p>
+</div>
+<button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full h-12 px-5 bg-primary text-gray-900 text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Ver contenido</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<!-- Card 6: La Ropa -->
+<div class="flex flex-col gap-4 p-4 bg-white dark:bg-background-dark/50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 dark:border-gray-800">
+<div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover rounded" data-alt="A child's closet with various items of clothing neatly arranged" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBNkGuks_eHQ4aO8ltnYdnEdM91kEvbj4E4_hS7SddBIDZMRlGGM9OodiykfInDccj7HxdaY-Eafl370_Q8IAxqJR0WnXv93gFWhar2_HxJwkFnzzQWq13xifvQLw7Ob2sxeJroei1xBUdIwRrJ7q7ZVUw6Vxt9vnvYH_O9qm_yF_TjuGDayaA___H4LXYwDNNsFx5YReRWNEI97bNi5lTsUMAUcY1kgrgAgiCYWySs-Z80crE9-WoU3kl4JxKsLZZp0dUINYcVneNQ");'></div>
+<div class="flex flex-col gap-2 flex-grow">
+<span class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">Bloque 3</span>
+<p class="text-lg font-bold text-gray-900 dark:text-gray-50">La Ropa</p>
+<p class="text-sm text-gray-600 dark:text-gray-400 flex-grow">¿Qué llevas puesto hoy?</p>
+<p class="text-sm text-gray-500 dark:text-gray-400 italic">"Camisa, Pantalones, Zapatos..."</p>
+</div>
+<button class="flex w-full min-w-[84px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-full h-12 px-5 bg-primary text-gray-900 text-base font-bold leading-normal tracking-[0.015em] hover:opacity-90 transition-opacity">
+<span class="truncate">Ver contenido</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

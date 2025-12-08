@@ -12,6 +12,7 @@ const pageSchema = new mongoose.Schema(
   {
     section: { type: String, enum: ['vocabulario', 'gramatica'], required: true, index: true },
     topic: { type: String, required: true, index: true, trim: true },
+    category: { type: String, default: 'Bloque 1', trim: true, index: true },
     summary: { type: String, default: '', trim: true },
     coverImage: { type: String, default: '', trim: true },
     content: { type: String, default: '' },

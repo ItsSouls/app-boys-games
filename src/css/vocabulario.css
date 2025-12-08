@@ -1,0 +1,816 @@
+/**
+ * Vocabulario Section - Vista Alumno y Admin
+ * Basado en diseños de referencia con estilo minimalista verde
+ */
+
+/* ============================================
+   VISTA ALUMNO - Estilo de tarjetas modernas
+   ============================================ */
+
+/* Vocabulario Section Container */
+.vocabulario-section {
+  padding: var(--spacing-6) 0;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Vocabulario Hero */
+.vocabulario-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.vocabulario-back-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  background: none;
+  border: none;
+  padding: var(--spacing-2) var(--spacing-3);
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-sm);
+}
+
+.vocabulario-back-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+}
+
+.vocabulario-back-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.vocabulario-hero-content {
+  flex: 1;
+  min-width: 300px;
+  margin-top: var(--spacing-8);
+}
+
+.vocabulario-hero__title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+  line-height: 1.2;
+}
+
+.vocabulario-hero__subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--color-primary);
+  margin: 0;
+  font-weight: var(--font-weight-regular);
+}
+
+/* Admin Toggle Button */
+.vocabulario-admin-toggle {
+  display: none;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 12px 24px;
+  background: var(--color-white);
+  border: 2px solid var(--color-border-medium);
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+}
+
+.vocabulario-admin-toggle.is-visible {
+  display: flex;
+}
+
+.vocabulario-admin-toggle:hover {
+  border-color: var(--color-primary);
+  background: rgba(0, 217, 126, 0.05);
+  color: var(--color-primary);
+}
+
+.vocabulario-admin-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Filters / Chips */
+.vocabulario-filters {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-3) 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.vocabulario-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.vocabulario-filter-chip {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  border: none;
+  background: var(--color-gray-100);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-base);
+  white-space: nowrap;
+}
+
+.vocabulario-filter-chip:hover {
+  background: var(--color-gray-200);
+  transform: translateY(-1px);
+}
+
+.vocabulario-filter-chip.is-active {
+  background: rgba(0, 217, 126, 0.15);
+  color: var(--color-primary-dark);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Vocabulario Grid */
+.vocabulario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-6);
+  padding: var(--spacing-4) 0;
+}
+
+@media (min-width: 900px) {
+  .vocabulario-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Vocabulario Card */
+.vocabulario-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  background: var(--color-white);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-4);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.vocabulario-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--color-border-dark);
+}
+
+/* Card Cover Image */
+.vocabulario-card__cover {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-gray-100);
+  position: relative;
+}
+
+.vocabulario-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.vocabulario-card:hover .vocabulario-card__cover img {
+  transform: scale(1.05);
+}
+
+/* Card Content */
+.vocabulario-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  flex-grow: 1;
+}
+
+/* Badge de Bloque/Categoría */
+.vocabulario-card__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+
+/* Colores de categorías/bloques */
+.vocabulario-card__badge--bloque-1 {
+  background: rgba(0, 217, 126, 0.15);
+  color: #00875A;
+}
+
+.vocabulario-card__badge--bloque-2 {
+  background: rgba(255, 184, 77, 0.15);
+  color: #B87503;
+}
+
+.vocabulario-card__badge--bloque-3 {
+  background: rgba(78, 205, 196, 0.15);
+  color: #00766E;
+}
+
+.vocabulario-card__badge--default {
+  background: var(--color-gray-100);
+  color: var(--color-text-secondary);
+}
+
+/* Card Title */
+.vocabulario-card__title {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Card Description */
+.vocabulario-card__description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  flex-grow: 1;
+}
+
+/* Card Hint */
+.vocabulario-card__hint {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+/* Card Button */
+.vocabulario-card__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  padding: 12px 20px;
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+}
+
+.vocabulario-card__button:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.vocabulario-card__button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Empty State */
+.vocabulario-empty {
+  text-align: center;
+  padding: var(--spacing-8) var(--spacing-4);
+  color: var(--color-text-muted);
+  font-size: 1.125rem;
+}
+
+/* Loading State */
+.vocabulario-loading {
+  text-align: center;
+  padding: var(--spacing-8) var(--spacing-4);
+  color: var(--color-text-secondary);
+  font-size: 1.125rem;
+}
+
+/* Error State */
+.vocabulario-error {
+  text-align: center;
+  padding: var(--spacing-8) var(--spacing-4);
+  color: var(--color-error);
+  font-size: 1.125rem;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: var(--radius-md);
+}
+
+/* ============================================
+   VISTA ADMIN - Panel de edición lateral
+   ============================================ */
+
+/* Admin View Container */
+.vocabulario-admin-view {
+  display: none;
+  min-height: 70vh;
+}
+
+.vocabulario-admin-view.is-active {
+  display: flex;
+  gap: 0;
+}
+
+/* Admin Layout: Sidebar + Editor */
+.vocabulario-admin__container {
+  display: flex;
+  gap: 0;
+  height: 80vh;
+  max-height: 80vh;
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-white);
+  position: relative;
+}
+
+/* Botón de cerrar del modal admin - Diseño profesional */
+.theory-admin__close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: auto;
+  user-select: none;
+  transition: all var(--transition-base);
+  padding: 0;
+}
+
+.theory-admin__close-btn::before,
+.theory-admin__close-btn::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: all var(--transition-base);
+}
+
+.theory-admin__close-btn::before {
+  transform: rotate(45deg);
+}
+
+.theory-admin__close-btn::after {
+  transform: rotate(-45deg);
+}
+
+.theory-admin__close-btn:hover {
+  background: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+.theory-admin__close-btn:active {
+  transform: scale(0.95);
+}
+
+/* Sidebar izquierdo (25% ancho) */
+.vocabulario-admin__sidebar {
+  width: 25%;
+  min-width: 280px;
+  max-width: 400px;
+  background: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border-medium);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.vocabulario-admin__sidebar-header {
+  padding: var(--spacing-4);
+  border-bottom: 1px solid var(--color-border-medium);
+  background: var(--color-white);
+}
+
+.vocabulario-admin__sidebar-header h3 {
+  margin: 0 0 var(--spacing-1) 0;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.vocabulario-admin__sidebar-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Lista de páginas */
+.vocabulario-admin__list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-2);
+}
+
+.vocabulario-admin__list-item {
+  padding: var(--spacing-3);
+  margin-bottom: var(--spacing-2);
+  background: var(--color-white);
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.vocabulario-admin__list-item:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-border-dark);
+}
+
+.vocabulario-admin__list-item.is-active {
+  border: 2px solid var(--color-primary);
+  background: rgba(0, 217, 126, 0.05);
+  border-radius: var(--radius-sm);
+}
+
+.vocabulario-admin__list-info {
+  margin-bottom: var(--spacing-2);
+}
+
+.vocabulario-admin__list-info strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.vocabulario-admin__list-info span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Botones de acción (subir, bajar, eliminar) */
+.vocabulario-admin__list-actions {
+  display: flex;
+  gap: var(--spacing-1);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.vocabulario-admin__list-btn {
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--color-gray-100);
+  color: var(--color-text-secondary);
+}
+
+.vocabulario-admin__list-btn:hover:not(:disabled) {
+  background: var(--color-gray-200);
+  color: var(--color-text-primary);
+}
+
+.vocabulario-admin__list-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.vocabulario-admin__list-btn--danger {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--color-error);
+}
+
+.vocabulario-admin__list-btn--danger:hover {
+  background: rgba(255, 107, 107, 0.2);
+  color: #E74C3C;
+}
+
+/* Botón Nueva Página */
+.vocabulario-admin__new-btn {
+  margin: var(--spacing-2);
+  padding: var(--spacing-3);
+  background: rgba(0, 217, 126, 0.1);
+  color: var(--color-primary-dark);
+  border: 2px dashed var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+}
+
+.vocabulario-admin__new-btn:hover {
+  background: rgba(0, 217, 126, 0.15);
+  border-style: solid;
+}
+
+.vocabulario-admin__new-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Panel de edición derecho (75% ancho) */
+.vocabulario-admin__editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: var(--spacing-6);
+  padding-top: var(--spacing-8);
+}
+
+.vocabulario-admin__editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-6);
+  gap: var(--spacing-4);
+}
+
+.vocabulario-admin__editor-title-group {
+  flex: 1;
+}
+
+.vocabulario-admin__editor-title {
+  font-size: 2rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-1) 0;
+}
+
+.vocabulario-admin__editor-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Toggle Visible para el alumnado - Ahora en la esquina superior derecha */
+.vocabulario-admin__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.vocabulario-admin__toggle-label {
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.vocabulario-admin__toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.vocabulario-admin__toggle-switch.is-active {
+  background: var(--color-primary);
+}
+
+.vocabulario-admin__toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition-base);
+}
+
+.vocabulario-admin__toggle-switch.is-active::after {
+  transform: translateX(20px);
+}
+
+/* Campos del formulario */
+.vocabulario-admin__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+}
+
+.vocabulario-admin__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+/* Campo de resumen ocupa toda la fila */
+.vocabulario-admin__field:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.vocabulario-admin__field label {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.vocabulario-admin__field input,
+.vocabulario-admin__field textarea {
+  padding: 12px 16px;
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+  background: var(--color-white);
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+}
+
+.vocabulario-admin__field input:focus,
+.vocabulario-admin__field textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 217, 126, 0.1);
+}
+
+.vocabulario-admin__field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Editor de contenido (Quill) */
+.vocabulario-admin__content-editor {
+  margin-bottom: var(--spacing-4);
+}
+
+.vocabulario-admin__content-label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-2);
+}
+
+/* Botón guardar cambios */
+.vocabulario-admin__save-btn {
+  padding: 14px 32px;
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+  align-self: flex-start;
+  margin-top: var(--spacing-6);
+  margin-bottom: var(--spacing-4);
+}
+
+.vocabulario-admin__save-btn:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.vocabulario-admin__save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Feedback messages */
+.vocabulario-admin__feedback {
+  margin-top: var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-3);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  display: none;
+}
+
+.vocabulario-admin__feedback.is-visible {
+  display: block;
+}
+
+.vocabulario-admin__feedback--success {
+  background: rgba(0, 217, 126, 0.1);
+  color: var(--color-primary-dark);
+  border: 1px solid rgba(0, 217, 126, 0.3);
+}
+
+.vocabulario-admin__feedback--error {
+  background: rgba(255, 107, 107, 0.1);
+  color: var(--color-error);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+/* Empty state sidebar */
+.vocabulario-admin__empty {
+  padding: var(--spacing-4);
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .vocabulario-admin__container {
+    flex-direction: column;
+  }
+
+  .vocabulario-admin__sidebar {
+    width: 100%;
+    max-width: none;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-medium);
+  }
+
+  .vocabulario-admin__list {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .vocabulario-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+
+  .vocabulario-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .vocabulario-admin-toggle {
+    margin-top: var(--spacing-2);
+  }
+
+  .vocabulario-admin__editor {
+    padding: var(--spacing-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .vocabulario-filters {
+    gap: var(--spacing-1);
+  }
+
+  .vocabulario-filter-chip {
+    padding: 8px 16px;
+    font-size: 0.8125rem;
+  }
+
+  .vocabulario-hero__title {
+    font-size: 2rem;
+  }
+
+  .vocabulario-card {
+    padding: var(--spacing-3);
+  }
+}

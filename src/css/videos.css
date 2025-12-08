@@ -110,9 +110,11 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   gap: var(--spacing-4);
   margin-bottom: var(--spacing-6);
   flex-wrap: wrap;
+  width: 100%;
 }
 
 /* Search Bar */
@@ -158,10 +160,10 @@
 .videos-filters {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: var(--spacing-2);
   flex: 1;
   flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 .categories-dropdown-container {
