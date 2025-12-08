@@ -20,9 +20,9 @@ export async function renderVideos(filter = '', forceUserView = false) {
   }
 
   // Show/hide admin toggle button
-  const adminToggle = document.getElementById('videos-admin-toggle');
+  const adminToggle = document.getElementById('videos-admin-gear');
   if (adminToggle) {
-    adminToggle.style.display = isAdmin ? 'flex' : 'none';
+    adminToggle.classList.toggle('is-visible', isAdmin);
   }
 
   // Show appropriate view (always start with user view)
@@ -344,7 +344,7 @@ function filterVideosByCategory(category) {
 
 function wireViewToggles() {
   // Wire admin toggle (user view -> admin view)
-  const adminToggle = document.getElementById('videos-admin-toggle');
+  const adminToggle = document.getElementById('videos-admin-gear');
   if (adminToggle && !adminToggle.__wired) {
     adminToggle.__wired = true;
     adminToggle.addEventListener('click', () => {

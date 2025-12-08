@@ -45,6 +45,17 @@
 	box-shadow: var(--shadow-md);
 }
 
+/* Admin buttons hidden by default */
+#vocabulario-admin-gear,
+#gramatica-admin-gear {
+	display: none;
+}
+
+#vocabulario-admin-gear.is-visible,
+#gramatica-admin-gear.is-visible {
+	display: inline-block;
+}
+
 .option-btn:hover {
 	transform: translateY(-3px);
 	background: var(--color-primary-dark);
