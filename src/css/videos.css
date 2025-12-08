@@ -586,6 +586,42 @@
   gap: var(--spacing-3);
 }
 
+/* Drag handle for reordering */
+.drag-handle {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: var(--color-text-muted);
+  transition: color var(--transition-base);
+  flex-shrink: 0;
+}
+
+.drag-handle:hover {
+  color: var(--color-primary);
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Dragging state */
+tr[draggable="true"].dragging {
+  opacity: 0.5;
+  background: var(--color-bg-secondary);
+}
+
+tr[draggable="true"] {
+  transition: background var(--transition-base);
+  cursor: move;
+}
+
+tr[draggable="true"]:hover {
+  background: rgba(0, 217, 126, 0.03);
+}
+
 .admin-video-thumb {
   width: 80px;
   height: 60px;

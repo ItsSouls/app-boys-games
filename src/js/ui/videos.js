@@ -161,9 +161,19 @@ async function renderAdminView(filter = '') {
         const statusText = video.status === 'published' ? 'Publicado' : 'Borrador';
 
         return `
-          <tr>
+          <tr draggable="true" data-video-id="${video.id}">
             <td>
               <div class="admin-video-cell">
+                <div class="drag-handle" title="Arrastra para reordenar">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <circle cx="6" cy="4" r="1.5" fill="currentColor"/>
+                    <circle cx="10" cy="4" r="1.5" fill="currentColor"/>
+                    <circle cx="6" cy="8" r="1.5" fill="currentColor"/>
+                    <circle cx="10" cy="8" r="1.5" fill="currentColor"/>
+                    <circle cx="6" cy="12" r="1.5" fill="currentColor"/>
+                    <circle cx="10" cy="12" r="1.5" fill="currentColor"/>
+                  </svg>
+                </div>
                 <div class="admin-video-thumb">
                   ${thumbnailMarkup}
                 </div>
@@ -200,6 +210,7 @@ async function renderAdminView(filter = '') {
 
   wireAdminSearchInput(searchInput);
   wireAdminActions();
+  wireDragAndDrop();
   console.log(`[videos] ${list.length} videos renderizados en vista admin`);
 }
 
@@ -367,6 +378,87 @@ function wireViewToggles() {
       userView?.classList.remove('hidden');
       renderUserView('');
     });
+  }
+}
+
+function wireDragAndDrop() {
+  const adminList = document.getElementById('videos-admin-list');
+  if (!adminList || adminList.__dragWired) return;
+  adminList.__dragWired = true;
+
+  let draggedRow = null;
+
+  adminList.addEventListener('dragstart', (e) => {
+    const row = e.target.closest('tr[draggable="true"]');
+    if (!row) return;
+
+    draggedRow = row;
+    row.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', row.innerHTML);
+  });
+
+  adminList.addEventListener('dragend', (e) => {
+    const row = e.target.closest('tr[draggable="true"]');
+    if (row) {
+      row.classList.remove('dragging');
+    }
+    draggedRow = null;
+  });
+
+  adminList.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const row = e.target.closest('tr[draggable="true"]');
+    if (!row || row === draggedRow) return;
+
+    const rect = row.getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+
+    if (e.clientY < midpoint) {
+      row.parentNode.insertBefore(draggedRow, row);
+    } else {
+      row.parentNode.insertBefore(draggedRow, row.nextSibling);
+    }
+  });
+
+  adminList.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Get current order of video IDs
+    const rows = adminList.querySelectorAll('tr[data-video-id]');
+    const order = Array.from(rows).map(row => row.dataset.videoId);
+
+    // Save order to backend
+    await saveVideoOrder(order);
+  });
+}
+
+async function saveVideoOrder(order) {
+  try {
+    const token = localStorage.getItem('abg_token');
+    const res = await fetch(`${API_BASE}/admin/videos/reorder`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ order })
+    });
+
+    if (res.ok) {
+      console.log('[videos] Orden actualizado correctamente');
+      // Update cache to reflect new order
+      cache = [];
+      await renderAdminView('');
+    } else {
+      const errorData = await res.json().catch(() => ({}));
+      console.error('[videos] Error al actualizar orden:', errorData);
+      alert('Error al guardar el orden de los videos');
+    }
+  } catch (err) {
+    console.error('[videos] Error guardando orden:', err);
+    alert('Error al guardar el orden de los videos');
   }
 }
 
