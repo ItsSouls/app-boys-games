@@ -2,6 +2,44 @@ import { API_BASE } from '../app/config.js';
 import { isImageUrl } from '../utils/validators.js';
 import { escapeHtml, escapeAttribute } from '../utils/sanitize.js';
 
+/**
+ * Convierte cualquier formato de URL de YouTube al formato embed
+ * Soporta: watch?v=ID, youtu.be/ID, embed/ID
+ */
+function convertToEmbedUrl(url) {
+  if (!url) return url;
+  
+  // Si ya es embed, retornarlo tal cual
+  if (url.includes('/embed/')) {
+    return url.trim();
+  }
+  
+  let videoId = null;
+  
+  // Formato: youtube.com/watch?v=VIDEO_ID
+  const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (watchMatch) {
+    videoId = watchMatch[1];
+  }
+  
+  // Formato: youtu.be/VIDEO_ID
+  if (!videoId) {
+    const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (shortMatch) {
+      videoId = shortMatch[1];
+    }
+  }
+  
+  // Si encontramos el ID, convertir a embed
+  if (videoId) {
+    console.log('[videos] URL convertida:', url, '->', `https://www.youtube.com/embed/${videoId}`);
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  
+  // Si no se pudo extraer, devolver la URL original
+  return url.trim();
+}
+
 let cache = [];
 let isAdmin = false;
 
@@ -519,6 +557,9 @@ function openAddVideoModal() {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
+    
+    // Convertir URL de YouTube al formato embed
+    videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
 
     try {
       const token = localStorage.getItem('abg_token');
@@ -610,6 +651,9 @@ function openEditVideoModal(videoId) {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
+    
+    // Convertir URL de YouTube al formato embed
+    videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
 
     try {
       const token = localStorage.getItem('abg_token');
