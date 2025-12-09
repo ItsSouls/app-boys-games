@@ -793,16 +793,16 @@ function initializeBubblePhysics(allAnswers, correctAnswer, word, theme, showNex
     startRoundTimer();
     
     // Asegurar que el overlay de pausa esté oculto en nueva ronda
-    pauseOverlay = document.getElementById('pause-overlay');
-    if (pauseOverlay) pauseOverlay.style.display = 'none';
+    const pauseOverlayEl = document.getElementById('pause-overlay');
+    if (pauseOverlayEl) pauseOverlayEl.style.display = 'none';
     
     // Restaurar botón de pausa
-    pauseButton = document.getElementById('pause-button');
-    if (pauseButton) {
-      pauseButton.textContent = '⏸';
-      pauseButton.style.opacity = '1';
-      pauseButton.style.cursor = 'pointer';
-      pauseButton.title = 'Pausar juego';
+    const pauseButtonEl = document.getElementById('pause-button');
+    if (pauseButtonEl) {
+      pauseButtonEl.textContent = '⏸';
+      pauseButtonEl.style.opacity = '1';
+      pauseButtonEl.style.cursor = 'pointer';
+      pauseButtonEl.title = 'Pausar juego';
     }
   }
   

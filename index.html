@@ -28,13 +28,14 @@
 
           <!-- Área de usuario (derecha) -->
           <div class="header-actions">
-            <a href="#" class="header-nav-link" id="nav-parents" data-section="parents">Para Padres</a>
+            <a href="#" class="header-nav-link" id="nav-parents" data-section="parents" data-i18n="forParents"></a>
+            <button class="lang-toggle" id="lang-toggle" aria-label="Cambiar idioma">🇬🇧 EN</button>
             <div id="header-user" class="header-user is-hidden">
-              <span class="user-greet">Hola, <strong id="user-name"></strong></span>
-              <button id="header-logout" class="header-logout-btn">Salir</button>
+              <span class="user-greet"><span data-i18n="greeting"></span> <strong id="user-name"></strong></span>
+              <button id="header-logout" class="header-logout-btn" data-i18n="logout"></button>
             </div>
             <div id="header-auth" class="header-auth">
-              <button id="auth-login" class="header-login-btn">Iniciar sesión</button>
+              <button id="auth-login" class="header-login-btn" data-i18n="login"></button>
             </div>
           </div>
         </div>
@@ -46,11 +47,10 @@
           <div id="home-page" class="page-view">
             <section class="hero-section">
               <div class="hero-content">
-                <h1 class="hero-title">¡Hola, amigo!</h1>
-                <p class="hero-subtitle">¡Vamos a aprender y jugar en español!</p>
+                <h1 class="hero-title" data-i18n="heroTitle"></h1>
+                <p class="hero-subtitle" data-i18n="heroSubtitle"></p>
                 <div class="hero-buttons">
-                  <button class="hero-btn-primary" data-section="games">Empezar a Aprender</button>
-                  <button class="hero-btn-secondary" data-section="games">Explorar Juegos</button>
+                  <button class="hero-btn-primary" data-section="games" data-i18n="startLearning"></button>
                 </div>
               </div>
               <div class="hero-image">
@@ -60,34 +60,34 @@
 
             <!-- Menu Principal -->
             <section class="main-menu" id="main-menu">
-              <h2 class="section-heading">Elige tu aventura</h2>
+              <h2 class="section-heading" data-i18n="chooseAdventure"></h2>
               <div class="menu-grid">
                 <div class="menu-card" data-section="videos">
                   <div class="menu-card-icon">🎬</div>
                   <div class="menu-card-content">
-                    <h3 class="menu-card-title">Videos</h3>
-                    <p class="menu-card-description">Aprende con videos educativos</p>
+                    <h3 class="menu-card-title" data-i18n="videos"></h3>
+                    <p class="menu-card-description" data-i18n="videosDesc"></p>
                   </div>
                 </div>
                 <div class="menu-card" data-section="games">
                   <div class="menu-card-icon">🎮</div>
                   <div class="menu-card-content">
-                    <h3 class="menu-card-title">Juegos</h3>
-                    <p class="menu-card-description">Practica con juegos divertidos</p>
+                    <h3 class="menu-card-title" data-i18n="games"></h3>
+                    <p class="menu-card-description" data-i18n="gamesDesc"></p>
                   </div>
                 </div>
                 <div class="menu-card" data-section="vocabulario">
                   <div class="menu-card-icon">📚</div>
                   <div class="menu-card-content">
-                    <h3 class="menu-card-title">Vocabulario</h3>
-                    <p class="menu-card-description">Aprende nuevas palabras</p>
+                    <h3 class="menu-card-title" data-i18n="vocabulary"></h3>
+                    <p class="menu-card-description" data-i18n="vocabularyDesc"></p>
                   </div>
                 </div>
                 <div class="menu-card" data-section="gramatica">
                   <div class="menu-card-icon">🧠</div>
                   <div class="menu-card-content">
-                    <h3 class="menu-card-title">Gramática</h3>
-                    <p class="menu-card-description">Reglas y ejemplos</p>
+                    <h3 class="menu-card-title" data-i18n="grammar"></h3>
+                    <p class="menu-card-description" data-i18n="grammarDesc"></p>
                   </div>
                 </div>
               </div>
@@ -104,16 +104,13 @@
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    Volver
+                    <span data-i18n="back"></span>
                   </button>
                   <div class="videos-hero-content">
-                    <h1 class="videos-hero__title">Panel de Videos</h1>
-                    <p class="videos-hero__subtitle">Mira y aprende con nuestros divertidos videos educativos.</p>
+                    <h1 class="videos-hero__title" data-i18n="videoPanel"></h1>
+                    <p class="videos-hero__subtitle" data-i18n="videoPanelDesc"></p>
                   </div>
                   <button class="videos-admin-toggle" id="videos-admin-gear" title="Gestión de videos">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 6V14M6 10H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
                     Administrar
                   </button>
                 </div>
@@ -124,7 +121,7 @@
                       <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
                       <path d="M14 14L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    <input id="videos-search" type="search" placeholder="¿Qué quieres aprender hoy?" aria-label="Buscar videos por título" />
+                    <input id="videos-search" type="search" data-i18n="searchPlaceholder" placeholder="¿Qué quieres aprender hoy?" aria-label="Buscar videos por título" />
                   </div>
 
                   <div class="videos-filters">
@@ -219,16 +216,13 @@
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    Volver
+                    <span data-i18n="back"></span>
                   </button>
                   <div class="vocabulario-hero-content">
-                    <h1 class="vocabulario-hero__title">Selección de Temas de Vocabulario</h1>
-                    <p class="vocabulario-hero__subtitle">Aprende nuevas palabras por temas y practica con ejemplos.</p>
+                    <h1 class="vocabulario-hero__title" data-i18n="vocabularyTitle"></h1>
+                    <p class="vocabulario-hero__subtitle" data-i18n="vocabularyDesc"></p>
                   </div>
                   <button class="vocabulario-admin-toggle" id="vocabulario-admin-gear" title="Gestión de vocabulario">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 6V14M6 10H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
                     Administrar
                   </button>
                 </div>
@@ -240,11 +234,11 @@
                       <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
                       <path d="M14 14L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    <input id="vocabulario-search" type="search" placeholder="Buscar tema..." aria-label="Buscar temas de vocabulario" />
+                    <input id="vocabulario-search" type="search" data-i18n="searchTopicPlaceholder" placeholder="Buscar tema..." aria-label="Buscar temas de vocabulario" />
                   </div>
 
                   <div class="vocabulario-filters" id="vocabulario-filters">
-                    <button class="vocabulario-filter-chip is-active" data-filter="all">Todos los bloques</button>
+                    <button class="vocabulario-filter-chip is-active" data-filter="all" data-i18n="allBlocks">Todos los bloques</button>
                     <!-- Los filtros se cargarán dinámicamente -->
                   </div>
                 </div>
@@ -272,16 +266,13 @@
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    Volver
+                    <span data-i18n="back"></span>
                   </button>
                   <div class="vocabulario-hero-content">
-                    <h1 class="vocabulario-hero__title">Gramática</h1>
-                    <p class="vocabulario-hero__subtitle">Reglas y ejemplos para hablar y escribir mejor.</p>
+                    <h1 class="vocabulario-hero__title" data-i18n="grammarTitle"></h1>
+                    <p class="vocabulario-hero__subtitle" data-i18n="grammarDesc"></p>
                   </div>
                   <button class="vocabulario-admin-toggle" id="gramatica-admin-gear" title="Gestión de gramática">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 6V14M6 10H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
                     Administrar
                   </button>
                 </div>
@@ -293,11 +284,11 @@
                       <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/>
                       <path d="M14 14L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    <input id="gramatica-search" type="search" placeholder="Buscar tema..." aria-label="Buscar temas de gramática" />
+                    <input id="gramatica-search" type="search" data-i18n="searchTopicPlaceholder" placeholder="Buscar tema..." aria-label="Buscar temas de gramática" />
                   </div>
 
                   <div class="vocabulario-filters" id="gramatica-filters">
-                    <button class="vocabulario-filter-chip is-active" data-filter="all">Todos los bloques</button>
+                    <button class="vocabulario-filter-chip is-active" data-filter="all" data-i18n="allBlocks"></button>
                   </div>
                 </div>
 
@@ -318,8 +309,8 @@
           <div id="games-page" class="page-view hidden">
             <section class="section-container" id="vocabulary-section">
               <div class="section-header">
-                <button class="back-btn" id="vocabulary-back-btn">← Volver al Menú</button>
-                <h2 class="section-title">🎮 Juegos</h2>
+                <button class="back-btn" id="vocabulary-back-btn" data-i18n="backToMenu"></button>
+                <h2 class="section-title" data-i18n="gamesTitle"></h2>
               </div>
               <div class="games-grid" id="vocabulary-games-grid">
                 <!-- Juegos de vocabulario se cargarán aquí -->
@@ -330,10 +321,10 @@
           <!-- Contenedor del juego -->
           <section class="game-container hidden" id="game-container">
             <div class="game-header">
-              <button class="back-btn" id="back-btn">← Volver</button>
+              <button class="back-btn" id="back-btn" data-i18n="back"></button>
               <h3 class="game-title" id="game-title"></h3>
               <div class="game-stats">
-                <div class="score" id="score">Puntos: 0</div>
+                <div class="score" id="score" data-i18n="score"></div>
                 <div class="progress" id="progress">1/5</div>
                 <div class="lives" id="lives">❤️❤️❤️❤️❤️</div>
               </div>
@@ -348,46 +339,38 @@
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                Volver
+                <span data-i18n="back"></span>
               </button>
 
               <div class="parents-hero">
-                <h1 class="parents-title">Para Padres y Educadores</h1>
-                <p class="parents-subtitle">Descubre cómo ayudamos a tus hijos a aprender español de forma divertida y efectiva</p>
+                <h1 class="parents-title" data-i18n="parentsTitle"></h1>
+                <p class="parents-subtitle" data-i18n="parentsSubtitle"></p>
               </div>
 
               <div class="parents-content">
                 <!-- Misión y Visión -->
                 <div class="parents-card parents-card--mission">
                   <div class="parents-card__icon">🎯</div>
-                  <h2 class="parents-card__title">Nuestra Misión</h2>
-                  <p class="parents-card__text">
-                    El Rincón Español es una plataforma educativa diseñada especialmente para niños de 5 a 12 años 
-                    que están aprendiendo español. Nuestro objetivo es hacer que el aprendizaje del idioma sea una 
-                    experiencia divertida, interactiva y memorable.
-                  </p>
+                  <h2 class="parents-card__title" data-i18n="missionTitle"></h2>
+                  <p class="parents-card__text" data-i18n="missionText"></p>
                 </div>
 
                 <div class="parents-card parents-card--method">
                   <div class="parents-card__icon">📚</div>
-                  <h2 class="parents-card__title">Metodología</h2>
-                  <p class="parents-card__text">
-                    Utilizamos un enfoque basado en el juego y la gamificación para enseñar vocabulario, gramática 
-                    y comprensión. Los niños aprenden mejor cuando se divierten, y nuestros juegos están diseñados 
-                    para mantener su interés mientras refuerzan conceptos clave del idioma.
-                  </p>
+                  <h2 class="parents-card__title" data-i18n="methodTitle"></h2>
+                  <p class="parents-card__text" data-i18n="methodText"></p>
                 </div>
 
                 <div class="parents-card parents-card--features">
                   <div class="parents-card__icon">✨</div>
-                  <h2 class="parents-card__title">Características</h2>
+                  <h2 class="parents-card__title" data-i18n="featuresTitle"></h2>
                   <ul class="parents-features-list">
-                    <li>🎮 Juegos interactivos adaptados a diferentes niveles</li>
-                    <li>🎬 Videos educativos con contenido apropiado para niños</li>
-                    <li>📖 Lecciones de vocabulario organizadas por temas</li>
-                    <li>📝 Ejercicios de gramática explicados de forma sencilla</li>
-                    <li>🏆 Sistema de puntos y recompensas para motivar</li>
-                    <li>👨‍👩‍👧‍👦 Entorno seguro y sin publicidad</li>
+                    <li data-i18n="feature1"></li>
+                    <li data-i18n="feature2"></li>
+                    <li data-i18n="feature3"></li>
+                    <li data-i18n="feature4"></li>
+                    <li data-i18n="feature5"></li>
+                    <li data-i18n="feature6"></li>
                   </ul>
                 </div>
 
@@ -397,31 +380,24 @@
                     <img src="/profesor.jpg" alt="Foto del profesor" onerror="this.src='https://ui-avatars.com/api/?name=Profesor&background=00D97E&color=fff&size=200'">
                   </div>
                   <div class="parents-professor__info">
-                    <h2 class="parents-professor__name">Sobre el Profesor</h2>
-                    <h3 class="parents-professor__role">Creador y Educador</h3>
+                    <h2 class="parents-professor__name" data-i18n="professorTitle"></h2>
+                    <h3 class="parents-professor__role" data-i18n="professorRole"></h3>
                     <div class="parents-professor__bio">
-                      <p>
-                        Soy un profesor apasionado por la enseñanza del español a niños. Con años de experiencia 
-                        en educación infantil, he desarrollado esta plataforma para hacer que el aprendizaje 
-                        del español sea accesible y divertido para todos los niños.
-                      </p>
-                      <p>
-                        Mi enfoque se basa en la inmersión lúdica, donde los niños aprenden jugando y 
-                        descubriendo el idioma de forma natural, sin presión y a su propio ritmo.
-                      </p>
+                      <p data-i18n="professorBio1"></p>
+                      <p data-i18n="professorBio2"></p>
                     </div>
                     <div class="parents-professor__credentials">
                       <div class="credential">
                         <span class="credential__icon">🎓</span>
-                        <span class="credential__text">Licenciatura en Educación</span>
+                        <span class="credential__text" data-i18n="credential1"></span>
                       </div>
                       <div class="credential">
                         <span class="credential__icon">📜</span>
-                        <span class="credential__text">Especialización en Enseñanza de Idiomas</span>
+                        <span class="credential__text" data-i18n="credential2"></span>
                       </div>
                       <div class="credential">
                         <span class="credential__icon">👶</span>
-                        <span class="credential__text">+10 años de experiencia con niños</span>
+                        <span class="credential__text" data-i18n="credential3"></span>
                       </div>
                     </div>
                   </div>
@@ -429,13 +405,10 @@
 
                 <!-- Contacto -->
                 <div class="parents-contact">
-                  <h2 class="parents-contact__title">¿Tienes preguntas?</h2>
-                  <p class="parents-contact__text">
-                    Estamos aquí para ayudarte. Si tienes alguna pregunta sobre la plataforma o cómo 
-                    puede beneficiar a tu hijo, no dudes en contactarnos.
-                  </p>
+                  <h2 class="parents-contact__title" data-i18n="contactTitle"></h2>
+                  <p class="parents-contact__text" data-i18n="contactText"></p>
                   <a href="mailto:contacto@elrinconespanol.com" class="parents-contact__btn">
-                    📧 Contactar
+                    📧 <span data-i18n="contactBtn"></span>
                   </a>
                 </div>
               </div>
@@ -447,9 +420,9 @@
       <footer class="footer">
         <div class="container">
           <div class="footer-links">
-            <a href="#" class="footer-link">Términos de Servicio</a>
-            <a href="#" class="footer-link">Política de Privacidad</a>
-            <a href="#" class="footer-link">Contacto</a>
+            <a href="#" class="footer-link" data-i18n="terms"></a>
+            <a href="#" class="footer-link" data-i18n="privacy"></a>
+            <a href="#" class="footer-link" data-i18n="contact"></a>
           </div>
         </div>
       </footer>

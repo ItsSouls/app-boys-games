@@ -1,9 +1,17 @@
 import DOMPurify from 'dompurify';
+import { marked } from 'marked';
 import { API_BASE } from './config.js';
 import { openTheoryAdminModal } from '../ui/admin/theoryModal.js';
 
+// Configurar marked para tablas y GFM (GitHub Flavored Markdown)
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  tables: true,
+});
+
 const THEORY_SANITIZE_CONFIG = {
-  ADD_TAGS: ['iframe', 'video', 'source', 'figure', 'figcaption', 'section', 'article'],
+  ADD_TAGS: ['iframe', 'video', 'source', 'figure', 'figcaption', 'section', 'article', 'table', 'thead', 'tbody', 'tr', 'th', 'td'],
   ADD_ATTR: [
     'allow',
     'allowfullscreen',
@@ -21,7 +29,44 @@ const THEORY_SANITIZE_CONFIG = {
 
 const HTML_TAG_REGEX = /<([a-z][\s\S]*?)>/i;
 
-// Estado global para cada sección
+/**
+ * Detecta si el contenido es Markdown o HTML
+ * Si parece HTML (tiene tags), lo trata como HTML
+ * Si no, lo trata como Markdown
+ */
+const isMarkdown = (content) => {
+  if (!content || typeof content !== 'string') return false;
+  const trimmed = content.trim();
+  // Si empieza con un tag HTML, probablemente es HTML
+  if (trimmed.startsWith('<')) return false;
+  // Si contiene muchos tags HTML, probablemente es HTML
+  const htmlTagCount = (trimmed.match(/<[a-z][\s\S]*?>/gi) || []).length;
+  const lines = trimmed.split('\n').length;
+  // Si más del 30% de las líneas tienen tags, es HTML
+  if (htmlTagCount > lines * 0.3) return false;
+  return true;
+};
+
+const prepareTheoryHtml = (raw = '') => {
+  const trimmed = (raw || '').trim();
+  if (!trimmed) return '';
+  
+  // Si es Markdown, parsearlo
+  if (isMarkdown(trimmed)) {
+    return marked.parse(trimmed);
+  }
+  
+  // Si ya es HTML, devolverlo tal cual
+  if (HTML_TAG_REGEX.test(trimmed)) return trimmed;
+  
+  // Fallback: convertir texto plano a párrafos
+  return trimmed
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => '<p>' + block.replace(/\n/g, '<br />') + '</p>')
+    .join('');
+};
 const state = {
   vocabulario: {
     pages: [],
@@ -46,18 +91,6 @@ export const formatTheoryDate = (value) => {
   return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
 };
 
-const prepareTheoryHtml = (raw = '') => {
-  const trimmed = (raw || '').trim();
-  if (!trimmed) return '';
-  if (HTML_TAG_REGEX.test(trimmed)) return trimmed;
-  return trimmed
-    .split(/\n{2,}/)
-    .map((block) => block.trim())
-    .filter(Boolean)
-    .map((block) => '<p>' + block.replace(/\n/g, '<br />') + '</p>')
-    .join('');
-};
-
 export const sanitizeTheoryHtml = (raw = '') =>
   DOMPurify.sanitize(prepareTheoryHtml(raw), THEORY_SANITIZE_CONFIG);
 
@@ -66,31 +99,17 @@ export const sanitizeIdForUrl = (id) => {
   return encodeURIComponent(trimmed).replace(/\(/g, '%28').replace(/\)/g, '%29');
 };
 
-// Determina el badge de bloque basado en el índice o categoría
-function getBadgeClass(index, category) {
-  if (category && category.toLowerCase().includes('bloque 1')) return 'bloque-1';
-  if (category && category.toLowerCase().includes('bloque 2')) return 'bloque-2';
-  if (category && category.toLowerCase().includes('bloque 3')) return 'bloque-3';
-
-  // Si no hay categoría, usar el índice
-  const bloqueNum = (index % 3) + 1;
-  return `bloque-${bloqueNum}`;
-}
-
-// Extraer categoría/bloque del campo category o fallback al texto
-function extractCategory(page, index) {
-  // Si la página ya tiene category del backend, usarla
-  if (page.category) return page.category;
-
-  // Buscar en el topic o summary referencias a bloques
-  const text = `${page.topic || ''} ${page.summary || ''}`.toLowerCase();
-  if (text.includes('bloque 1')) return 'Bloque 1';
-  if (text.includes('bloque 2')) return 'Bloque 2';
-  if (text.includes('bloque 3')) return 'Bloque 3';
-
-  // Por defecto, asignar basado en el índice
-  const bloqueNum = (index % 3) + 1;
-  return `Bloque ${bloqueNum}`;
+// Determina el badge de bloque basado en la categoría
+function getBadgeClass(category) {
+  if (!category) return 'bloque-1';
+  
+  // Extraer número del bloque (ej: "Bloque 2" -> 2)
+  const match = category.match(/\d+/);
+  const bloqueNum = match ? parseInt(match[0], 10) : 1;
+  
+  // Limitar a 1-3 para las clases CSS disponibles
+  const normalizedNum = ((bloqueNum - 1) % 3) + 1;
+  return `bloque-${normalizedNum}`;
 }
 
 // Cargar páginas desde el backend
@@ -101,13 +120,8 @@ async function loadPages(sectionName) {
     const data = await res.json();
     const pages = Array.isArray(data?.pages) ? data.pages : [];
 
-    // Agregar categoría a cada página
-    state[sectionName].pages = pages.map((page, index) => ({
-      ...page,
-      category: extractCategory(page, index),
-    }));
-
-    state[sectionName].filteredPages = [...state[sectionName].pages];
+    state[sectionName].pages = pages;
+    state[sectionName].filteredPages = [...pages];
     return true;
   } catch (err) {
     console.error('[theory]', err);
@@ -256,8 +270,8 @@ function renderUserView(sectionName) {
     return;
   }
 
-  gridContainer.innerHTML = pages.map((page, index) => {
-    const badgeClass = getBadgeClass(index, page.category);
+  gridContainer.innerHTML = pages.map((page) => {
+    const badgeClass = getBadgeClass(page.category);
     const hint = extractHint(page);
 
     return `
@@ -418,32 +432,34 @@ export function openTheoryModal(page, sectionName) {
 
   const header = document.createElement('header');
   header.className = 'theory-modal__header';
+  
+  // Espaciador vacío para centrar el título con grid
+  const spacer = document.createElement('div');
+  header.appendChild(spacer);
   header.appendChild(title);
   header.appendChild(closeBtn);
   modal.appendChild(header);
+
+  // Contenedor scrollable para el contenido
+  const scrollContainer = document.createElement('div');
+  scrollContainer.className = 'theory-modal__scroll-container';
 
   if (page.summary) {
     const summary = document.createElement('p');
     summary.className = 'theory-modal__summary';
     summary.textContent = page.summary;
-    modal.appendChild(summary);
+    scrollContainer.appendChild(summary);
   }
 
-  if (page.coverImage) {
-    const figure = document.createElement('figure');
-    figure.className = 'theory-modal__cover';
-    const img = document.createElement('img');
-    img.src = page.coverImage;
-    img.alt = 'Imagen del tema ' + page.topic;
-    img.loading = 'lazy';
-    figure.appendChild(img);
-    modal.appendChild(figure);
-  }
+  // Separador entre summary y contenido
+  const separator = document.createElement('hr');
+  separator.className = 'theory-modal__separator';
+  scrollContainer.appendChild(separator);
 
   const body = document.createElement('div');
   body.className = 'theory-modal__body';
   body.innerHTML = sanitizeTheoryHtml(page.content || page.summary || '');
-  modal.appendChild(body);
+  scrollContainer.appendChild(body);
 
   if (Array.isArray(page.resources) && page.resources.length) {
     const resources = document.createElement('section');
@@ -463,7 +479,7 @@ export function openTheoryModal(page, sectionName) {
       list.appendChild(item);
     });
     resources.appendChild(list);
-    modal.appendChild(resources);
+    scrollContainer.appendChild(resources);
   }
 
   const meta = document.createElement('footer');
@@ -474,7 +490,9 @@ export function openTheoryModal(page, sectionName) {
     stamp.textContent = 'Actualizado el ' + updated;
     meta.appendChild(stamp);
   }
-  modal.appendChild(meta);
+  scrollContainer.appendChild(meta);
+
+  modal.appendChild(scrollContainer);
 
   const close = () => overlay.remove();
   closeBtn.addEventListener('click', close);

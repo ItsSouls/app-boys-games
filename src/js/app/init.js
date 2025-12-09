@@ -6,9 +6,13 @@ import { createNavigationController } from './navigation.js';
 import { createGamesController } from './games.js';
 import { maybeShowSectionAdminGear } from './adminAccess.js';
 import { logThemeWarning } from './themes.js';
+import { initI18n } from '../i18n/translations.js';
 
 export function initApp() {
   console.log('App Boys Games - Aprende Español Jugando');
+
+  // Initialize internationalization system
+  initI18n();
 
   const gameController = new GameController();
   window.gameController = gameController;

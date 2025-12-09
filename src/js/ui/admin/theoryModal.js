@@ -1,19 +1,9 @@
 import { API_BASE } from '../../app/config.js';
-import { loadQuill } from '../../app/quillLoader.js';
+import EasyMDE from 'easymde';
+import 'easymde/dist/easymde.min.css';
 import { formatTheoryDate, renderTheory, sanitizeIdForUrl } from '../../app/theory.js';
 import { getAuthHeaders } from '../../utils/auth.js';
 import { createFeedback } from '../../utils/feedback.js';
-
-const toolbar = [
-	[{ header: [1, 2, 3, 4, false] }],
-	['bold', 'italic', 'underline', 'strike'],
-	[{ color: [] }, { background: [] }],
-	[{ list: 'ordered' }, { list: 'bullet' }],
-	[{ align: [] }],
-	['blockquote', 'code-block'],
-	['link', 'image', 'video'],
-	['clean'],
-];
 
 const sectionLabel = (section) => (section === 'gramatica' ? 'Gramática' : 'Vocabulario');
 
@@ -91,10 +81,10 @@ export async function openTheoryAdminModal(section) {
           </div>
         </div>
 
-        <!-- Editor de contenido -->
+        <!-- Editor de contenido Markdown -->
         <div class="vocabulario-admin__content-editor">
-          <label class="vocabulario-admin__content-label">Contenido Principal</label>
-          <div id="theory-quill" style="min-height:300px;background:white;border-radius:var(--radius-sm);"></div>
+          <label class="vocabulario-admin__content-label">Contenido Principal (Markdown)</label>
+          <textarea id="theory-markdown-editor"></textarea>
         </div>
 
         <!-- Contenedor de acciones (feedback + botón guardar) -->
@@ -158,7 +148,7 @@ export async function openTheoryAdminModal(section) {
   const state = {
     pages: [],
     currentId: null,
-    quill: null,
+    editor: null,  // EasyMDE instance
     saving: false,
     isPublished: true,
   };
@@ -183,7 +173,7 @@ export async function openTheoryAdminModal(section) {
     summaryInput.value = '';
     coverInput.value = '';
     updateToggle(true);
-    if (state.quill) state.quill.setContents([]);
+    if (state.editor) state.editor.value('');
     editorTitle.textContent = 'Nueva Página';
     editorSubtitle.textContent = 'Completa los campos para publicar';
   };
@@ -196,10 +186,9 @@ export async function openTheoryAdminModal(section) {
     summaryInput.value = page?.summary || '';
     coverInput.value = page?.coverImage || '';
     updateToggle(page?.isPublished !== false);
-    if (state.quill) {
+    if (state.editor) {
       const content = page?.content || '';
-      state.quill.setContents([]);
-      state.quill.clipboard.dangerouslyPasteHTML(content);
+      state.editor.value(content);
     }
     editorTitle.textContent = page?.topic || 'Sin título';
     editorSubtitle.textContent = page?.updatedAt
@@ -325,7 +314,7 @@ export async function openTheoryAdminModal(section) {
     const category = `Bloque ${blockNumber}`;
     const summary = summaryInput.value.trim();
     const coverImage = coverInput.value.trim();
-    const content = state.quill ? state.quill.root.innerHTML : '';
+    const content = state.editor ? state.editor.value() : '';
     return { topic, category, summary, coverImage, content, isPublished: state.isPublished };
   };
 
@@ -490,15 +479,24 @@ export async function openTheoryAdminModal(section) {
 
   saveBtn.addEventListener('click', saveCurrentPage);
 
-  const Quill = await loadQuill();
-  const quillContainer = modal.querySelector('#theory-quill');
-  state.quill = new Quill(quillContainer, {
-    theme: 'snow',
-    modules: {
-      toolbar,
-      clipboard: { matchVisual: false },
+  // Inicializar editor Markdown (EasyMDE)
+  const markdownTextarea = modal.querySelector('#theory-markdown-editor');
+  state.editor = new EasyMDE({
+    element: markdownTextarea,
+    spellChecker: false,
+    autosave: {
+      enabled: false,
     },
-    placeholder: 'Escribe el contenido principal de la lección...',
+    placeholder: 'Escribe el contenido en Markdown...\n\n# Título\n## Subtítulo\n\n**negrita** y *cursiva*\n\n- Lista\n- De elementos\n\n| Columna 1 | Columna 2 |\n|-----------|-----------|',
+    toolbar: [
+      'bold', 'italic', 'heading', '|',
+      'quote', 'unordered-list', 'ordered-list', '|',
+      'link', 'image', 'table', '|',
+      'preview', 'side-by-side', 'fullscreen', '|',
+      'guide'
+    ],
+    status: ['lines', 'words'],
+    minHeight: '300px',
   });
 
   await loadPages();

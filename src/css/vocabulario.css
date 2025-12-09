@@ -319,9 +319,8 @@
   transition: all var(--transition-base);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  /* Altura fija para que todas las tarjetas sean iguales */
-  height: 300px;
-  overflow: hidden;
+  /* Altura mínima para que todas las tarjetas sean consistentes */
+  min-height: 340px;
 }
 
 .vocabulario-card:hover {
@@ -361,9 +360,8 @@
   gap: var(--spacing-1);
   flex: 1;
   min-width: 0;
-  min-height: 0;
-  overflow: hidden;
   justify-content: flex-start;
+  overflow: visible;
 }
 
 /* Badge de Bloque/Categoría */
@@ -410,24 +408,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 100%;
 }
 
 /* Card Description */
 .vocabulario-card__description {
   font-size: 0.875rem;
   color: var(--color-text-secondary);
-  line-height: 1.6;
+  line-height: 1.5;
   margin: 0;
-  flex-grow: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
   -webkit-box-orient: vertical;
-  word-break: break-word;
-  max-height: 2.8em;
 }
 
 /* Card Hint */
@@ -488,6 +482,11 @@
 
 /* Loading State */
 .vocabulario-loading {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
   text-align: center;
   padding: var(--spacing-8) var(--spacing-4);
   color: var(--color-text-secondary);
@@ -935,7 +934,7 @@
   min-height: 80px;
 }
 
-/* Editor de contenido (Quill) */
+/* Editor de contenido (EasyMDE) */
 .vocabulario-admin__content-editor {
   margin-bottom: var(--spacing-4);
 }
@@ -946,27 +945,6 @@
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   margin-bottom: var(--spacing-2);
-}
-
-/* Quill Editor - esquinas superiores rectas, inferiores redondeadas */
-.ql-editor {
-  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
-}
-
-.ql-container {
-  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
-}
-
-.ql-container.ql-snow {
-  border-radius: 0 0 var(--radius-sm) var(--radius-sm) !important;
-}
-
-.ql-toolbar {
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
-}
-
-.ql-toolbar.ql-snow {
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
 }
 
 /* Contenedor de acciones (botón guardar + feedback) */

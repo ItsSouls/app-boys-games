@@ -320,25 +320,57 @@
   border-radius: 20px;
   width: min(960px, 100%);
   max-height: calc(100vh - 80px);
-  overflow-y: auto;
+  overflow: hidden;
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
-  gap: 18px;
   padding: 24px;
+  padding-bottom: 0;
+}
+
+/* Contenedor scrollable interno */
+.theory-modal__scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  padding-bottom: 24px;
+  margin-right: -8px;
+}
+
+/* Scrollbar estilizada para el contenedor de scroll */
+.theory-modal__scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.theory-modal__scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.theory-modal__scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 217, 126, 0.3);
+  border-radius: 4px;
+}
+
+.theory-modal__scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 217, 126, 0.5);
 }
 
 .theory-modal__header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
   align-items: center;
   gap: 12px;
+  margin-bottom: 8px;
 }
 
 .theory-modal__title {
   margin: 0;
   font-size: 1.6rem;
   color: var(--color-primary);
+  text-align: center;
+  grid-column: 2;
 }
 
 .theory-modal__close {
@@ -356,16 +388,13 @@
   color: var(--color-muted);
 }
 
-.theory-modal__cover {
-  margin: 0;
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.theory-modal__cover img {
-  width: 100%;
-  height: auto;
-  display: block;
+/* Separador entre header y contenido */
+.theory-modal__separator {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 217, 126, 0.4), transparent);
+  margin: 12px 0 16px 0;
+  flex-shrink: 0;
 }
 
 .theory-modal__body {
@@ -384,10 +413,149 @@
   margin: 0 auto;
 }
 
+.theory-modal__body h1,
 .theory-modal__body h2,
 .theory-modal__body h3,
 .theory-modal__body h4 {
   color: var(--color-primary);
+}
+
+.theory-modal__body h1 { font-size: 1.8rem; }
+.theory-modal__body h2 { font-size: 1.5rem; }
+.theory-modal__body h3 { font-size: 1.25rem; }
+.theory-modal__body h4 { font-size: 1.1rem; }
+
+/* Tablas Markdown */
+.theory-modal__body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.theory-modal__body thead {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: white;
+}
+
+.theory-modal__body th,
+.theory-modal__body td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.theory-modal__body th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.theory-modal__body tbody tr:nth-child(even) {
+  background: var(--color-bg-secondary);
+}
+
+.theory-modal__body tbody tr:hover {
+  background: rgba(78, 205, 196, 0.1);
+}
+
+/* Listas Markdown */
+.theory-modal__body ul,
+.theory-modal__body ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.theory-modal__body li {
+  margin: 0.3em 0;
+}
+
+.theory-modal__body ul li::marker {
+  color: var(--color-primary);
+}
+
+.theory-modal__body ol li::marker {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Blockquotes - Estilo educativo llamativo */
+.theory-modal__body blockquote {
+  margin: 1em 0;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(78, 205, 196, 0.12) 0%, rgba(102, 126, 234, 0.08) 100%);
+  border-left: 5px solid;
+  border-image: linear-gradient(180deg, var(--color-primary) 0%, var(--color-secondary) 100%) 1;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-style: normal;
+  color: var(--color-text-primary);
+  box-shadow: 0 2px 8px rgba(78, 205, 196, 0.1);
+  position: relative;
+}
+
+.theory-modal__body blockquote::before {
+  content: '💡';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  font-size: 1.2rem;
+  background: white;
+  padding: 2px;
+  border-radius: 50%;
+}
+
+/* Código */
+.theory-modal__body code {
+  background: var(--color-bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+}
+
+.theory-modal__body pre {
+  background: var(--color-bg-tertiary);
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+}
+
+.theory-modal__body pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* Enlaces */
+.theory-modal__body a {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.theory-modal__body a:hover {
+  text-decoration: underline;
+}
+
+/* Línea horizontal */
+.theory-modal__body hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-border-medium), transparent);
+  margin: 1.5em 0;
+}
+
+/* Negrita y cursiva */
+.theory-modal__body strong {
+  color: var(--color-text-primary);
+  font-weight: 700;
+}
+
+.theory-modal__body em {
+  font-style: italic;
 }
 
 .theory-modal__resources {
@@ -461,6 +629,69 @@
 
 .vocabulario-admin__feedback.is-visible.vocabulario-admin__feedback--error {
   display: block;
+}
+
+/* EasyMDE Editor Styles */
+.vocabulario-admin__content-editor .EasyMDEContainer {
+  width: 100%;
+}
+
+.vocabulario-admin__content-editor .EasyMDEContainer .CodeMirror {
+  min-height: 300px;
+  border-radius: 0;
+  border: 1px solid var(--color-border-medium);
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.95rem;
+}
+
+.vocabulario-admin__content-editor .editor-toolbar {
+  border: 1px solid var(--color-border-medium);
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--color-bg-secondary);
+}
+
+.vocabulario-admin__content-editor .editor-toolbar button {
+  color: var(--color-text-secondary);
+}
+
+.vocabulario-admin__content-editor .editor-toolbar button:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.vocabulario-admin__content-editor .editor-toolbar button.active {
+  background: var(--color-primary);
+  color: white;
+}
+
+.vocabulario-admin__content-editor .editor-preview {
+  background: white;
+  padding: 16px;
+}
+
+.vocabulario-admin__content-editor .editor-preview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.vocabulario-admin__content-editor .editor-preview th,
+.vocabulario-admin__content-editor .editor-preview td {
+  border: 1px solid var(--color-border-medium);
+  padding: 8px 12px;
+}
+
+.vocabulario-admin__content-editor .editor-preview th {
+  background: var(--color-bg-secondary);
+  font-weight: 600;
+}
+
+.vocabulario-admin__content-editor .editor-statusbar {
+  border: 1px solid var(--color-border-medium);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  background: var(--color-bg-secondary);
+  padding: 8px 12px;
 }
 
 /* Admin Video Modal */

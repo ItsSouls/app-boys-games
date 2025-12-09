@@ -29,8 +29,3 @@ export function decreaseLives() {
   gameState.lives--;
   return gameState.lives;
 }
-
-export function nextQuestion() {
-  gameState.currentQuestionIndex++;
-  return gameState.currentQuestionIndex < gameState.gameQuestions.length;
-}
