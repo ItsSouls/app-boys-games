@@ -12,32 +12,9 @@
     font-size: 1.1rem;
   }
 
-  .games-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
   .menu-grid {
     grid-template-columns: 1fr;
     gap: 25px;
-  }
-
-  .game-header {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-  }
-
-  .game-stats {
-    justify-content: center;
-  }
-
-  .current-word {
-    font-size: 2.5rem;
-  }
-
-  .options-grid {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -54,50 +31,15 @@
     padding: 25px;
   }
 
-  .game-card,
   .menu-card {
     padding: 20px;
   }
 
-  .game-icon,
   .menu-icon {
     font-size: 3rem;
   }
 
-  .current-word {
-    font-size: 2rem;
-  }
-
   .menu-title {
     font-size: 1.5rem;
-  }
-}
-
-/* Responsive para el selector de temática */
-@media (max-width: 768px) {
-  .themes-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .theme-selector-header h2 {
-    font-size: 2rem;
-  }
-
-  .theme-card {
-    padding: 20px;
-  }
-
-  .theme-icon {
-    font-size: 3rem;
-  }
-
-  .bubble-game-header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .target-word-section {
-    order: -1;
   }
 }

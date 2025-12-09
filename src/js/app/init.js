@@ -1,11 +1,7 @@
 import { router } from '../router.js';
-import { GameController } from '../games/gameController.js';
-import { ensureThemesLoaded } from '../services/themes.js';
 import { createUserController } from './user.js';
 import { createNavigationController } from './navigation.js';
-import { createGamesController } from './games.js';
 import { maybeShowSectionAdminGear } from './adminAccess.js';
-import { logThemeWarning } from './themes.js';
 import { initI18n } from '../i18n/translations.js';
 
 export function initApp() {
@@ -14,8 +10,6 @@ export function initApp() {
   // Initialize internationalization system
   initI18n();
 
-  const gameController = new GameController();
-  window.gameController = gameController;
   window.router = router;
 
   let navigation;
@@ -30,19 +24,8 @@ export function initApp() {
     maybeShowAdminGear: maybeShowSectionAdminGear,
   });
 
-  const games = createGamesController({
-    router,
-    gameController,
-    hideAllSections: navigation.hideAllSections,
-    ensureAuthControls: () => userController.ensureAuthControls(),
-    refreshUserGreeting: () => userController.refreshUserGreeting(),
-  });
-
   userController.setOnAuthSuccess(async () => {
-    await Promise.all([
-      userController.refreshUserGreeting(),
-      ensureThemesLoaded().catch(logThemeWarning),
-    ]);
+    await userController.refreshUserGreeting();
     // User stays on current page after login
     // Show admin button if applicable
     const current = window.location.pathname.replace(/^\/+/, '').split('/')[0] || '';
@@ -55,22 +38,15 @@ export function initApp() {
 
   router.route('/', () => navigation.showMainMenu());
   router.route('/videos', () => navigation.showSection('videos'));
-  router.route('/games', () => games.showVocabularyGames());
+  router.route('/games', () => navigation.showSection('games'));
   router.route('/vocabulario', () => navigation.showSection('vocabulario'));
   router.route('/gramatica', () => navigation.showSection('gramatica'));
   router.route('/parents', () => navigation.showSection('parents'));
-  router.route('/games/:gameId', (params) =>
-    games.showGame(params.gameId).catch((err) => {
-      console.error('[router] error al cargar juego', err);
-      router.navigate('/games');
-    }),
-  );
 
   router.init();
 
   document.addEventListener('DOMContentLoaded', () => {
     userController.refreshUserGreeting();
-    ensureThemesLoaded().catch(logThemeWarning);
 
     const mainMenu = document.getElementById('main-menu');
     if (mainMenu && !mainMenu.__wired) {
@@ -126,17 +102,5 @@ export function initApp() {
       button.__wired = true;
       button.addEventListener('click', () => router.navigate('/'));
     });
-
-    const gameBackButton = document.querySelector('#back-btn');
-    if (gameBackButton && !gameBackButton.__wired) {
-      gameBackButton.__wired = true;
-      gameBackButton.addEventListener('click', () => {
-        if (window.gameController?.goBackToSection) {
-          window.gameController.goBackToSection();
-        } else {
-          router.navigate('/games');
-        }
-      });
-    }
   });
 }

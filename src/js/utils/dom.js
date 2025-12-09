@@ -12,7 +12,6 @@ export function hideAllSections() {
 		'#main-menu',
 		'#videos-section',
 		'#vocabulary-section',
-		'#game-container',
 		'#vocabulario-section',
 		'#gramatica-section'
 	];

@@ -1,7 +1,5 @@
 import { renderVideos } from '../ui/videos.js';
-import { ensureThemesLoaded } from '../services/themes.js';
 import { renderTheory } from './theory.js';
-import { logThemeWarning } from './themes.js';
 
 const PAGE_SELECTORS = [
   '#home-page',
@@ -10,7 +8,6 @@ const PAGE_SELECTORS = [
   '#vocabulario-page',
   '#gramatica-page',
   '#parents-page',
-  '#game-container',
 ];
 
 export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear }) {
@@ -28,7 +25,6 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
     if (typeof refreshUserGreeting === 'function') {
       await refreshUserGreeting();
     }
-    ensureThemesLoaded().catch(logThemeWarning);
   };
 
   const showSection = async (sectionName) => {

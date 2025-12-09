@@ -57,16 +57,11 @@
 }
 
 /* Grid layouts - Consistent spacing */
-.games-grid,
 .videos-grid,
 .theory-grid {
 	display: grid;
 	gap: var(--spacing-4);
 	margin-bottom: var(--spacing-6);
-}
-
-.games-grid {
-	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .videos-grid {
@@ -98,7 +93,6 @@
 		padding: var(--spacing-6) 0;
 	}
 
-	.games-grid,
 	.videos-grid,
 	.theory-grid {
 		grid-template-columns: 1fr;
