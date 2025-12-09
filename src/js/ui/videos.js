@@ -698,7 +698,6 @@ async function deleteVideo(videoId) {
     if (res.ok) {
       cache = [];
       await renderAdminView('');
-      alert('Video eliminado correctamente');
       console.log('[videos] Video eliminado correctamente');
     } else {
       const errorData = await res.json().catch(() => ({}));
