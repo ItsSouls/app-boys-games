@@ -7,6 +7,52 @@ import { isImageUrl } from '../../utils/validators.js';
 
 const VIDEO_DEFAULT_EMOJI = '🎬';
 
+/**
+ * Convierte cualquier URL de YouTube al formato embed
+ * Soporta: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID
+ */
+function convertToEmbedUrl(url) {
+  if (!url) return '';
+  
+  const trimmed = url.trim();
+  
+  // Si ya es formato embed, devolverla tal cual
+  if (trimmed.includes('youtube.com/embed/')) {
+    return trimmed;
+  }
+  
+  let videoId = null;
+  
+  // Formato: youtube.com/watch?v=VIDEO_ID
+  const watchMatch = trimmed.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (watchMatch) {
+    videoId = watchMatch[1];
+  }
+  
+  // Formato: youtu.be/VIDEO_ID
+  if (!videoId) {
+    const shortMatch = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (shortMatch) {
+      videoId = shortMatch[1];
+    }
+  }
+  
+  // Formato: youtube.com/v/VIDEO_ID
+  if (!videoId) {
+    const vMatch = trimmed.match(/youtube\.com\/v\/([a-zA-Z0-9_-]{11})/);
+    if (vMatch) {
+      videoId = vMatch[1];
+    }
+  }
+  
+  if (videoId) {
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  
+  // Si no se pudo extraer, devolver la URL original
+  return trimmed;
+}
+
 export async function openVideosAdminModal() {
   const overlay = document.createElement('div');
   overlay.className = 'theory-admin-overlay';
@@ -34,8 +80,8 @@ export async function openVideosAdminModal() {
     '        <input id="video-emoji" type="text" placeholder="🎬 o https://mis-imagenes.com/miniatura.png" />',
     '      </label>',
     '      <label class="theory-admin__field theory-admin__field--full">',
-    '        <span>URL de YouTube (embed)</span>',
-    '        <input id="video-url" type="url" placeholder="https://www.youtube.com/embed/..." />',
+    '        <span>URL de YouTube</span>',
+    '        <input id="video-url" type="url" placeholder="https://www.youtube.com/watch?v=... o https://youtu.be/..." />',
     '      </label>',
     '      <label class="theory-admin__field theory-admin__field--full">',
     '        <span>Descripción</span>',
@@ -186,7 +232,9 @@ export async function openVideosAdminModal() {
 
   const gatherPayload = () => {
     const title = titleInput?.value.trim() || '';
-    const embedUrl = urlInput?.value.trim() || '';
+    const rawUrl = urlInput?.value.trim() || '';
+    const embedUrl = convertToEmbedUrl(rawUrl);
+    console.log('[videos] URL conversion:', { rawUrl, embedUrl });
     const description = descriptionInput?.value.trim() || '';
     const mediaRaw = emojiInput?.value.trim() || '';
     return {
