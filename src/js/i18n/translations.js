@@ -45,6 +45,9 @@ export const translations = {
     
     // Games section
     gamesTitle: '🎮 Juegos',
+    gamesDesc: 'Aprende jugando con nuestros juegos interactivos.',
+    comingSoon: '¡Próximamente!',
+    gamesComingSoonDesc: 'Estamos preparando juegos increíbles para ti.',
     backToMenu: '← Volver al Menú',
     score: 'Puntos: 0',
     
@@ -126,6 +129,9 @@ export const translations = {
     
     // Games section
     gamesTitle: '🎮 Games',
+    gamesDesc: 'Learn while playing with our interactive games.',
+    comingSoon: 'Coming Soon!',
+    gamesComingSoonDesc: 'We are preparing amazing games for you.',
     backToMenu: '← Back to Menu',
     score: 'Score: 0',
     

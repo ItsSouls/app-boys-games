@@ -307,15 +307,26 @@
 
           <!-- Página de Juegos (próximamente) -->
           <div id="games-page" class="page-view hidden">
-            <section class="section-container" id="vocabulary-section">
-              <div class="section-header">
-                <button class="back-btn" id="vocabulary-back-btn" data-i18n="backToMenu"></button>
-                <h2 class="section-title" data-i18n="gamesTitle"></h2>
-              </div>
-              <div class="coming-soon-message" style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 4rem; margin-bottom: 20px;">🎮</div>
-                <h3 style="color: var(--color-text-primary); margin-bottom: 10px;">¡Próximamente!</h3>
-                <p style="color: var(--color-text-secondary);">Estamos preparando juegos increíbles para ti.</p>
+            <section class="vocabulario-section" id="games-section">
+              <div class="vocabulario-user-view">
+                <div class="vocabulario-hero">
+                  <button class="vocabulario-back-btn" id="games-back-btn" aria-label="Volver a inicio">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span data-i18n="back"></span>
+                  </button>
+                  <div class="vocabulario-hero-content">
+                    <h1 class="vocabulario-hero__title" data-i18n="gamesTitle"></h1>
+                    <p class="vocabulario-hero__subtitle" data-i18n="gamesDesc"></p>
+                  </div>
+                </div>
+
+                <div class="coming-soon-message" style="text-align: center; padding: 60px 20px;">
+                  <div style="font-size: 4rem; margin-bottom: 20px;">🎮</div>
+                  <h3 style="color: var(--color-text-primary); margin-bottom: 10px;" data-i18n="comingSoon"></h3>
+                  <p style="color: var(--color-text-secondary);" data-i18n="gamesComingSoonDesc"></p>
+                </div>
               </div>
             </section>
           </div>
