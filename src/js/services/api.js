@@ -1,4 +1,4 @@
-// Frontend API client for Auth + Scores
+// Frontend API client for Auth
 import { API_BASE } from '../app/config.js';
 
 const BASE = API_BASE;
@@ -59,35 +59,4 @@ export async function me() {
 	return handleResponse(res, 'No autenticado');
 }
 
-export async function saveScore({ gameId, theme, score, maxScore, percentage, lives }) {
-	const res = await fetch(`${BASE}/scores`, {
-		method: 'POST',
-		headers: authHeaders({ 'Content-Type': 'application/json' }),
-		body: JSON.stringify({ gameId, theme, score, maxScore, percentage, lives })
-	});
-	return handleResponse(res, 'Guardar puntuación falló');
-}
-
-export async function myScores() {
-	const res = await fetch(`${BASE}/scores/my`, {
-		headers: authHeaders()
-	});
-	return handleResponse(res, 'No se pudieron obtener puntuaciones');
-}
-
-export async function lastScore({ type, theme }) {
-	const params = new URLSearchParams({ type, theme }).toString();
-	const res = await fetch(`${BASE}/scores/last?${params}`, {
-		headers: authHeaders()
-	});
-	return handleResponse(res, 'No se pudo obtener el último score');
-}
-
-export async function lastScoresAll() {
-	const res = await fetch(`${BASE}/scores/last/all`, {
-		headers: authHeaders()
-	});
-	return handleResponse(res, 'No se pudieron obtener los últimos scores');
-}
-
-export const api = { register, login, me, saveScore, myScores, lastScore, lastScoresAll };
+export const api = { register, login, me };

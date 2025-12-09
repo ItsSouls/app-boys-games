@@ -5,11 +5,12 @@ export const videosRouter = express.Router();
 
 const DEFAULT_EMOJI = '🎬';
 
-const normalizeVideoPayload = ({ title, description, embedUrl, emoji }) => ({
+const normalizeVideoPayload = ({ title, description, embedUrl, emoji, category }) => ({
   title: title?.trim(),
   description: description ? String(description).trim() : '',
   embedUrl: embedUrl?.trim(),
   emoji: emoji && emoji.trim() ? emoji.trim() : DEFAULT_EMOJI,
+  category: category && category.trim() ? category.trim() : 'General',
 });
 
 videosRouter.get('/', async (req, res) => {

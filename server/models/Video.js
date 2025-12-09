@@ -5,6 +5,7 @@ const videoSchema = new mongoose.Schema({
   description: { type: String, default: '' },
   embedUrl: { type: String, required: true },
   emoji: { type: String, default: '🎬' },
+  category: { type: String, default: 'General', trim: true, index: true },
   order: { type: Number, default: 0 },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
