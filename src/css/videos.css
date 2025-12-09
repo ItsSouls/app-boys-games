@@ -291,11 +291,9 @@
   }
 }
 
-/* Video Card - YouTube-style Redesign */
+/* Video Card - Diseño limpio: imagen + texto flotante */
 .video-card {
-  background: var(--color-white);
-  border-radius: 16px;
-  overflow: hidden;
+  background: transparent;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -305,18 +303,23 @@
 
 .video-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .video-thumbnail {
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.video-card:hover .video-thumbnail {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .video-thumbnail__image {
@@ -341,12 +344,12 @@
 }
 
 .video-info {
-  padding: 14px 12px;
+  padding: 12px 4px 0;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  background: #fff;
+  gap: 2px;
+  background: transparent;
 }
 
 .video-title {
@@ -369,7 +372,7 @@
 .video-category {
   font-size: 0.825rem;
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
+  color: var(--color-primary-dark);
   line-height: 1.4;
 }
 
