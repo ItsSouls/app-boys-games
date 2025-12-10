@@ -43,5 +43,8 @@
 /* 14. Parents page */
 @import './parents.css';
 
-/* 15. Responsive - Load last to override as needed */
+/* 15. Games section */
+@import './games.css';
+
+/* 16. Responsive - Load last to override as needed */
 @import './responsive.css';

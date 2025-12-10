@@ -305,28 +305,36 @@
             </section>
           </div>
 
-          <!-- Página de Juegos (próximamente) -->
+          <!-- Página de Juegos -->
           <div id="games-page" class="page-view hidden">
-            <section class="vocabulario-section" id="games-section">
-              <div class="vocabulario-user-view">
-                <div class="vocabulario-hero">
-                  <button class="vocabulario-back-btn" id="games-back-btn" aria-label="Volver a inicio">
+            <section class="games-section">
+              <!-- Vista de Usuario -->
+              <div class="games-user-view" id="games-user-view">
+                <div class="games-hero">
+                  <button class="videos-back-btn" id="games-back-btn" aria-label="Volver a inicio">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                       <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span data-i18n="back"></span>
+                    <span data-i18n="back">Volver</span>
                   </button>
-                  <div class="vocabulario-hero-content">
-                    <h1 class="vocabulario-hero__title" data-i18n="gamesTitle"></h1>
-                    <p class="vocabulario-hero__subtitle" data-i18n="gamesDesc"></p>
+                  <div class="games-hero-content">
+                    <h1 class="games-hero__title">🎮 Juegos Didácticos</h1>
+                    <p class="games-hero__subtitle">Elige tu juego favorito</p>
                   </div>
+                  <button class="videos-admin-toggle" id="games-admin-gear" title="Panel de administración">
+                    Administrar
+                  </button>
                 </div>
 
-                <div class="coming-soon-message" style="text-align: center; padding: 60px 20px;">
-                  <div style="font-size: 4rem; margin-bottom: 20px;">🎮</div>
-                  <h3 style="color: var(--color-text-primary); margin-bottom: 10px;" data-i18n="comingSoon"></h3>
-                  <p style="color: var(--color-text-secondary);" data-i18n="gamesComingSoonDesc"></p>
+                <!-- Grid de tipos de juegos -->
+                <div class="games-grid" id="games-grid">
+                  <!-- Se llenarán dinámicamente con JS -->
                 </div>
+              </div>
+
+              <!-- Vista de Administrador -->
+              <div class="games-admin-view hidden" id="games-admin-view">
+                <!-- Se llenará dinámicamente con JS -->
               </div>
             </section>
           </div>
