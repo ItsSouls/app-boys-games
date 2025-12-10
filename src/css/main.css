@@ -45,6 +45,7 @@
 
 /* 15. Games section */
 @import './games.css';
+@import './gameFormModal.css';
 
 /* 16. Responsive - Load last to override as needed */
 @import './responsive.css';

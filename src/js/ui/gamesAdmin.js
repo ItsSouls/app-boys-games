@@ -1,6 +1,7 @@
 // gamesAdmin.js - Panel de administración de juegos
 import { api } from '../services/api.js';
 import { renderGames } from '../app/games.js';
+import { openGameFormModal } from './gameFormModal.js';
 
 let adminState = {
   games: [],
@@ -140,7 +141,9 @@ function wireAdminEvents() {
   if (addBtn && !addBtn.__wired) {
     addBtn.__wired = true;
     addBtn.addEventListener('click', () => {
-      openGameFormModal('create');
+      openGameFormModal('create', null, () => {
+        loadGames(); // Recargar lista después de crear
+      });
     });
   }
 
@@ -309,7 +312,9 @@ function wireRowEvents() {
     btn.__wired = true;
     btn.addEventListener('click', () => {
       const gameId = btn.dataset.gameId;
-      openGameFormModal('edit', gameId);
+      openGameFormModal('edit', gameId, () => {
+        loadGames(); // Recargar lista después de editar
+      });
     });
   });
 
@@ -322,22 +327,6 @@ function wireRowEvents() {
       await deleteGame(gameId);
     });
   });
-}
-
-/**
- * Abre el modal de formulario de juego
- */
-function openGameFormModal(mode, gameId = null) {
-  console.log('[gamesAdmin] Opening game form:', mode, gameId);
-
-  // TODO: Implementar modal de formulario
-  // Por ahora, mostrar alerta
-  if (mode === 'create') {
-    alert('Modal de crear juego\n\n(Se implementará en el siguiente paso con los formularios específicos para cada tipo de juego)');
-  } else {
-    const game = adminState.games.find(g => g._id === gameId);
-    alert(`Modal de editar juego\n\nJuego: ${game?.title}\nTipo: ${game?.type}\n\n(Se implementará en el siguiente paso)`);
-  }
 }
 
 /**
