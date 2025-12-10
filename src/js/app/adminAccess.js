@@ -1,5 +1,6 @@
 import { api } from '../services/api.js';
 import { openTheoryAdminModal } from '../ui/admin/theoryModal.js';
+import { openAdminView } from '../ui/gamesAdmin.js';
 
 // Handler for videos admin view (toggles to admin view)
 function toggleVideosAdminView() {
@@ -23,6 +24,7 @@ const ADMIN_TOGGLES = [
   { id: 'videos-admin-gear', section: 'videos', handler: toggleVideosAdminView },
   { id: 'vocabulario-admin-gear', section: 'vocabulario', handler: () => openTheoryAdminModal('vocabulario') },
   { id: 'gramatica-admin-gear', section: 'gramatica', handler: () => openTheoryAdminModal('gramatica') },
+  { id: 'games-admin-gear', section: 'games', handler: openAdminView },
 ];
 
 const hideAdminIcons = () => {

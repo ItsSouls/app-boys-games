@@ -1,5 +1,6 @@
 import { renderVideos } from '../ui/videos.js';
 import { renderTheory } from './theory.js';
+import { initGames } from './games.js';
 
 const PAGE_SELECTORS = [
   '#home-page',
@@ -48,6 +49,8 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
 
     if (sectionName === 'videos') {
       await renderVideos();
+    } else if (sectionName === 'games') {
+      initGames();
     } else if (sectionName === 'vocabulario' || sectionName === 'gramatica') {
       await renderTheory(sectionName);
     }
