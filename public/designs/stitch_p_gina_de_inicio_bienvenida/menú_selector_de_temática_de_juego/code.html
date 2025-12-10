@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Menú Selector de Temática de Juego</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#25f46a",
+                        "background-light": "#f5f8f6",
+                        "background-dark": "#102216",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111813] dark:text-white">
+<div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-4 sm:px-8 md:px-20 lg:px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col w-full max-w-[960px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f5f1] dark:border-b-primary/10 px-4 sm:px-10 py-3">
+<div class="flex items-center gap-4 text-[#111813] dark:text-white">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 6H42L36 24L42 42H6L12 24L6 6Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-[#111813] dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">Juego de Memoria</h2>
+</div>
+<div class="flex gap-2">
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 bg-background-light dark:bg-background-dark border border-[#f0f5f1] dark:border-primary/10 text-[#111813] dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined text-xl">person</span>
+</button>
+<button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 bg-background-light dark:bg-background-dark border border-[#f0f5f1] dark:border-primary/10 text-[#111813] dark:text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-grow">
+<div class="flex flex-wrap gap-2 p-4">
+<a class="text-primary/80 dark:text-primary/90 text-base font-medium leading-normal hover:text-primary" href="#">Juegos</a>
+<span class="text-gray-400 dark:text-gray-500 text-base font-medium leading-normal">/</span>
+<span class="text-[#111813] dark:text-white text-base font-medium leading-normal">Elige un Tema</span>
+</div>
+<h1 class="text-[#111813] dark:text-white tracking-tight text-[32px] font-bold leading-tight px-4 text-center pb-3 pt-6">Elige un tema para jugar</h1>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-6 p-4">
+<a class="flex flex-col gap-3 pb-3 group cursor-pointer" href="#">
+<div class="relative w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl bg-[#e3f4ff] dark:bg-[#002845] transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/30">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl md:text-8xl text-[#299cff]">pets</span>
+</div>
+</div>
+<p class="text-[#111813] dark:text-white text-center text-base sm:text-lg font-bold leading-normal">Animales</p>
+</a>
+<a class="flex flex-col gap-3 pb-3 group cursor-pointer" href="#">
+<div class="relative w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl bg-[#fff0f0] dark:bg-[#4d1616] transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/30">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl md:text-8xl text-[#ff5252]">palette</span>
+</div>
+</div>
+<p class="text-[#111813] dark:text-white text-center text-base sm:text-lg font-bold leading-normal">Colores</p>
+</a>
+<a class="flex flex-col gap-3 pb-3 group cursor-pointer" href="#">
+<div class="relative w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl bg-[#fffbe6] dark:bg-[#4d4300] transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/30">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl md:text-8xl text-[#ffc400]">family_restroom</span>
+</div>
+</div>
+<p class="text-[#111813] dark:text-white text-center text-base sm:text-lg font-bold leading-normal">Familia</p>
+</a>
+<a class="flex flex-col gap-3 pb-3 group cursor-pointer" href="#">
+<div class="relative w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl bg-[#effaf5] dark:bg-[#0c3c26] transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/30">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl md:text-8xl text-[#00c853]">restaurant</span>
+</div>
+</div>
+<p class="text-[#111813] dark:text-white text-center text-base sm:text-lg font-bold leading-normal">Comida</p>
+</a>
+<a class="flex flex-col gap-3 pb-3 group cursor-pointer" href="#">
+<div class="relative w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl bg-[#f3e5f5] dark:bg-[#3c1348] transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/30">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl md:text-8xl text-[#d500f9]">checkroom</span>
+</div>
+</div>
+<p class="text-[#111813] dark:text-white text-center text-base sm:text-lg font-bold leading-normal">Ropa</p>
+</a>
+<a class="flex flex-col gap-3 pb-3 group cursor-pointer" href="#">
+<div class="relative w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl bg-[#eceff1] dark:bg-[#1e2a32] transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-primary/30">
+<div class="absolute inset-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl md:text-8xl text-[#546e7a]">house</span>
+</div>
+</div>
+<p class="text-[#111813] dark:text-white text-center text-base sm:text-lg font-bold leading-normal">La Casa</p>
+</a>
+</div>
+</main>
+</div>
+</div>
+</div>
+</div>
+</body></html>

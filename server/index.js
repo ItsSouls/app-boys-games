@@ -7,8 +7,13 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import adminRoutes from './routes/admin/index.js';
 import publicRoutes from './routes/public.js';
+import gamesRoutes from './routes/games.js';
+import gameStatsRoutes from './routes/gameStats.js';
 import { Video } from './models/Video.js';
 import { Page } from './models/Page.js';
+import { Game } from './models/Game.js';
+import { GameAttempt } from './models/GameAttempt.js';
+import { UserGameStats } from './models/UserGameStats.js';
 
 // Load environment variables
 dotenv.config(); // loads .env by default if present
@@ -35,6 +40,8 @@ app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api/games', gamesRoutes);
+app.use('/api/game-stats', gameStatsRoutes);
 
 async function start() {
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/app_boys_games';
@@ -43,6 +50,9 @@ async function start() {
   try {
     await Video.syncIndexes();
     await Page.syncIndexes();
+    await Game.syncIndexes();
+    await GameAttempt.syncIndexes();
+    await UserGameStats.syncIndexes();
     console.log('Indexes synchronized');
   } catch (e) {
     console.warn('Failed to sync indexes', e?.message || e);
