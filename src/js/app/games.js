@@ -1,5 +1,6 @@
 // games.js - Pantalla de selección de tipos de juegos
 import { api } from '../services/api.js';
+import { openThemeSelection } from '../ui/themeSelection.js';
 
 // Definición de tipos de juegos disponibles
 const GAME_TYPES = [
@@ -154,10 +155,8 @@ function openGameThemeSelection(gameType) {
 
   console.log('[games] Opening theme selection for:', gameType, games);
 
-  // TODO: Implementar pantalla de selección de temáticas
-  // Por ahora, mostrar alerta con los temas disponibles
-  const themesText = games.map(g => `- ${g.title} (${g.topic})`).join('\n');
-  alert(`Temas disponibles:\n\n${themesText}\n\n(La pantalla de selección de temas se implementará en el siguiente paso)`);
+  // Abrir pantalla de selección de temáticas
+  openThemeSelection(gameType, games);
 }
 
 /**
