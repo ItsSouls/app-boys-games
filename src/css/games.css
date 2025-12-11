@@ -156,74 +156,6 @@
   --game-color-light: rgba(16, 185, 129, 0.1);
 }
 
-/* Admin Panel Styles */
-.games-admin-view {
-  animation: fadeIn 0.3s ease-out;
-}
-
-.admin-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-6);
-  flex-wrap: wrap;
-  gap: var(--spacing-3);
-}
-
-.admin-header__title {
-  font-size: 2rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.admin-header__subtitle {
-  font-size: 1rem;
-  color: var(--color-text-secondary);
-  margin: var(--spacing-1) 0 0;
-}
-
-.admin-actions {
-  display: flex;
-  gap: var(--spacing-2);
-  align-items: center;
-}
-
-.admin-btn {
-  padding: 12px 24px;
-  border-radius: var(--radius-sm);
-  font-weight: var(--font-weight-semibold);
-  font-size: 0.938rem;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  border: none;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-2);
-}
-
-.admin-btn--primary {
-  background: var(--color-primary);
-  color: var(--color-white);
-}
-
-.admin-btn--primary:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.admin-btn--secondary {
-  background: var(--color-white);
-  color: var(--color-text-primary);
-  border: 2px solid var(--color-border-medium);
-}
-
-.admin-btn--secondary:hover {
-  border-color: var(--color-primary);
-  background: rgba(0, 217, 126, 0.05);
-}
-
 /* Admin Controls */
 .admin-controls {
   display: flex;
@@ -382,6 +314,7 @@
 .admin-actions-cell {
   display: flex;
   gap: var(--spacing-2);
+  justify-content: flex-end;
 }
 
 .admin-action-btn {

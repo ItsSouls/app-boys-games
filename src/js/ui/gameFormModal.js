@@ -185,6 +185,18 @@ function renderWordsearchForm(gameData = null) {
           >${escapeHtml(data.description || '')}</textarea>
         </div>
 
+        <div class="form-group">
+          <label for="game-cover" class="form-label">Portada (URL de imagen)</label>
+          <input
+            type="url"
+            id="game-cover"
+            name="coverImage"
+            class="form-input"
+            placeholder="https://ejemplo.com/portada.jpg"
+            value="${escapeHtml(data.coverImage || '')}"
+          />
+        </div>
+
         <div class="form-row">
           <div class="form-group">
             <label for="game-topic" class="form-label">Temática del Vocabulario <span class="required">*</span></label>
@@ -342,6 +354,18 @@ function renderHangmanForm(gameData = null) {
             rows="2"
             maxlength="200"
           >${escapeHtml(data.description || '')}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="game-cover" class="form-label">Portada (URL de imagen)</label>
+          <input
+            type="url"
+            id="game-cover"
+            name="coverImage"
+            class="form-input"
+            placeholder="https://ejemplo.com/portada.jpg"
+            value="${escapeHtml(data.coverImage || '')}"
+          />
         </div>
 
         <div class="form-row">
@@ -655,6 +679,7 @@ async function handleFormSubmit(form, gameData) {
     type,
     title: formData.get('title'),
     description: formData.get('description') || '',
+    coverImage: (formData.get('coverImage') || '').trim(),
     topic: formData.get('topic'),
     category: formData.get('category') || 'General',
     difficulty: formData.get('difficulty'),
@@ -724,16 +749,16 @@ async function handleFormSubmit(form, gameData) {
 
     console.log('[gameFormModal] Game saved:', result);
 
+    // Guardar callback antes de limpiar estado
+    const successCb = modalState.onSuccess;
+
     // Cerrar modal
     closeModal();
 
     // Llamar callback
-    if (modalState.onSuccess) {
-      modalState.onSuccess(result);
+    if (successCb) {
+      await successCb(result);
     }
-
-    // Mostrar mensaje de éxito
-    alert(`Juego ${modalState.mode === 'edit' ? 'actualizado' : 'creado'} exitosamente`);
 
   } catch (error) {
     console.error('[gameFormModal] Error saving game:', error);

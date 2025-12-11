@@ -141,8 +141,11 @@ function wireAdminEvents() {
   if (addBtn && !addBtn.__wired) {
     addBtn.__wired = true;
     addBtn.addEventListener('click', () => {
-      openGameFormModal('create', null, () => {
-        loadGames(); // Recargar lista después de crear
+      openGameFormModal('create', null, async () => {
+        await Promise.all([
+          loadGames(), // Recargar lista admin
+          renderGames(adminState.games.filter(g => g.isPublished)), // Refrescar selector usuario con cache
+        ]);
       });
     });
   }
@@ -312,8 +315,11 @@ function wireRowEvents() {
     btn.__wired = true;
     btn.addEventListener('click', () => {
       const gameId = btn.dataset.gameId;
-      openGameFormModal('edit', gameId, () => {
-        loadGames(); // Recargar lista después de editar
+      openGameFormModal('edit', gameId, async () => {
+        await Promise.all([
+          loadGames(), // Recargar lista admin
+          renderGames(adminState.games.filter(g => g.isPublished)), // Refrescar selector usuario con cache
+        ]);
       });
     });
   });
@@ -341,8 +347,10 @@ async function deleteGame(gameId) {
 
   try {
     await api.deleteGame(gameId);
-    alert('Juego eliminado exitosamente');
-    await loadGames();
+    await Promise.all([
+      loadGames(),
+      renderGames(adminState.games.filter(g => g.isPublished)),
+    ]);
   } catch (error) {
     console.error('[gamesAdmin] Error deleting game:', error);
     alert('Error al eliminar el juego. Por favor, intenta de nuevo.');
@@ -358,3 +366,4 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
+

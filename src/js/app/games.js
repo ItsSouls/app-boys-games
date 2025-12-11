@@ -52,8 +52,9 @@ let gamesCache = {};
 
 /**
  * Renderiza la pantalla principal de selección de juegos
+ * @param {Array|null} preloadedGames - lista opcional de juegos ya obtenida
  */
-export async function renderGames() {
+export async function renderGames(preloadedGames = null) {
   console.log('[games] Rendering games selection screen');
 
   const grid = document.getElementById('games-grid');
@@ -67,7 +68,7 @@ export async function renderGames() {
 
   // Obtener conteo de juegos por tipo
   try {
-    const games = await api.getGames();
+    const games = preloadedGames || await api.getGames({ isPublished: true });
     gamesCache = {};
 
     // Agrupar por tipo

@@ -1,5 +1,6 @@
 // themeSelection.js - Pantalla de selección de temáticas
 import { api } from '../services/api.js';
+import { maybeShowSectionAdminGear } from '../app/adminAccess.js';
 
 let previousGamesUserView = null;
 
@@ -14,9 +15,9 @@ const GAME_TYPE_NAMES = {
 
 const GAME_TYPE_ICONS = {
   wordsearch: '🔍',
-  hangman: '🎯',
-  matching: '🎴',
-  crossword: '📝',
+  hangman: '🪢',
+  matching: '🧩',
+  crossword: '🧠',
   multichoice: '❓',
   bubbles: '🫧'
 };
@@ -37,7 +38,6 @@ export async function openThemeSelection(gameType, games) {
     previousGamesUserView = userView.innerHTML;
   }
 
-  // Renderizar la pantalla de selección de temáticas
   renderThemeSelection(userView, gameType, games);
 }
 
@@ -47,9 +47,6 @@ export async function openThemeSelection(gameType, games) {
 function renderThemeSelection(container, gameType, games) {
   const typeName = GAME_TYPE_NAMES[gameType] || gameType;
   const typeIcon = GAME_TYPE_ICONS[gameType] || '🎮';
-
-  // Agrupar juegos por topic
-  const gamesByTopic = groupGamesByTopic(games);
 
   container.innerHTML = `
     <div class="theme-selection">
@@ -70,14 +67,12 @@ function renderThemeSelection(container, gameType, games) {
       </div>
 
       <div class="theme-grid">
-        ${Object.entries(gamesByTopic).map(([topic, topicGames]) =>
-          createThemeCard(topic, topicGames, gameType)
-        ).join('')}
+        ${games.map(game => createThemeCard(game, gameType)).join('')}
       </div>
 
-      ${Object.keys(gamesByTopic).length === 0 ? `
+      ${games.length === 0 ? `
         <div class="theme-empty-state">
-          <div class="theme-empty-icon">📚</div>
+          <div class="theme-empty-icon">🎲</div>
           <h3>No hay temas disponibles</h3>
           <p>Aún no se han creado juegos de este tipo. Vuelve pronto para ver nuevas temáticas.</p>
         </div>
@@ -85,35 +80,23 @@ function renderThemeSelection(container, gameType, games) {
     </div>
   `;
 
-  // Wire eventos
   wireThemeEvents(gameType);
 }
 
 /**
- * Agrupa juegos por topic
+ * Crea una tarjeta de tema (un juego por tarjeta)
  */
-function groupGamesByTopic(games) {
-  const grouped = {};
-  games.forEach(game => {
-    const topic = game.topic || 'General';
-    if (!grouped[topic]) {
-      grouped[topic] = [];
-    }
-    grouped[topic].push(game);
-  });
-  return grouped;
-}
-
-/**
- * Crea una tarjeta de tema
- */
-function createThemeCard(topic, games, gameType) {
-  const gamesCount = games.length;
-  const difficulty = getMostCommonDifficulty(games);
-  const category = games[0]?.category || 'General';
+function createThemeCard(game, gameType) {
+  const topic = game.topic || 'General';
+  const difficulty = game.difficulty || 'media';
+  const category = game.category || 'General';
+  const cover = game.coverImage || '';
 
   return `
     <div class="theme-card" data-topic="${escapeHtml(topic)}" data-game-type="${gameType}">
+      <div class="theme-card-cover">
+        ${cover ? `<img src="${escapeHtml(cover)}" alt="Portada de ${escapeHtml(topic)}" onerror="this.classList.add('is-fallback')">` : '<div class="theme-card-cover__placeholder">🎮</div>'}
+      </div>
       <div class="theme-card-header">
         <h3 class="theme-card__title">${escapeHtml(topic)}</h3>
         <span class="theme-card__category">${escapeHtml(category)}</span>
@@ -125,7 +108,7 @@ function createThemeCard(topic, games, gameType) {
               <path d="M8 2V8L12 10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/>
             </svg>
-            <span>${gamesCount} juego${gamesCount !== 1 ? 's' : ''}</span>
+            <span>${escapeHtml(game.title || 'Juego')}</span>
           </div>
           <div class="theme-stat">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -135,7 +118,7 @@ function createThemeCard(topic, games, gameType) {
           </div>
         </div>
         <p class="theme-card__description">
-          Practica con ${gamesCount} ${gamesCount === 1 ? 'juego' : 'juegos diferentes'} sobre ${escapeHtml(topic.toLowerCase())}
+          ${escapeHtml(game.description || 'Tema disponible')}
         </p>
       </div>
       <button class="theme-card-btn">
@@ -149,32 +132,9 @@ function createThemeCard(topic, games, gameType) {
 }
 
 /**
- * Obtiene la dificultad más común
- */
-function getMostCommonDifficulty(games) {
-  const difficulties = games.map(g => g.difficulty || 'media');
-  const counts = {};
-  difficulties.forEach(d => {
-    counts[d] = (counts[d] || 0) + 1;
-  });
-
-  let maxCount = 0;
-  let mostCommon = 'media';
-  for (const [diff, count] of Object.entries(counts)) {
-    if (count > maxCount) {
-      maxCount = count;
-      mostCommon = diff;
-    }
-  }
-
-  return mostCommon.charAt(0).toUpperCase() + mostCommon.slice(1);
-}
-
-/**
  * Wire eventos de la pantalla de temáticas
  */
 function wireThemeEvents(gameType) {
-  // Botón volver
   const backBtn = document.getElementById('theme-back-btn');
   if (backBtn && !backBtn.__wired) {
     backBtn.__wired = true;
@@ -185,12 +145,12 @@ function wireThemeEvents(gameType) {
         previousGamesUserView = null;
       }
 
-      // Volver a la pantalla de selección de juegos
       import('../app/games.js').then(module => {
         module.renderGames?.();
       });
 
-      // Re-wire back button to home (como en initGames)
+      maybeShowSectionAdminGear('games');
+
       const mainBackBtn = document.getElementById('games-back-btn');
       if (mainBackBtn && !mainBackBtn.__wired) {
         mainBackBtn.__wired = true;
@@ -201,29 +161,14 @@ function wireThemeEvents(gameType) {
     });
   }
 
-  // Tarjetas de temas
   document.querySelectorAll('.theme-card').forEach(card => {
     if (card.__wired) return;
     card.__wired = true;
 
     card.addEventListener('click', async () => {
       const topic = card.dataset.topic;
-      const gameType = card.dataset.gameType;
-
-      console.log('[themeSelection] Theme selected:', { topic, gameType });
-
-      // TODO: Abrir el juego con la temática seleccionada
-      // Por ahora, mostrar un mensaje temporal
-      alert(`¡Próximamente! Abrirá el juego de ${GAME_TYPE_NAMES[gameType]} con la temática: ${topic}`);
-
-      // En el futuro, esto llamará a la función que abre el motor del juego:
-      // import('../games/wordsearch.js').then(module => {
-      //   module.openWordsearchGame(topic);
-      // });
-      // o
-      // import('../games/hangman.js').then(module => {
-      //   module.openHangmanGame(topic);
-      // });
+      const type = card.dataset.gameType;
+      alert(`¡Próximamente! Abriré el juego de ${GAME_TYPE_NAMES[type] || type} con la temática: ${topic}`);
     });
   });
 }
