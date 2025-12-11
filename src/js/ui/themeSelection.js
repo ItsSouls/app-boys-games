@@ -1,6 +1,8 @@
 // themeSelection.js - Pantalla de selección de temáticas
 import { api } from '../services/api.js';
 
+let previousGamesUserView = null;
+
 const GAME_TYPE_NAMES = {
   wordsearch: 'Sopa de Letras',
   hangman: 'Ahorcado',
@@ -31,6 +33,10 @@ export async function openThemeSelection(gameType, games) {
     return;
   }
 
+  if (!previousGamesUserView) {
+    previousGamesUserView = userView.innerHTML;
+  }
+
   // Renderizar la pantalla de selección de temáticas
   renderThemeSelection(userView, gameType, games);
 }
@@ -48,11 +54,11 @@ function renderThemeSelection(container, gameType, games) {
   container.innerHTML = `
     <div class="theme-selection">
       <div class="theme-selection-header">
-        <button class="theme-back-btn" id="theme-back-btn">
+        <button class="videos-back-btn" id="theme-back-btn">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
             <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          Volver
+          <span>Volver</span>
         </button>
         <div class="theme-selection-header-content">
           <div class="theme-selection-icon">${typeIcon}</div>
@@ -173,12 +179,25 @@ function wireThemeEvents(gameType) {
   if (backBtn && !backBtn.__wired) {
     backBtn.__wired = true;
     backBtn.addEventListener('click', () => {
+      const container = document.getElementById('games-user-view');
+      if (container && previousGamesUserView !== null) {
+        container.innerHTML = previousGamesUserView;
+        previousGamesUserView = null;
+      }
+
       // Volver a la pantalla de selección de juegos
       import('../app/games.js').then(module => {
-        if (module.renderGames) {
-          module.renderGames();
-        }
+        module.renderGames?.();
       });
+
+      // Re-wire back button to home (como en initGames)
+      const mainBackBtn = document.getElementById('games-back-btn');
+      if (mainBackBtn && !mainBackBtn.__wired) {
+        mainBackBtn.__wired = true;
+        mainBackBtn.addEventListener('click', () => {
+          window.router?.navigate('/');
+        });
+      }
     });
   }
 

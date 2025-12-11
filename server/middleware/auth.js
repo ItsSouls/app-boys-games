@@ -35,6 +35,37 @@ export async function auth(req, res, next) {
 // Alias used in routers
 export const authMiddleware = auth;
 
+// Optional auth: if token present, attach req.user; otherwise continue
+export async function optionalAuth(req, res, next) {
+  const hdr = req.headers.authorization || '';
+  const token = hdr.startsWith('Bearer ') ? hdr.slice(7) : null;
+  if (!token) return next();
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'devsecret');
+    try {
+      const u = await User.findById(decoded.id).lean();
+      req.user = {
+        _id: decoded.id,
+        id: decoded.id,
+        username: decoded.username,
+        name: decoded.name,
+        role: u?.role || decoded.role || 'user',
+      };
+    } catch {
+      req.user = {
+        _id: decoded.id,
+        id: decoded.id,
+        username: decoded.username,
+        name: decoded.name,
+        role: decoded.role || 'user',
+      };
+    }
+  } catch {
+    // ignore invalid token on optional auth
+  }
+  next();
+}
+
 // Simple admin guard
 export function adminMiddleware(req, res, next) {
   if (!req.user || req.user.role !== 'admin') {

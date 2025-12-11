@@ -1,6 +1,6 @@
 import express from 'express';
 import { gameService } from '../services/gameService.js';
-import { authMiddleware, adminMiddleware } from '../middleware/auth.js';
+import { authMiddleware, adminMiddleware, optionalAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
  * Obtiene todos los juegos (públicos o todos si es admin)
  * Query params: type, category, topic, difficulty, isPublished
  */
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
   try {
     const { type, category, topic, difficulty, isPublished } = req.query;
 
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
  * GET /api/games/:id
  * Obtiene un juego específico por ID
  */
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const game = await gameService.getGameById(req.params.id);
 
@@ -166,7 +166,7 @@ router.get('/:id/stats', authMiddleware, async (req, res) => {
  * GET /api/games/:id/ranking
  * Obtiene el ranking para un juego específico
  */
-router.get('/:id/ranking', async (req, res) => {
+router.get('/:id/ranking', optionalAuth, async (req, res) => {
   try {
     const gameId = req.params.id;
     const limit = parseInt(req.query.limit) || 10;
