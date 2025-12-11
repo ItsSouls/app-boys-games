@@ -54,7 +54,6 @@ function renderTopCard(player, position) {
       <div class="ranking-card__info">
         <div class="ranking-card__name">${escapeHtml(player.name || 'Jugador')}</div>
         <div class="ranking-card__score">${player.totalScore || 0} pts</div>
-        <div class="ranking-card__meta">Partidas: ${player.gamesPlayed || 0} · Completadas: ${player.gamesCompleted || 0}</div>
       </div>
       <div class="ranking-card__position">#${position}</div>
     </div>

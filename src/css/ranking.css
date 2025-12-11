@@ -1,5 +1,9 @@
 /* Ranking layout: top 3 cards centered, rest listed below */
 
+#ranking-page.page-view {
+  padding: var(--spacing-6) 0;
+}
+
 .ranking-section {
   padding: var(--spacing-6) var(--spacing-4);
   max-width: 1100px;

@@ -50,7 +50,7 @@ export function startHangmanGame({ container, game, onExit }) {
         <div class="hangman__layout">
           <div class="hangman__panel hangman__panel--image">
             <div class="hangman__image-frame">
-              ${game.coverImage ? `<img src="${game.coverImage}" alt="Portada" onerror="this.classList.add('is-fallback')">` : '<div class="hangman__image-placeholder">🧩</div>'}
+              ${game.coverImage ? `<img src="${game.coverImage}" alt="Portada" onerror="this.classList.add('is-fallback')">` : '<div class="hangman__image-placeholder">🎮</div>'}
             </div>
             <div class="hangman__status">
               <div class="hangman__lives"><span>❤️</span> Vidas: ${maxErrors - errors}/${maxErrors}</div>
