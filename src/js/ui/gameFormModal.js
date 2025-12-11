@@ -203,9 +203,9 @@ function renderWordsearchForm(gameData = null) {
             <label for="game-difficulty" class="form-label">Nivel de Dificultad <span class="required">*</span></label>
             <select id="game-difficulty" name="difficulty" class="form-select" required>
               <option value="">Selecciona...</option>
-              <option value="fácil" ${(config.difficulty || data.difficulty) === 'fácil' ? 'selected' : ''}>Fácil</option>
+              <option value="facil" ${(config.difficulty || data.difficulty) === 'facil' ? 'selected' : ''}>Fácil</option>
               <option value="media" ${(config.difficulty || data.difficulty) === 'media' ? 'selected' : ''}>Media</option>
-              <option value="difícil" ${(config.difficulty || data.difficulty) === 'difícil' ? 'selected' : ''}>Difícil</option>
+              <option value="dificil" ${(config.difficulty || data.difficulty) === 'dificil' ? 'selected' : ''}>Difícil</option>
             </select>
           </div>
         </div>
@@ -215,8 +215,8 @@ function renderWordsearchForm(gameData = null) {
           <select id="game-category" name="category" class="form-select">
             <option value="General">General</option>
             <option value="Vocabulario" ${data.category === 'Vocabulario' ? 'selected' : ''}>Vocabulario</option>
-            <option value="Gramática" ${data.category === 'Gramática' ? 'selected' : ''}>Gramática</option>
-            <option value="Matemáticas" ${data.category === 'Matemáticas' ? 'selected' : ''}>Matemáticas</option>
+            <option value="Gramatica" ${data.category === 'Gramatica' ? 'selected' : ''}>Gramática</option>
+            <option value="Matematicas" ${data.category === 'Matematicas' ? 'selected' : ''}>Matemáticas</option>
             <option value="Cultura" ${data.category === 'Cultura' ? 'selected' : ''}>Cultura</option>
             <option value="Ciencias" ${data.category === 'Ciencias' ? 'selected' : ''}>Ciencias</option>
           </select>
@@ -362,9 +362,9 @@ function renderHangmanForm(gameData = null) {
             <label for="game-difficulty" class="form-label">Nivel de Dificultad <span class="required">*</span></label>
             <select id="game-difficulty" name="difficulty" class="form-select" required>
               <option value="">Selecciona...</option>
-              <option value="fácil" ${(config.difficulty || data.difficulty) === 'fácil' ? 'selected' : ''}>Fácil</option>
+              <option value="facil" ${(config.difficulty || data.difficulty) === 'facil' ? 'selected' : ''}>Fácil</option>
               <option value="media" ${(config.difficulty || data.difficulty) === 'media' ? 'selected' : ''}>Media</option>
-              <option value="difícil" ${(config.difficulty || data.difficulty) === 'difícil' ? 'selected' : ''}>Difícil</option>
+              <option value="dificil" ${(config.difficulty || data.difficulty) === 'dificil' ? 'selected' : ''}>Difícil</option>
             </select>
           </div>
         </div>
@@ -374,8 +374,8 @@ function renderHangmanForm(gameData = null) {
           <select id="game-category" name="category" class="form-select">
             <option value="General">General</option>
             <option value="Vocabulario" ${data.category === 'Vocabulario' ? 'selected' : ''}>Vocabulario</option>
-            <option value="Gramática" ${data.category === 'Gramática' ? 'selected' : ''}>Gramática</option>
-            <option value="Matemáticas" ${data.category === 'Matemáticas' ? 'selected' : ''}>Matemáticas</option>
+            <option value="Gramatica" ${data.category === 'Gramatica' ? 'selected' : ''}>Gramática</option>
+            <option value="Matematicas" ${data.category === 'Matematicas' ? 'selected' : ''}>Matemáticas</option>
             <option value="Cultura" ${data.category === 'Cultura' ? 'selected' : ''}>Cultura</option>
             <option value="Ciencias" ${data.category === 'Ciencias' ? 'selected' : ''}>Ciencias</option>
           </select>

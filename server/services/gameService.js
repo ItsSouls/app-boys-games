@@ -18,8 +18,8 @@ const configValidators = {
       errors.push('El campo "topic" (temática) es requerido');
     }
 
-    if (!config.difficulty || !['fácil', 'media', 'difícil'].includes(config.difficulty)) {
-      errors.push('El campo "difficulty" debe ser: fácil, media o difícil');
+    if (!config.difficulty || !['facil', 'media', 'dificil'].includes(config.difficulty)) {
+      errors.push('El campo "difficulty" debe ser: facil, media o dificil');
     }
 
     if (!config.gridWidth || typeof config.gridWidth !== 'number' || config.gridWidth < 10 || config.gridWidth > 20) {
@@ -63,8 +63,8 @@ const configValidators = {
       errors.push('El campo "topic" (temática) es requerido');
     }
 
-    if (!config.difficulty || !['fácil', 'media', 'difícil'].includes(config.difficulty)) {
-      errors.push('El campo "difficulty" debe ser: fácil, media o difícil');
+    if (!config.difficulty || !['facil', 'media', 'dificil'].includes(config.difficulty)) {
+      errors.push('El campo "difficulty" debe ser: facil, media o dificil');
     }
 
     if (!Array.isArray(config.words) || config.words.length < 1) {

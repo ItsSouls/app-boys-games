@@ -18,15 +18,15 @@ const gameSchema = new mongoose.Schema({
   topic: { type: String, required: true, trim: true, index: true }, // Ej: "Animales de la Granja"
   category: {
     type: String,
-    enum: ['Vocabulario', 'Gramática', 'Matemáticas', 'Cultura', 'Ciencias', 'General'],
+    enum: ['Vocabulario', 'Gramatica', 'Matematicas', 'Cultura', 'Ciencias', 'General'],
     default: 'General',
     trim: true,
     index: true
   },
   difficulty: {
     type: String,
-    enum: ['fácil', 'media', 'difícil'],
-    default: 'fácil',
+    enum: ['facil', 'media', 'dificil'],
+    default: 'facil',
     index: true
   },
 
