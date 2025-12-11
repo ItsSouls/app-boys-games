@@ -15,10 +15,11 @@ function setToken(token) {
 
 function authHeaders(extra = {}) {
 	const token = getToken();
-	return {
-		Authorization: `Bearer ${token}`,
-		...extra
-	};
+	const base = { ...extra };
+	if (token) {
+		base.Authorization = `Bearer ${token}`;
+	}
+	return base;
 }
 
 async function handleResponse(res, fallbackMessage) {

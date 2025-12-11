@@ -9,6 +9,7 @@ const PAGE_SELECTORS = [
   '#vocabulario-page',
   '#gramatica-page',
   '#parents-page',
+  '#ranking-page',
 ];
 
 export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear }) {
@@ -38,6 +39,7 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
       'vocabulario': 'vocabulario-page',
       'gramatica': 'gramatica-page',
       'parents': 'parents-page',
+      'ranking': 'ranking-page',
     };
 
     const pageId = pageMap[sectionName];
@@ -53,6 +55,9 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
       initGames();
     } else if (sectionName === 'vocabulario' || sectionName === 'gramatica') {
       await renderTheory(sectionName);
+    } else if (sectionName === 'ranking') {
+      const { renderRanking } = await import('../ui/ranking.js');
+      await renderRanking();
     }
 
     if (typeof maybeShowAdminGear === 'function') {

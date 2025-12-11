@@ -1,8 +1,9 @@
 // themeSelection.js - Pantalla de selección de temáticas
-import { api } from '../services/api.js';
 import { maybeShowSectionAdminGear } from '../app/adminAccess.js';
 
 let previousGamesUserView = null;
+let currentGames = [];
+let currentGameType = null;
 
 const GAME_TYPE_NAMES = {
   wordsearch: 'Sopa de Letras',
@@ -38,7 +39,10 @@ export async function openThemeSelection(gameType, games) {
     previousGamesUserView = userView.innerHTML;
   }
 
-  renderThemeSelection(userView, gameType, games);
+  currentGames = games || [];
+  currentGameType = gameType;
+
+  renderThemeSelection(userView, gameType, currentGames);
 }
 
 /**
@@ -80,7 +84,7 @@ function renderThemeSelection(container, gameType, games) {
     </div>
   `;
 
-  wireThemeEvents(gameType);
+  wireThemeEvents();
 }
 
 /**
@@ -93,7 +97,7 @@ function createThemeCard(game, gameType) {
   const cover = game.coverImage || '';
 
   return `
-    <div class="theme-card" data-topic="${escapeHtml(topic)}" data-game-type="${gameType}">
+    <div class="theme-card" data-topic="${escapeHtml(topic)}" data-game-type="${gameType}" data-game-id="${game._id}">
       <div class="theme-card-cover">
         ${cover ? `<img src="${escapeHtml(cover)}" alt="Portada de ${escapeHtml(topic)}" onerror="this.classList.add('is-fallback')">` : '<div class="theme-card-cover__placeholder">🎮</div>'}
       </div>
@@ -134,7 +138,7 @@ function createThemeCard(game, gameType) {
 /**
  * Wire eventos de la pantalla de temáticas
  */
-function wireThemeEvents(gameType) {
+function wireThemeEvents() {
   const backBtn = document.getElementById('theme-back-btn');
   if (backBtn && !backBtn.__wired) {
     backBtn.__wired = true;
@@ -166,9 +170,34 @@ function wireThemeEvents(gameType) {
     card.__wired = true;
 
     card.addEventListener('click', async () => {
-      const topic = card.dataset.topic;
+      const gameId = card.dataset.gameId;
       const type = card.dataset.gameType;
-      alert(`¡Próximamente! Abriré el juego de ${GAME_TYPE_NAMES[type] || type} con la temática: ${topic}`);
+      const game = currentGames.find(g => g._id === gameId);
+      if (!game) {
+        alert('No se encontró el juego seleccionado.');
+        return;
+      }
+
+      if (type === 'hangman') {
+        import('../games/hangman/index.js').then(module => {
+          module.startHangmanGame?.({
+            container: document.getElementById('games-user-view'),
+            game,
+            onExit: () => {
+              // Regresar a la selección de temas
+              const container = document.getElementById('games-user-view');
+              if (container && previousGamesUserView !== null) {
+                container.innerHTML = previousGamesUserView;
+                previousGamesUserView = null;
+              }
+              import('../app/games.js').then(mod => mod.renderGames?.());
+              maybeShowSectionAdminGear('games');
+            }
+          });
+        });
+      } else {
+        alert('Este tipo de juego aún no está disponible.');
+      }
     });
   });
 }

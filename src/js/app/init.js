@@ -42,6 +42,7 @@ export function initApp() {
   router.route('/vocabulario', () => navigation.showSection('vocabulario'));
   router.route('/gramatica', () => navigation.showSection('gramatica'));
   router.route('/parents', () => navigation.showSection('parents'));
+  router.route('/ranking', () => navigation.showSection('ranking'));
 
   router.init();
 
@@ -85,6 +86,16 @@ export function initApp() {
     if (headerLogo && !headerLogo.__wired) {
       headerLogo.__wired = true;
       headerLogo.addEventListener('click', () => router.navigate('/'));
+    }
+
+    // Ranking link
+    const rankingLink = document.getElementById('nav-ranking');
+    if (rankingLink && !rankingLink.__wired) {
+      rankingLink.__wired = true;
+      rankingLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        router.navigate('/ranking');
+      });
     }
 
     // Para Padres link

@@ -47,6 +47,8 @@
 @import './games.css';
 @import './gameFormModal.css';
 @import './themeSelection.css';
+@import './hangman.css';
+@import './ranking.css';
 
 /* 16. Responsive - Load last to override as needed */
 @import './responsive.css';

@@ -112,9 +112,9 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
 /**
  * POST /api/games/:id/attempts
  * Guarda un intento de juego
- * Puede ser llamado por usuarios autenticados o anónimos
+ * Requiere usuario autenticado (para asociar puntaje)
  */
-router.post('/:id/attempts', async (req, res) => {
+router.post('/:id/attempts', authMiddleware, async (req, res) => {
   try {
     const gameId = req.params.id;
     const { score, maxScore, completed, durationSeconds, metadata } = req.body;
