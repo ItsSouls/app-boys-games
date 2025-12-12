@@ -23,12 +23,6 @@ const gameSchema = new mongoose.Schema({
     trim: true,
     index: true
   },
-  difficulty: {
-    type: String,
-    enum: ['facil', 'media', 'dificil'],
-    default: 'facil',
-    index: true
-  },
 
   // Visual
   coverImage: { type: String, default: '', trim: true },

@@ -18,10 +18,6 @@ const configValidators = {
       errors.push('El campo "topic" (temática) es requerido');
     }
 
-    if (!config.difficulty || !['facil', 'media', 'dificil'].includes(config.difficulty)) {
-      errors.push('El campo "difficulty" debe ser: facil, media o dificil');
-    }
-
     if (!config.gridWidth || typeof config.gridWidth !== 'number' || config.gridWidth < 10 || config.gridWidth > 20) {
       errors.push('El ancho de la cuadrícula debe estar entre 10 y 20');
     }
@@ -61,10 +57,6 @@ const configValidators = {
 
     if (!config.topic || typeof config.topic !== 'string') {
       errors.push('El campo "topic" (temática) es requerido');
-    }
-
-    if (!config.difficulty || !['facil', 'media', 'dificil'].includes(config.difficulty)) {
-      errors.push('El campo "difficulty" debe ser: facil, media o dificil');
     }
 
     if (!Array.isArray(config.words) || config.words.length < 1) {
@@ -169,7 +161,6 @@ export const gameService = {
     if (filters.type) query.type = filters.type;
     if (filters.category) query.category = filters.category;
     if (filters.topic) query.topic = new RegExp(filters.topic, 'i');
-    if (filters.difficulty) query.difficulty = filters.difficulty;
     if (filters.isPublished !== undefined) query.isPublished = filters.isPublished;
 
     const games = await Game.find(query)

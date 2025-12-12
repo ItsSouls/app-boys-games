@@ -7,17 +7,16 @@ const router = express.Router();
 /**
  * GET /api/games
  * Obtiene todos los juegos (públicos o todos si es admin)
- * Query params: type, category, topic, difficulty, isPublished
+ * Query params: type, category, topic, isPublished
  */
 router.get('/', optionalAuth, async (req, res) => {
   try {
-    const { type, category, topic, difficulty, isPublished } = req.query;
+    const { type, category, topic, isPublished } = req.query;
 
     const filters = {};
     if (type) filters.type = type;
     if (category) filters.category = category;
     if (topic) filters.topic = topic;
-    if (difficulty) filters.difficulty = difficulty;
 
     // Si no es admin, solo mostrar juegos publicados
     if (!req.user || req.user.role !== 'admin') {

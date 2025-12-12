@@ -211,15 +211,6 @@ function renderWordsearchForm(gameData = null) {
             />
           </div>
 
-          <div class="form-group">
-            <label for="game-difficulty" class="form-label">Nivel de Dificultad <span class="required">*</span></label>
-            <select id="game-difficulty" name="difficulty" class="form-select" required>
-              <option value="">Selecciona...</option>
-              <option value="facil" ${(config.difficulty || data.difficulty) === 'facil' ? 'selected' : ''}>Fácil</option>
-              <option value="media" ${(config.difficulty || data.difficulty) === 'media' ? 'selected' : ''}>Media</option>
-              <option value="dificil" ${(config.difficulty || data.difficulty) === 'dificil' ? 'selected' : ''}>Difícil</option>
-            </select>
-          </div>
         </div>
 
         <div class="form-group">
@@ -382,15 +373,6 @@ function renderHangmanForm(gameData = null) {
             />
           </div>
 
-          <div class="form-group">
-            <label for="game-difficulty" class="form-label">Nivel de Dificultad <span class="required">*</span></label>
-            <select id="game-difficulty" name="difficulty" class="form-select" required>
-              <option value="">Selecciona...</option>
-              <option value="facil" ${(config.difficulty || data.difficulty) === 'facil' ? 'selected' : ''}>Fácil</option>
-              <option value="media" ${(config.difficulty || data.difficulty) === 'media' ? 'selected' : ''}>Media</option>
-              <option value="dificil" ${(config.difficulty || data.difficulty) === 'dificil' ? 'selected' : ''}>Difícil</option>
-            </select>
-          </div>
         </div>
 
         <div class="form-group">
@@ -682,7 +664,6 @@ async function handleFormSubmit(form, gameData) {
     coverImage: (formData.get('coverImage') || '').trim(),
     topic: formData.get('topic'),
     category: formData.get('category') || 'General',
-    difficulty: formData.get('difficulty'),
     isPublished: formData.get('isPublished') === 'on',
     config: {}
   };
@@ -702,7 +683,6 @@ async function handleFormSubmit(form, gameData) {
 
     gamePayload.config = {
       topic: formData.get('topic'),
-      difficulty: formData.get('difficulty'),
       gridWidth: parseInt(formData.get('gridWidth')),
       gridHeight: parseInt(formData.get('gridHeight')),
       words
@@ -727,7 +707,6 @@ async function handleFormSubmit(form, gameData) {
 
     gamePayload.config = {
       topic: formData.get('topic'),
-      difficulty: formData.get('difficulty'),
       maxErrors: parseInt(formData.get('maxErrors')),
       words
     };

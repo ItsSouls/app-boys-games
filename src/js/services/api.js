@@ -72,7 +72,6 @@ async function getGames(filters = {}) {
 	if (filters.type) params.append('type', filters.type);
 	if (filters.category) params.append('category', filters.category);
 	if (filters.topic) params.append('topic', filters.topic);
-	if (filters.difficulty) params.append('difficulty', filters.difficulty);
 	if (filters.isPublished !== undefined) params.append('isPublished', filters.isPublished);
 
 	const url = `${BASE}/games${params.toString() ? `?${params}` : ''}`;

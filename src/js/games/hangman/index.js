@@ -40,7 +40,6 @@ export function startHangmanGame({ container, game, onExit }) {
   const selected = words[Math.floor(Math.random() * words.length)];
   const targetWord = (selected.word || '').toUpperCase();
   const hint = selected.hint || '';
-  const difficulty = game.difficulty || 'media';
   const startTime = Date.now();
 
   let errors = 0;
@@ -59,7 +58,6 @@ export function startHangmanGame({ container, game, onExit }) {
             <div class="hangman__title">${game.title || 'Juego del Ahorcado'}</div>
             <div class="hangman__meta">
               <span class="hangman__badge">Categoría: ${game.topic || 'General'}</span>
-              <span class="hangman__badge hangman__badge--ghost">Dificultad: ${difficulty}</span>
             </div>
           </div>
           <div class="hangman__actions">

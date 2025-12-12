@@ -92,7 +92,6 @@ function renderThemeSelection(container, gameType, games) {
  */
 function createThemeCard(game, gameType) {
   const topic = game.topic || 'General';
-  const difficulty = game.difficulty || 'media';
   const category = game.category || 'General';
   const cover = game.coverImage || '';
 
@@ -113,12 +112,6 @@ function createThemeCard(game, gameType) {
               <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2"/>
             </svg>
             <span>${escapeHtml(game.title || 'Juego')}</span>
-          </div>
-          <div class="theme-stat">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1L10 6L15 6L11 9L13 14L8 11L3 14L5 9L1 6L6 6L8 1Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>${difficulty}</span>
           </div>
         </div>
         <p class="theme-card__description">
