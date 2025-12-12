@@ -120,7 +120,7 @@
 }
 
 .hangman__image-frame {
-  background: #111;
+  background: #ffffff;
   border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
@@ -133,6 +133,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.hangman__image-frame img.hangman__cookie-image {
+  object-fit: contain;
+  padding: var(--spacing-2);
+  background: transparent;
 }
 
 .hangman__image-placeholder {

@@ -3,6 +3,28 @@ import { api } from '../../services/api.js';
 
 const LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Ñ','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
 
+const COOKIE_STAGE_FILES = [
+  'Galleta_completa.png',
+  'Galleta_1_bite.png',
+  'Galleta_2_bite.png',
+  'Galleta_3_bite.png',
+  'Galleta_4_bit.png',
+  'Galleta_5_bite.png',
+  'Galleta_end.png',
+];
+
+const COOKIE_STAGES = COOKIE_STAGE_FILES.map((name) => {
+  const publicPath = `/Galleta/${name}`;
+  if (typeof window !== 'undefined') {
+    return publicPath;
+  }
+  try {
+    return new URL(`../../../../public/Galleta/${name}`, import.meta.url).href;
+  } catch {
+    return publicPath;
+  }
+});
+
 /**
  * Inicializa el juego de ahorcado.
  * @param {Object} options
@@ -28,6 +50,7 @@ export function startHangmanGame({ container, game, onExit }) {
   render();
 
   function render() {
+    const cookieImage = getCookieImage(errors, maxErrors);
     container.innerHTML = `
       <div class="hangman">
         <div class="hangman__header">
@@ -50,7 +73,9 @@ export function startHangmanGame({ container, game, onExit }) {
         <div class="hangman__layout">
           <div class="hangman__panel hangman__panel--image">
             <div class="hangman__image-frame">
-              ${game.coverImage ? `<img src="${game.coverImage}" alt="Portada" onerror="this.classList.add('is-fallback')">` : '<div class="hangman__image-placeholder">🎮</div>'}
+              ${game.coverImage
+                ? `<img src="${game.coverImage}" alt="Portada" onerror="this.classList.add('is-fallback')">`
+                : renderCookieStage(cookieImage)}
             </div>
             <div class="hangman__status">
               <div class="hangman__lives"><span>❤️</span> Vidas: ${maxErrors - errors}/${maxErrors}</div>
@@ -175,4 +200,19 @@ export function startHangmanGame({ container, game, onExit }) {
       onExit();
     }
   }
+}
+
+function getCookieImage(errors, maxErrors) {
+  if (!COOKIE_STAGES.length) return '';
+  if (!Number.isFinite(maxErrors) || maxErrors <= 0) return COOKIE_STAGES[0];
+  const ratio = Math.min(1, Math.max(0, errors / maxErrors));
+  const index = Math.min(COOKIE_STAGES.length - 1, Math.floor(ratio * (COOKIE_STAGES.length - 1)));
+  return COOKIE_STAGES[index];
+}
+
+function renderCookieStage(src) {
+  if (!src) {
+    return '<div class="hangman__image-placeholder">🧩</div>';
+  }
+  return `<img src="${src}" alt="Progreso de la galleta" class="hangman__cookie-image">`;
 }
