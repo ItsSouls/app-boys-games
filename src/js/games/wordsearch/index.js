@@ -50,10 +50,13 @@ export function startWordsearchGame({ container, game, onExit }) {
       found: false,
     })),
     failedWords: puzzle.failedWords,
-    selection: null,
     startTime: Date.now(),
     foundCount: 0,
     errors: 0,
+    selectionStart: null,
+    selectionPath: [],
+    isSelecting: false,
+    activePointerId: null,
   };
 
   render();
@@ -62,7 +65,6 @@ export function startWordsearchGame({ container, game, onExit }) {
     container.innerHTML = `
       <div class="wordsearch">
         <div class="wordsearch__header">
-          <div class="wordsearch__breadcrumbs">Inicio / Juegos / Sopa de Letras</div>
           <div class="wordsearch__title-area">
             <div>
               <h1 class="wordsearch__title">${escapeHtml(game.title || 'Sopa de Letras')}</h1>
@@ -119,6 +121,12 @@ export function startWordsearchGame({ container, game, onExit }) {
                 <span>Tiempo: <strong id="wordsearch-timer">0s</strong></span>
               </div>
             </div>
+            <div class="wordsearch__selection-info">
+              <div class="wordsearch__selection-preview" id="wordsearch-selection-preview">
+                Arrastra para seleccionar una palabra.
+              </div>
+              <button class="btn btn--primary" id="wordsearch-check-btn" disabled>Comprobar palabra</button>
+            </div>
             <div class="wordsearch__word-list" id="wordsearch-word-list">
               ${state.placements
                 .map(
@@ -155,52 +163,69 @@ export function startWordsearchGame({ container, game, onExit }) {
       }
     });
 
-    container.querySelectorAll('.wordsearch-cell').forEach((cell) => {
-      cell.addEventListener('click', () => handleCellClick(cell));
+    const gridEl = container.querySelector('#wordsearch-grid');
+    const cells = container.querySelectorAll('.wordsearch-cell');
+    cells.forEach((cell) => {
+      cell.addEventListener('pointerdown', (event) => handlePointerDown(event, cell));
+      cell.addEventListener('pointerover', (event) => handlePointerOver(event, cell));
     });
+    gridEl?.addEventListener('pointerleave', handlePointerLeave);
+
+    const checkBtn = container.querySelector('#wordsearch-check-btn');
+    checkBtn?.addEventListener('click', handleCheckSelection);
   }
 
-  function handleCellClick(cell) {
-    const row = Number(cell.dataset.row);
-    const col = Number(cell.dataset.col);
+  function handlePointerDown(event, cell) {
+    event.preventDefault();
+    state.isSelecting = true;
+    state.activePointerId = event.pointerId;
+    startSelection(cell);
+    window.addEventListener('pointerup', handlePointerUpOnce);
+  }
 
-    if (!state.selection) {
-      state.selection = {
-        start: { row, col },
-        path: [{ row, col }],
-      };
-      highlightSelection(state.selection.path);
-      return;
+  function handlePointerOver(event, cell) {
+    if (!state.isSelecting || event.pointerId !== state.activePointerId) return;
+    updateSelection(cell);
+  }
+
+  function handlePointerLeave(event) {
+    if (state.isSelecting && event.pointerId === state.activePointerId) {
+      // keep selection but do not update until re-enter
     }
+  }
 
-    const path = getPath(state.selection.start, { row, col });
+  function handlePointerUpOnce(event) {
+    if (event.pointerId !== state.activePointerId) return;
+    state.isSelecting = false;
+    state.activePointerId = null;
+    finalizeSelection();
+    window.removeEventListener('pointerup', handlePointerUpOnce);
+  }
+
+  function startSelection(cell) {
     clearSelectionHighlight();
+    const start = {
+      row: Number(cell.dataset.row),
+      col: Number(cell.dataset.col),
+    };
+    state.selectionStart = start;
+    state.selectionPath = [start];
+    highlightSelection(state.selectionPath);
+    updateSelectionInfo();
+  }
 
-    if (!path) {
-      state.errors += 1;
-      flashCells([{ row, col }], 'wordsearch-cell--error');
-      state.selection = null;
-      updateStats();
-      return;
-    }
+  function updateSelection(cell) {
+    if (!state.selectionStart) return;
+    const target = { row: Number(cell.dataset.row), col: Number(cell.dataset.col) };
+    const path = getPath(state.selectionStart, target);
+    if (!path) return;
+    state.selectionPath = path;
+    highlightSelection(state.selectionPath);
+    updateSelectionInfo();
+  }
 
-    const placement = findPlacement(path);
-
-    if (placement && !placement.found) {
-      placement.found = true;
-      state.foundCount += 1;
-      markWordFound(placement, path);
-      state.selection = null;
-      updateStats();
-      if (state.foundCount === state.placements.length) {
-        finishGame(true);
-      }
-    } else {
-      state.errors += 1;
-      flashCells(path, 'wordsearch-cell--error');
-      state.selection = null;
-      updateStats();
-    }
+  function finalizeSelection() {
+    updateSelectionInfo();
   }
 
   function markWordFound(placement, path) {
@@ -217,6 +242,7 @@ export function startWordsearchGame({ container, game, onExit }) {
   }
 
   function highlightSelection(path) {
+    clearSelectionHighlight();
     path.forEach((cell) => {
       const cellEl = container.querySelector(`.wordsearch-cell[data-cell="${cell.row}-${cell.col}"]`);
       cellEl?.classList.add('wordsearch-cell--selecting');
@@ -230,6 +256,7 @@ export function startWordsearchGame({ container, game, onExit }) {
   }
 
   function flashCells(path, className) {
+    clearSelectionHighlight();
     path.forEach((cell) => {
       const cellEl = container.querySelector(`.wordsearch-cell[data-cell="${cell.row}-${cell.col}"]`);
       if (!cellEl) return;
@@ -247,6 +274,54 @@ export function startWordsearchGame({ container, game, onExit }) {
     const errorsEl = container.querySelector('[data-wordsearch-errors]');
     if (errorsEl) {
       errorsEl.textContent = state.errors;
+    }
+  }
+
+  function updateSelectionInfo() {
+    const previewEl = container.querySelector('#wordsearch-selection-preview');
+    const checkBtn = container.querySelector('#wordsearch-check-btn');
+    if (!previewEl || !checkBtn) return;
+
+    if (state.selectionPath && state.selectionPath.length > 1) {
+      const word = state.selectionPath.map(({ row, col }) => state.grid[row][col]).join('');
+      previewEl.textContent = word;
+      checkBtn.disabled = false;
+    } else if (state.selectionPath && state.selectionPath.length === 1) {
+      previewEl.textContent = state.grid[state.selectionPath[0].row][state.selectionPath[0].col];
+      checkBtn.disabled = true;
+    } else {
+      previewEl.textContent = 'Arrastra para seleccionar una palabra.';
+      checkBtn.disabled = true;
+    }
+  }
+
+  function resetSelection() {
+    state.selectionStart = null;
+    state.selectionPath = [];
+    clearSelectionHighlight();
+    updateSelectionInfo();
+  }
+
+  function handleCheckSelection() {
+    if (!state.selectionPath || state.selectionPath.length === 0) {
+      alert('Selecciona una palabra arrastrando sobre la cuadrícula.');
+      return;
+    }
+    const placement = findPlacement(state.selectionPath);
+    if (placement && !placement.found) {
+      placement.found = true;
+      state.foundCount += 1;
+      markWordFound(placement, placement.cells);
+      resetSelection();
+      updateStats();
+      if (state.foundCount === state.placements.length) {
+        finishGame(true);
+      }
+    } else {
+      state.errors += 1;
+      flashCells(state.selectionPath, 'wordsearch-cell--error');
+      resetSelection();
+      updateStats();
     }
   }
 

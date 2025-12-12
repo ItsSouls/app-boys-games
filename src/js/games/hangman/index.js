@@ -53,7 +53,6 @@ export function startHangmanGame({ container, game, onExit }) {
     container.innerHTML = `
       <div class="hangman">
         <div class="hangman__header">
-          <div class="hangman__breadcrumbs">Inicio / Juegos / Ahorcado</div>
           <div class="hangman__title-area">
             <div class="hangman__title">${game.title || 'Juego del Ahorcado'}</div>
             <div class="hangman__meta">
@@ -61,9 +60,6 @@ export function startHangmanGame({ container, game, onExit }) {
             </div>
           </div>
           <div class="hangman__actions">
-            <button class="hangman__icon-btn" id="hangman-sound-btn" aria-label="Sonido">
-              🔈
-            </button>
             <button class="hangman__exit-btn" id="hangman-exit-btn">Salir</button>
           </div>
         </div>
@@ -125,7 +121,11 @@ export function startHangmanGame({ container, game, onExit }) {
 
   function wireEvents() {
     const exitBtn = container.querySelector('#hangman-exit-btn');
-    exitBtn?.addEventListener('click', handleExit);
+    exitBtn?.addEventListener('click', () => {
+      if (confirm('¿Deseas salir del juego?')) {
+        handleExit();
+      }
+    });
 
     container.querySelectorAll('.hangman__key').forEach(btn => {
       if (btn.__wired) return;
