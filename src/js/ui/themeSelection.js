@@ -171,22 +171,29 @@ function wireThemeEvents() {
         return;
       }
 
+      const mountGame = (renderFn) => {
+        renderFn?.({
+          container: document.getElementById('games-user-view'),
+          game,
+          onExit: () => {
+            const container = document.getElementById('games-user-view');
+            if (container && previousGamesUserView !== null) {
+              container.innerHTML = previousGamesUserView;
+              previousGamesUserView = null;
+            }
+            import('../app/games.js').then(mod => mod.renderGames?.());
+            maybeShowSectionAdminGear('games');
+          }
+        });
+      };
+
       if (type === 'hangman') {
         import('../games/hangman/index.js').then(module => {
-          module.startHangmanGame?.({
-            container: document.getElementById('games-user-view'),
-            game,
-            onExit: () => {
-              // Regresar a la selección de temas
-              const container = document.getElementById('games-user-view');
-              if (container && previousGamesUserView !== null) {
-                container.innerHTML = previousGamesUserView;
-                previousGamesUserView = null;
-              }
-              import('../app/games.js').then(mod => mod.renderGames?.());
-              maybeShowSectionAdminGear('games');
-            }
-          });
+          mountGame(module.startHangmanGame);
+        });
+      } else if (type === 'wordsearch') {
+        import('../games/wordsearch/index.js').then(module => {
+          mountGame(module.startWordsearchGame);
         });
       } else {
         alert('Este tipo de juego aún no está disponible.');
