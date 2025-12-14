@@ -8,8 +8,8 @@ let currentGameType = null;
 const GAME_TYPE_NAMES = {
   wordsearch: 'Sopa de Letras',
   hangman: 'Ahorcado',
-  matching: 'Unir Parejas',
   crossword: 'Crucigrama',
+  matching: 'Unir Parejas',
   multichoice: 'Preguntas',
   bubbles: 'Burbujas'
 };
@@ -17,8 +17,8 @@ const GAME_TYPE_NAMES = {
 const GAME_TYPE_ICONS = {
   wordsearch: '🔍',
   hangman: '🪢',
-  matching: '🧩',
-  crossword: '🧠',
+  crossword: '🧩',
+  matching: '🔗',
   multichoice: '❓',
   bubbles: '🫧'
 };
@@ -194,6 +194,10 @@ function wireThemeEvents() {
       } else if (type === 'wordsearch') {
         import('../games/wordsearch/index.js').then(module => {
           mountGame(module.startWordsearchGame);
+        });
+      } else if (type === 'crossword') {
+        import('../games/crossword/index.js').then(module => {
+          mountGame(module.startCrosswordGame);
         });
       } else {
         alert('Este tipo de juego aún no está disponible.');

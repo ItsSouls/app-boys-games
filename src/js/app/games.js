@@ -28,9 +28,9 @@ const GAME_TYPES = [
   {
     type: 'crossword',
     name: 'Crucigrama',
-    icon: '📝',
+    icon: '🧩',
     description: 'Completa el crucigrama con las pistas',
-    available: false
+    available: true
   },
   {
     type: 'multichoice',

@@ -82,6 +82,39 @@ const configValidators = {
       valid: errors.length === 0,
       errors
     };
+  },
+
+  /**
+   * Valida configuración de Crucigrama
+   * @param {Object} config
+   * @returns {Object} { valid: boolean, errors: string[] }
+   */
+  crossword: (config) => {
+    const errors = [];
+
+    if (!config.topic || typeof config.topic !== 'string') {
+      errors.push('El campo "topic" (temática) es requerido');
+    }
+
+    if (!Array.isArray(config.clues) || config.clues.length < 2) {
+      errors.push('Debe incluir al menos 2 palabras con pistas');
+    }
+
+    if (config.clues) {
+      config.clues.forEach((item, index) => {
+        if (!item.word || typeof item.word !== 'string' || item.word.trim().length < 2) {
+          errors.push(`La palabra en posición ${index + 1} debe tener al menos 2 caracteres`);
+        }
+        if (!item.clue || typeof item.clue !== 'string' || item.clue.trim().length === 0) {
+          errors.push(`La pista para la palabra en posición ${index + 1} es requerida`);
+        }
+      });
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors
+    };
   }
 };
 
@@ -98,7 +131,7 @@ export const gameService = {
     if (!validator) {
       return {
         valid: false,
-        errors: [`Tipo de juego "${type}" no soportado. Tipos disponibles: wordsearch, hangman`]
+        errors: [`Tipo de juego "${type}" no soportado. Tipos disponibles: wordsearch, hangman, crossword`]
       };
     }
 
