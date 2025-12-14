@@ -26,33 +26,3 @@ export function createFeedback(feedbackEl, duration = 4000) {
 		}
 	};
 }
-
-/**
- * Show a temporary success message
- * @param {HTMLElement} feedbackEl - The element to display feedback in
- * @param {string} message - The message to display
- * @param {number} [duration=4000] - Duration in milliseconds
- */
-export function showSuccess(feedbackEl, message, duration = 4000) {
-	createFeedback(feedbackEl, duration)(message, 'success');
-}
-
-/**
- * Show a temporary error message
- * @param {HTMLElement} feedbackEl - The element to display feedback in
- * @param {string} message - The message to display
- * @param {number} [duration=4000] - Duration in milliseconds
- */
-export function showError(feedbackEl, message, duration = 4000) {
-	createFeedback(feedbackEl, duration)(message, 'error');
-}
-
-/**
- * Show a temporary info message
- * @param {HTMLElement} feedbackEl - The element to display feedback in
- * @param {string} message - The message to display
- * @param {number} [duration=4000] - Duration in milliseconds
- */
-export function showInfo(feedbackEl, message, duration = 4000) {
-	createFeedback(feedbackEl, duration)(message, 'info');
-}
