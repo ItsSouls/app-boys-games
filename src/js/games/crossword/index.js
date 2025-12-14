@@ -697,24 +697,40 @@ function generateCrossword(clues) {
     }
   }
 
-  // Crear grid compacto
-  const width = maxCol - minCol + 1;
-  const height = maxRow - minRow + 1;
-  const compactGrid = [];
+  // Calcular dimensiones y hacer grid CUADRADO
+  const contentWidth = maxCol - minCol + 1;
+  const contentHeight = maxRow - minRow + 1;
+  const squareSize = Math.max(contentWidth, contentHeight);
 
-  for (let r = minRow; r <= maxRow; r++) {
+  // Calcular padding para centrar el contenido en el grid cuadrado
+  const padLeft = Math.floor((squareSize - contentWidth) / 2);
+  const padTop = Math.floor((squareSize - contentHeight) / 2);
+
+  // Crear grid cuadrado con contenido centrado
+  const squareGrid = [];
+  for (let r = 0; r < squareSize; r++) {
     const row = [];
-    for (let c = minCol; c <= maxCol; c++) {
-      row.push(grid[r][c]);
+    for (let c = 0; c < squareSize; c++) {
+      // Calcular posición en el grid original
+      const origRow = minRow + (r - padTop);
+      const origCol = minCol + (c - padLeft);
+
+      // Si está dentro de los bounds del contenido, copiar la celda
+      if (origRow >= minRow && origRow <= maxRow &&
+          origCol >= minCol && origCol <= maxCol) {
+        row.push(grid[origRow][origCol]);
+      } else {
+        row.push(null);
+      }
     }
-    compactGrid.push(row);
+    squareGrid.push(row);
   }
 
-  // Ajustar coordenadas de placements
+  // Ajustar coordenadas de placements al nuevo grid centrado
   placements.forEach(p => {
     p.cells = p.cells.map(cell => ({
-      row: cell.row - minRow,
-      col: cell.col - minCol
+      row: cell.row - minRow + padTop,
+      col: cell.col - minCol + padLeft
     }));
   });
 
@@ -722,73 +738,97 @@ function generateCrossword(clues) {
   placements.sort((a, b) => a.number - b.number);
 
   return {
-    grid: compactGrid,
+    grid: squareGrid,
     placements,
-    width,
-    height
+    width: squareSize,
+    height: squareSize
   };
 }
 
 function tryPlaceWord(wordData, grid, gridSize, placements, clueNumber) {
   const word = wordData.word;
-  const directions = ['down', 'across'];
+  const candidates = [];
 
-  // Buscar intersecciones con palabras existentes
+  // Recolectar TODAS las posiciones válidas
   for (const existingPlacement of placements) {
     for (let i = 0; i < existingPlacement.word.length; i++) {
       const letter = existingPlacement.word[i];
-      const letterIndexes = [];
 
       for (let j = 0; j < word.length; j++) {
         if (word[j] === letter) {
-          letterIndexes.push(j);
-        }
-      }
+          const intersectCell = existingPlacement.cells[i];
+          const newDirection = existingPlacement.direction === 'across' ? 'down' : 'across';
 
-      for (const wordIndex of letterIndexes) {
-        const intersectCell = existingPlacement.cells[i];
-        const newDirection = existingPlacement.direction === 'across' ? 'down' : 'across';
-
-        let startRow, startCol;
-        if (newDirection === 'across') {
-          startRow = intersectCell.row;
-          startCol = intersectCell.col - wordIndex;
-        } else {
-          startRow = intersectCell.row - wordIndex;
-          startCol = intersectCell.col;
-        }
-
-        if (canPlaceWord(word, startRow, startCol, newDirection, grid, gridSize)) {
-          const cells = [];
-          for (let k = 0; k < word.length; k++) {
-            const r = newDirection === 'across' ? startRow : startRow + k;
-            const c = newDirection === 'across' ? startCol + k : startCol;
-
-            if (!grid[r][c]) {
-              grid[r][c] = { letter: word[k] };
-            }
-            cells.push({ row: r, col: c });
+          let startRow, startCol;
+          if (newDirection === 'across') {
+            startRow = intersectCell.row;
+            startCol = intersectCell.col - j;
+          } else {
+            startRow = intersectCell.row - j;
+            startCol = intersectCell.col;
           }
 
-          // Asignar número si es inicio de palabra
-          if (!grid[startRow][startCol].number) {
-            grid[startRow][startCol].number = clueNumber;
-          }
+          if (canPlaceWord(word, startRow, startCol, newDirection, grid, gridSize)) {
+            // Calcular score de dispersión (más lejos del centro = mejor)
+            const centerRow = gridSize / 2;
+            const centerCol = gridSize / 2;
+            const midRow = startRow + (newDirection === 'down' ? word.length / 2 : 0);
+            const midCol = startCol + (newDirection === 'across' ? word.length / 2 : 0);
 
-          return {
-            id: `word-${clueNumber}`,
-            word,
-            clue: wordData.clue,
-            direction: newDirection,
-            number: grid[startRow][startCol].number || clueNumber,
-            cells
-          };
+            // Score basado en distancia al centro y variedad de posición
+            const distanceFromCenter = Math.abs(midRow - centerRow) + Math.abs(midCol - centerCol);
+
+            // Bonus por alternar direcciones (preferir dirección diferente a la última)
+            const lastPlacement = placements[placements.length - 1];
+            const directionBonus = lastPlacement && lastPlacement.direction !== newDirection ? 5 : 0;
+
+            // Bonus por usar intersecciones en diferentes posiciones de la palabra
+            const positionVariety = Math.abs(j - word.length / 2);
+
+            candidates.push({
+              startRow,
+              startCol,
+              direction: newDirection,
+              score: distanceFromCenter + directionBonus + positionVariety,
+              intersectIndex: i
+            });
+          }
         }
       }
     }
   }
 
-  return null;
+  if (candidates.length === 0) return null;
+
+  // Ordenar por score (mayor dispersión primero) y tomar el mejor
+  candidates.sort((a, b) => b.score - a.score);
+  const best = candidates[0];
+
+  // Colocar la palabra en la mejor posición
+  const cells = [];
+  for (let k = 0; k < word.length; k++) {
+    const r = best.direction === 'across' ? best.startRow : best.startRow + k;
+    const c = best.direction === 'across' ? best.startCol + k : best.startCol;
+
+    if (!grid[r][c]) {
+      grid[r][c] = { letter: word[k] };
+    }
+    cells.push({ row: r, col: c });
+  }
+
+  // Asignar número si es inicio de palabra
+  if (!grid[best.startRow][best.startCol].number) {
+    grid[best.startRow][best.startCol].number = clueNumber;
+  }
+
+  return {
+    id: `word-${clueNumber}`,
+    word,
+    clue: wordData.clue,
+    direction: best.direction,
+    number: grid[best.startRow][best.startCol].number || clueNumber,
+    cells
+  };
 }
 
 function canPlaceWord(word, startRow, startCol, direction, grid, gridSize) {
