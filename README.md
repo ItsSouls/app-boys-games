@@ -157,3 +157,4 @@ Desarrollado con ❤️ para hacer el aprendizaje del español más divertido pa
 4. Controla el rate limiting con `AUTH_RATE_WINDOW_MS` (ventana en ms) y `AUTH_RATE_MAX` (intentos por ventana).
 5. El API aplica Helmet con CSP restrictiva (`default-src 'self'`, sin frames ni object-src); adapta la configuracion si sirves contenido estatico adicional.
 6. Los tokens de sesión se envían en cookies httpOnly (SameSite=None en producción para permitir front-back en dominios distintos); define `CORS_ORIGIN` a tu frontend exacto y usa `credentials: 'include'` en las peticiones.
+7. Tokens: access token corto (`ACCESS_TOKEN_TTL_SECONDS`, default 15m) y refresh en `JWT_REFRESH_SECRET` (default 7d via `REFRESH_TOKEN_TTL_DAYS`), ambos en cookies `abg_at` y `abg_rt`.

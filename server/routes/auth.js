@@ -1,24 +1,29 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import rateLimit from 'express-rate-limit';
+import crypto from 'crypto';
 import { User } from '../models/User.js';
 import { auth } from '../middleware/auth.js';
-import rateLimit from 'express-rate-limit';
 import { validatePasswordStrength } from '../utils/passwordValidation.js';
+import { RefreshToken } from '../models/RefreshToken.js';
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET;
-const IS_PROD = process.env.NODE_ENV === 'production';
-const COOKIE_OPTS = {
-  httpOnly: true,
-  secure: IS_PROD,
-  sameSite: IS_PROD ? 'none' : 'lax',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-  path: '/',
-};
 
-if (!JWT_SECRET) {
+const ACCESS_SECRET = process.env.JWT_SECRET;
+const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
+const IS_PROD = process.env.NODE_ENV === 'production';
+const ACCESS_TOKEN_TTL_SECONDS = Number(process.env.ACCESS_TOKEN_TTL_SECONDS || 15 * 60); // 15m
+const REFRESH_TOKEN_TTL_DAYS = Number(process.env.REFRESH_TOKEN_TTL_DAYS || 7); // 7d
+const ACCESS_COOKIE = 'abg_at';
+const REFRESH_COOKIE = 'abg_rt';
+const COOKIE_SAMESITE = IS_PROD ? 'none' : 'lax';
+
+if (!ACCESS_SECRET) {
   throw new Error('JWT_SECRET environment variable is required for auth routes');
+}
+if (!REFRESH_SECRET) {
+  throw new Error('JWT_REFRESH_SECRET environment variable is required for auth routes');
 }
 
 const AUTH_RATE_WINDOW_MS = Number(process.env.AUTH_RATE_WINDOW_MS || 15 * 60 * 1000); // 15 min default
@@ -36,6 +41,58 @@ const authLimiter = rateLimit({
   },
 });
 
+function signAccessToken(user) {
+  return jwt.sign(
+    { id: user._id, username: user.username, name: user.name, role: user.role },
+    ACCESS_SECRET,
+    { expiresIn: `${ACCESS_TOKEN_TTL_SECONDS}s` }
+  );
+}
+
+function signRefreshToken(user, jti) {
+  const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000);
+  const token = jwt.sign({ id: user._id, jti }, REFRESH_SECRET, { expiresIn: `${REFRESH_TOKEN_TTL_DAYS}d` });
+  return { token, expiresAt };
+}
+
+function hashToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+function setAuthCookies(res, accessToken, refreshToken) {
+  res.cookie(ACCESS_COOKIE, accessToken, {
+    httpOnly: true,
+    secure: IS_PROD,
+    sameSite: COOKIE_SAMESITE,
+    maxAge: ACCESS_TOKEN_TTL_SECONDS * 1000,
+    path: '/',
+  });
+  res.cookie(REFRESH_COOKIE, refreshToken, {
+    httpOnly: true,
+    secure: IS_PROD,
+    sameSite: COOKIE_SAMESITE,
+    maxAge: REFRESH_TOKEN_TTL_DAYS * 24 * 60 * 60 * 1000,
+    path: '/',
+  });
+}
+
+async function persistRefreshToken(userId, token, expiresAt, jti, replacedBy = null) {
+  const tokenHash = hashToken(token);
+  return RefreshToken.create({
+    userId,
+    tokenHash,
+    jti,
+    expiresAt,
+    replacedBy,
+  });
+}
+
+async function revokeRefreshToken(token) {
+  if (!token) return;
+  const tokenHash = hashToken(token);
+  await RefreshToken.updateOne({ tokenHash }, { revokedAt: new Date() });
+}
+
 router.post('/register', authLimiter, async (req, res) => {
   try {
     const { name, username, password } = req.body;
@@ -46,14 +103,12 @@ router.post('/register', authLimiter, async (req, res) => {
     if (exists) return res.status(409).json({ error: 'Username already used' });
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await User.create({ name, username, passwordHash });
-    const token = jwt.sign(
-      { id: user._id, username: user.username, name: user.name, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-    res
-      .cookie('abg_token', token, COOKIE_OPTS)
-      .json({ user: { id: user._id, name: user.name, username: user.username, role: user.role } });
+    const accessToken = signAccessToken(user);
+    const jti = crypto.randomUUID();
+    const { token: refreshToken, expiresAt } = signRefreshToken(user, jti);
+    await persistRefreshToken(user._id, refreshToken, expiresAt, jti);
+    setAuthCookies(res, accessToken, refreshToken);
+    res.json({ user: { id: user._id, name: user.name, username: user.username, role: user.role } });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Server error' });
@@ -68,22 +123,50 @@ router.post('/login', authLimiter, async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign(
-      { id: user._id, username: user.username, name: user.name, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-    res
-      .cookie('abg_token', token, COOKIE_OPTS)
-      .json({ user: { id: user._id, name: user.name, username: user.username, role: user.role } });
+    const accessToken = signAccessToken(user);
+    const jti = crypto.randomUUID();
+    const { token: refreshToken, expiresAt } = signRefreshToken(user, jti);
+    await persistRefreshToken(user._id, refreshToken, expiresAt, jti);
+    setAuthCookies(res, accessToken, refreshToken);
+    res.json({ user: { id: user._id, name: user.name, username: user.username, role: user.role } });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
+router.post('/refresh', async (req, res) => {
+  const refreshCookie = req.cookies?.[REFRESH_COOKIE];
+  if (!refreshCookie) return res.status(401).json({ error: 'No refresh token' });
+  try {
+    const decoded = jwt.verify(refreshCookie, REFRESH_SECRET);
+    const tokenHash = hashToken(refreshCookie);
+    const stored = await RefreshToken.findOne({ tokenHash, userId: decoded.id });
+    if (!stored || stored.revokedAt || stored.expiresAt < new Date()) {
+      return res.status(401).json({ error: 'Invalid refresh token' });
+    }
+
+    const user = await User.findById(decoded.id);
+    if (!user) return res.status(401).json({ error: 'User not found' });
+
+    const newJti = crypto.randomUUID();
+    const { token: newRefreshToken, expiresAt } = signRefreshToken(user, newJti);
+    const newAccessToken = signAccessToken(user);
+    await RefreshToken.updateOne({ _id: stored._id }, { revokedAt: new Date(), replacedBy: newJti });
+    await persistRefreshToken(user._id, newRefreshToken, expiresAt, newJti, null);
+    setAuthCookies(res, newAccessToken, newRefreshToken);
+    res.json({ ok: true });
+  } catch (err) {
+    console.warn('[auth/refresh] failed', err?.message || err);
+    res.status(401).json({ error: 'Invalid refresh token' });
+  }
+});
+
 router.post('/logout', (req, res) => {
-  res.clearCookie('abg_token', { ...COOKIE_OPTS, maxAge: 0 });
+  const refreshCookie = req.cookies?.[REFRESH_COOKIE];
+  revokeRefreshToken(refreshCookie).catch((e) => console.warn('[logout] revoke failed', e?.message || e));
+  res.clearCookie(ACCESS_COOKIE, { httpOnly: true, secure: IS_PROD, sameSite: COOKIE_SAMESITE, path: '/' });
+  res.clearCookie(REFRESH_COOKIE, { httpOnly: true, secure: IS_PROD, sameSite: COOKIE_SAMESITE, path: '/' });
   res.json({ ok: true });
 });
 

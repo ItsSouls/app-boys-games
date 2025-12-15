@@ -8,6 +8,7 @@ import { Page } from './models/Page.js';
 import { Game } from './models/Game.js';
 import { GameAttempt } from './models/GameAttempt.js';
 import { UserGameStats } from './models/UserGameStats.js';
+import { RefreshToken } from './models/RefreshToken.js';
 
 // Load environment variables
 dotenv.config(); // loads .env by default if present
@@ -21,7 +22,7 @@ try {
   // no-op if resolution fails
 }
 
-const REQUIRED_ENV_VARS = ['JWT_SECRET'];
+const REQUIRED_ENV_VARS = ['JWT_SECRET', 'JWT_REFRESH_SECRET'];
 const missingEnv = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
 if (missingEnv.length) {
   console.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
@@ -41,6 +42,7 @@ async function start() {
     await Game.syncIndexes();
     await GameAttempt.syncIndexes();
     await UserGameStats.syncIndexes();
+    await RefreshToken.syncIndexes();
     console.log('Indexes synchronized');
   } catch (e) {
     console.warn('Failed to sync indexes', e?.message || e);

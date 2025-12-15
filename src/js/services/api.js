@@ -4,7 +4,7 @@ import { API_BASE } from '../app/config.js';
 const BASE = API_BASE;
 
 function authHeaders(extra = {}) {
-	// Tokens ahora viajan en cookie httpOnly; no se envía Authorization
+	// Tokens viajan en cookie httpOnly; no se envía Authorization
 	return { ...extra };
 }
 
@@ -15,6 +15,25 @@ async function handleResponse(res, fallbackMessage) {
 		throw new Error(message);
 	}
 	return res.json();
+}
+
+async function refreshSession() {
+	const res = await fetch(`${BASE}/auth/refresh`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	return res.ok;
+}
+
+async function requestWithRefresh(url, options = {}, { skipRetry } = {}) {
+	const res = await fetch(url, { credentials: 'include', ...options });
+	if (res.status === 401 && !skipRetry) {
+		const refreshed = await refreshSession().catch(() => false);
+		if (refreshed) {
+			return requestWithRefresh(url, options, { skipRetry: true });
+		}
+	}
+	return res;
 }
 
 export async function register({ name, username, password }) {
@@ -46,9 +65,8 @@ export async function logout() {
 }
 
 export async function me() {
-	const res = await fetch(`${BASE}/auth/me`, {
-		headers: authHeaders(),
-		credentials: 'include'
+	const res = await requestWithRefresh(`${BASE}/auth/me`, {
+		headers: authHeaders()
 	});
 	return handleResponse(res, 'No autenticado');
 }
@@ -68,10 +86,7 @@ async function getGames(filters = {}) {
 	if (filters.isPublished !== undefined) params.append('isPublished', filters.isPublished);
 
 	const url = `${BASE}/games${params.toString() ? `?${params}` : ''}`;
-	const res = await fetch(url, {
-		headers: authHeaders(),
-		credentials: 'include'
-	});
+	const res = await requestWithRefresh(url, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar juegos');
 }
 
@@ -79,10 +94,7 @@ async function getGames(filters = {}) {
  * Obtiene un juego por ID
  */
 async function getGame(gameId) {
-	const res = await fetch(`${BASE}/games/${gameId}`, {
-		headers: authHeaders(),
-		credentials: 'include'
-	});
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar juego');
 }
 
@@ -90,10 +102,9 @@ async function getGame(gameId) {
  * Crea un nuevo juego (admin)
  */
 async function createGame(gameData) {
-	const res = await fetch(`${BASE}/games`, {
+	const res = await requestWithRefresh(`${BASE}/games`, {
 		method: 'POST',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
-		credentials: 'include',
 		body: JSON.stringify(gameData)
 	});
 	return handleResponse(res, 'Error al crear juego');
@@ -103,10 +114,9 @@ async function createGame(gameData) {
  * Actualiza un juego (admin)
  */
 async function updateGame(gameId, gameData) {
-	const res = await fetch(`${BASE}/games/${gameId}`, {
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}`, {
 		method: 'PUT',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
-		credentials: 'include',
 		body: JSON.stringify(gameData)
 	});
 	return handleResponse(res, 'Error al actualizar juego');
@@ -116,10 +126,9 @@ async function updateGame(gameId, gameData) {
  * Elimina un juego (admin)
  */
 async function deleteGame(gameId) {
-	const res = await fetch(`${BASE}/games/${gameId}`, {
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}`, {
 		method: 'DELETE',
-		headers: authHeaders(),
-		credentials: 'include'
+		headers: authHeaders()
 	});
 	return handleResponse(res, 'Error al eliminar juego');
 }
@@ -128,10 +137,9 @@ async function deleteGame(gameId) {
  * Guarda un intento de juego
  */
 async function saveGameAttempt(gameId, attemptData) {
-	const res = await fetch(`${BASE}/games/${gameId}/attempts`, {
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}/attempts`, {
 		method: 'POST',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
-		credentials: 'include',
 		body: JSON.stringify(attemptData)
 	});
 	return handleResponse(res, 'Error al guardar intento');
@@ -141,10 +149,7 @@ async function saveGameAttempt(gameId, attemptData) {
  * Obtiene estadísticas del usuario para un juego
  */
 async function getGameStats(gameId) {
-	const res = await fetch(`${BASE}/games/${gameId}/stats`, {
-		headers: authHeaders(),
-		credentials: 'include'
-	});
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}/stats`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar estadísticas');
 }
 
@@ -152,10 +157,7 @@ async function getGameStats(gameId) {
  * Obtiene ranking de un juego
  */
 async function getGameRanking(gameId, limit = 10) {
-	const res = await fetch(`${BASE}/games/${gameId}/ranking?limit=${limit}`, {
-		headers: authHeaders(),
-		credentials: 'include'
-	});
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}/ranking?limit=${limit}`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar ranking');
 }
 
@@ -163,10 +165,7 @@ async function getGameRanking(gameId, limit = 10) {
  * Obtiene todas las estadísticas del usuario
  */
 async function getUserAllStats() {
-	const res = await fetch(`${BASE}/game-stats/me`, {
-		headers: authHeaders(),
-		credentials: 'include'
-	});
+	const res = await requestWithRefresh(`${BASE}/game-stats/me`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar estadísticas');
 }
 
@@ -174,10 +173,7 @@ async function getUserAllStats() {
  * Obtiene ranking global
  */
 async function getGlobalRanking(limit = 10) {
-	const res = await fetch(`${BASE}/game-stats/ranking/global?limit=${limit}`, {
-		headers: authHeaders(),
-		credentials: 'include'
-	});
+	const res = await requestWithRefresh(`${BASE}/game-stats/ranking/global?limit=${limit}`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar ranking global');
 }
 
@@ -185,16 +181,14 @@ async function getGlobalRanking(limit = 10) {
  * Obtiene posición del usuario en el ranking global
  */
 async function getUserGlobalPosition() {
-	const res = await fetch(`${BASE}/game-stats/ranking/global/me`, {
-		headers: authHeaders(),
-		credentials: 'include'
-	});
+	const res = await requestWithRefresh(`${BASE}/game-stats/ranking/global/me`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar posición');
 }
 
 export const api = {
 	register,
 	login,
+	logout,
 	me,
 	// Games
 	getGames,
@@ -207,6 +201,5 @@ export const api = {
 	getGameRanking,
 	getUserAllStats,
 	getGlobalRanking,
-	getUserGlobalPosition,
-	logout
+	getUserGlobalPosition
 };
