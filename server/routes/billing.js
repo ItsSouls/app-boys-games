@@ -77,7 +77,7 @@ router.post('/checkout', auth, async (req, res) => {
 });
 
 // POST /api/billing/webhook - Handle Stripe webhooks (raw body required)
-router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+router.post('/webhook', async (req, res) => {
   const sig = req.headers['stripe-signature'];
 
   if (!stripeWebhookSecret) {
@@ -86,9 +86,14 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   }
 
   let event;
+  const rawBody = Buffer.isBuffer(req.body) ? req.body : null;
+  if (!rawBody) {
+    console.error('Webhook raw body missing or parsed; ensure express.raw is applied before this route');
+    return res.status(400).send('Webhook Error: raw body required');
+  }
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, stripeWebhookSecret);
+    event = stripe.webhooks.constructEvent(rawBody, sig, stripeWebhookSecret);
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
