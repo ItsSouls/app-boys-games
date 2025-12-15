@@ -13,11 +13,10 @@ const loginFields = [
 ];
 
 export function setupAuthControls(options = {}) {
-  const { onAuthSuccess } = options;
   const loginBtn = document.getElementById('auth-login');
   if (!loginBtn) return;
 
-  loginBtn.onclick = () => showLoginModal(onAuthSuccess);
+  loginBtn.onclick = () => showLoginModal(options.onAuthSuccess);
 }
 
 function showLoginModal(onAuthSuccess) {

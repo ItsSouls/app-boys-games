@@ -6,11 +6,8 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
     onAuthSuccess: async () => {},
   };
 
-  let controlsWired = false;
   const ensureAuthControls = () => {
-    if (controlsWired) return;
     setupAuthControls(authCallbacks);
-    controlsWired = true;
   };
 
   const headerUser = document.getElementById('header-user');
@@ -73,8 +70,8 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
   };
 
   // Enforce header state flow from this controller
-  ensureAuthControls();
   authCallbacks.onAuthSuccess = refreshUserGreeting;
+  ensureAuthControls();
   setHeaderState('checking');
   refreshUserGreeting();
 
