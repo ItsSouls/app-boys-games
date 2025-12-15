@@ -156,4 +156,4 @@ Desarrollado con ❤️ para hacer el aprendizaje del español más divertido pa
 3. Ajusta `MONGODB_URI`, `CORS_ORIGIN` y `VITE_API_BASE_URL` segun tu despliegue local o en produccion.
 4. Controla el rate limiting con `AUTH_RATE_WINDOW_MS` (ventana en ms) y `AUTH_RATE_MAX` (intentos por ventana).
 5. El API aplica Helmet con CSP restrictiva (`default-src 'self'`, sin frames ni object-src); adapta la configuracion si sirves contenido estatico adicional.
-6. Los tokens de sesión se envían en cookies httpOnly/SameSite=Lax; define `CORS_ORIGIN` a tu frontend exacto y asegúrate de usar `credentials: 'include'` en las peticiones.
+6. Los tokens de sesión se envían en cookies httpOnly (SameSite=None en producción para permitir front-back en dominios distintos); define `CORS_ORIGIN` a tu frontend exacto y usa `credentials: 'include'` en las peticiones.
