@@ -42,9 +42,15 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       const display = user?.name || user?.username || '';
       if (!display) throw new Error('Usuario sin nombre');
       setHeaderState('authed', user);
-      logoutBtn.onclick = () => {
-        api.logout().catch((err) => console.warn('logout failed', err));
+      logoutBtn.onclick = async () => {
+        setHeaderState('checking');
+        try {
+          await api.logout();
+        } catch (err) {
+          console.warn('logout failed', err);
+        }
         setHeaderState('unauth');
+        ensureAuthControls();
 
         // Hide all admin buttons on logout
         const adminButtons = document.querySelectorAll('[id$="-admin-toggle"], [id$="-admin-gear"]');
