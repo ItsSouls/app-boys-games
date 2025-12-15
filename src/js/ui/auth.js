@@ -13,19 +13,10 @@ const loginFields = [
 ];
 
 export function setupAuthControls(options = {}) {
-  const { onAuthSuccess } = options;
   const loginBtn = document.getElementById('auth-login');
-  const headerAuth = document.getElementById('header-auth');
   if (!loginBtn) return;
 
-  const hasToken = Boolean(localStorage.getItem('abg_token'));
-
-  // Show/hide auth buttons in header
-  if (headerAuth) {
-    headerAuth.style.display = hasToken ? 'none' : 'flex';
-  }
-
-  loginBtn.onclick = () => showLoginModal(onAuthSuccess);
+  loginBtn.onclick = () => showLoginModal(options.onAuthSuccess);
 }
 
 function showLoginModal(onAuthSuccess) {

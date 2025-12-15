@@ -3,23 +3,9 @@ import { API_BASE } from '../app/config.js';
 
 const BASE = API_BASE;
 
-const TOKEN_KEY = 'abg_token';
-
-function getToken() {
-	return localStorage.getItem(TOKEN_KEY) || '';
-}
-
-function setToken(token) {
-	localStorage.setItem(TOKEN_KEY, token);
-}
-
 function authHeaders(extra = {}) {
-	const token = getToken();
-	const base = { ...extra };
-	if (token) {
-		base.Authorization = `Bearer ${token}`;
-	}
-	return base;
+	// Tokens viajan en cookie httpOnly; no se envía Authorization
+	return { ...extra };
 }
 
 async function handleResponse(res, fallbackMessage) {
@@ -31,30 +17,55 @@ async function handleResponse(res, fallbackMessage) {
 	return res.json();
 }
 
+async function refreshSession() {
+	const res = await fetch(`${BASE}/auth/refresh`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	return res.ok;
+}
+
+async function requestWithRefresh(url, options = {}, { skipRetry } = {}) {
+	const res = await fetch(url, { credentials: 'include', ...options });
+	if (res.status === 401 && !skipRetry) {
+		const refreshed = await refreshSession().catch(() => false);
+		if (refreshed) {
+			return requestWithRefresh(url, options, { skipRetry: true });
+		}
+	}
+	return res;
+}
+
 export async function register({ name, username, password }) {
 	const res = await fetch(`${BASE}/auth/register`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
 		body: JSON.stringify({ name, username, password })
 	});
-	const data = await handleResponse(res, 'Registro fallido');
-	setToken(data.token);
-	return data;
+	return handleResponse(res, 'Registro fallido');
 }
 
 export async function login({ username, password }) {
 	const res = await fetch(`${BASE}/auth/login`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
 		body: JSON.stringify({ username, password })
 	});
-	const data = await handleResponse(res, 'Login fallido');
-	setToken(data.token);
-	return data;
+	return handleResponse(res, 'Login fallido');
+}
+
+export async function logout() {
+	const res = await fetch(`${BASE}/auth/logout`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	return handleResponse(res, 'Logout fallido');
 }
 
 export async function me() {
-	const res = await fetch(`${BASE}/auth/me`, {
+	const res = await requestWithRefresh(`${BASE}/auth/me`, {
 		headers: authHeaders()
 	});
 	return handleResponse(res, 'No autenticado');
@@ -75,9 +86,7 @@ async function getGames(filters = {}) {
 	if (filters.isPublished !== undefined) params.append('isPublished', filters.isPublished);
 
 	const url = `${BASE}/games${params.toString() ? `?${params}` : ''}`;
-	const res = await fetch(url, {
-		headers: authHeaders()
-	});
+	const res = await requestWithRefresh(url, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar juegos');
 }
 
@@ -85,9 +94,7 @@ async function getGames(filters = {}) {
  * Obtiene un juego por ID
  */
 async function getGame(gameId) {
-	const res = await fetch(`${BASE}/games/${gameId}`, {
-		headers: authHeaders()
-	});
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar juego');
 }
 
@@ -95,7 +102,7 @@ async function getGame(gameId) {
  * Crea un nuevo juego (admin)
  */
 async function createGame(gameData) {
-	const res = await fetch(`${BASE}/games`, {
+	const res = await requestWithRefresh(`${BASE}/games`, {
 		method: 'POST',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
 		body: JSON.stringify(gameData)
@@ -107,7 +114,7 @@ async function createGame(gameData) {
  * Actualiza un juego (admin)
  */
 async function updateGame(gameId, gameData) {
-	const res = await fetch(`${BASE}/games/${gameId}`, {
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}`, {
 		method: 'PUT',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
 		body: JSON.stringify(gameData)
@@ -119,7 +126,7 @@ async function updateGame(gameId, gameData) {
  * Elimina un juego (admin)
  */
 async function deleteGame(gameId) {
-	const res = await fetch(`${BASE}/games/${gameId}`, {
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}`, {
 		method: 'DELETE',
 		headers: authHeaders()
 	});
@@ -130,7 +137,7 @@ async function deleteGame(gameId) {
  * Guarda un intento de juego
  */
 async function saveGameAttempt(gameId, attemptData) {
-	const res = await fetch(`${BASE}/games/${gameId}/attempts`, {
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}/attempts`, {
 		method: 'POST',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
 		body: JSON.stringify(attemptData)
@@ -142,9 +149,7 @@ async function saveGameAttempt(gameId, attemptData) {
  * Obtiene estadísticas del usuario para un juego
  */
 async function getGameStats(gameId) {
-	const res = await fetch(`${BASE}/games/${gameId}/stats`, {
-		headers: authHeaders()
-	});
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}/stats`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar estadísticas');
 }
 
@@ -152,9 +157,7 @@ async function getGameStats(gameId) {
  * Obtiene ranking de un juego
  */
 async function getGameRanking(gameId, limit = 10) {
-	const res = await fetch(`${BASE}/games/${gameId}/ranking?limit=${limit}`, {
-		headers: authHeaders()
-	});
+	const res = await requestWithRefresh(`${BASE}/games/${gameId}/ranking?limit=${limit}`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar ranking');
 }
 
@@ -162,9 +165,7 @@ async function getGameRanking(gameId, limit = 10) {
  * Obtiene todas las estadísticas del usuario
  */
 async function getUserAllStats() {
-	const res = await fetch(`${BASE}/game-stats/me`, {
-		headers: authHeaders()
-	});
+	const res = await requestWithRefresh(`${BASE}/game-stats/me`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar estadísticas');
 }
 
@@ -172,9 +173,7 @@ async function getUserAllStats() {
  * Obtiene ranking global
  */
 async function getGlobalRanking(limit = 10) {
-	const res = await fetch(`${BASE}/game-stats/ranking/global?limit=${limit}`, {
-		headers: authHeaders()
-	});
+	const res = await requestWithRefresh(`${BASE}/game-stats/ranking/global?limit=${limit}`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar ranking global');
 }
 
@@ -182,15 +181,14 @@ async function getGlobalRanking(limit = 10) {
  * Obtiene posición del usuario en el ranking global
  */
 async function getUserGlobalPosition() {
-	const res = await fetch(`${BASE}/game-stats/ranking/global/me`, {
-		headers: authHeaders()
-	});
+	const res = await requestWithRefresh(`${BASE}/game-stats/ranking/global/me`, { headers: authHeaders() });
 	return handleResponse(res, 'Error al cargar posición');
 }
 
 export const api = {
 	register,
 	login,
+	logout,
 	me,
 	// Games
 	getGames,

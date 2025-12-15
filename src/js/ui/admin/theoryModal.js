@@ -2,7 +2,6 @@ import { API_BASE } from '../../app/config.js';
 import EasyMDE from 'easymde';
 import 'easymde/dist/easymde.min.css';
 import { formatTheoryDate, renderTheory, sanitizeIdForUrl } from '../../app/theory.js';
-import { getAuthHeaders } from '../../utils/auth.js';
 import { createFeedback } from '../../utils/feedback.js';
 
 const sectionLabel = (section) => (section === 'gramatica' ? 'Gramática' : 'Vocabulario');
@@ -275,16 +274,12 @@ export async function openTheoryAdminModal(section) {
   };
 
   const persistOrder = async () => {
-    const headers = getAuthHeaders();
-    if (!headers) {
-      pushFeedback('Debes iniciar sesión como administrador.', 'error');
-      return;
-    }
     try {
       const body = JSON.stringify({ section, order: state.pages.map((page) => page._id) });
       const res = await fetch(API_BASE + '/admin/pages/reorder', {
         method: 'PATCH',
-        headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body,
       });
       if (!res.ok) {
@@ -319,14 +314,9 @@ export async function openTheoryAdminModal(section) {
   };
 
   const loadPages = async (focusId) => {
-    const headers = getAuthHeaders();
-    if (!headers) {
-      pushFeedback('Debes iniciar sesión como administrador.', 'error');
-      return;
-    }
     try {
       const res = await fetch(API_BASE + '/admin/pages?section=' + encodeURIComponent(section), {
-        headers,
+        credentials: 'include',
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -356,11 +346,6 @@ export async function openTheoryAdminModal(section) {
   };
 
   const saveCurrentPage = async () => {
-    const headers = getAuthHeaders();
-    if (!headers) {
-      pushFeedback('Debes iniciar sesión como administrador.', 'error');
-      return;
-    }
     const payload = gatherPayload();
     if (!payload.topic) {
       pushFeedback('El tema es obligatorio.', 'error');
@@ -375,13 +360,15 @@ export async function openTheoryAdminModal(section) {
         const safeId = sanitizeIdForUrl(state.currentId);
         res = await fetch(API_BASE + '/admin/pages/' + safeId, {
           method: 'PUT',
-          headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body,
         });
       } else {
         res = await fetch(API_BASE + '/admin/pages', {
           method: 'POST',
-          headers: Object.assign({ 'Content-Type': 'application/json' }, headers),
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body,
         });
       }
@@ -402,18 +389,13 @@ export async function openTheoryAdminModal(section) {
   };
 
   const deletePage = async (id) => {
-    const headers = getAuthHeaders();
-    if (!headers) {
-      pushFeedback('Debes iniciar sesión como administrador.', 'error');
-      return;
-    }
     if (!window.confirm('¿Seguro que quieres eliminar este contenido?')) return;
     setSaving(true);
     try {
       const safeId = sanitizeIdForUrl(id);
       const res = await fetch(API_BASE + '/admin/pages/' + safeId, {
         method: 'DELETE',
-        headers,
+        credentials: 'include',
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));

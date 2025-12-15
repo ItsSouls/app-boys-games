@@ -18,6 +18,11 @@ const GAME_TYPE_INFO = {
     name: 'Ahorcado',
     icon: '🎯',
     description: 'Crea un juego de ahorcado con palabras y pistas'
+  },
+  crossword: {
+    name: 'Crucigrama',
+    icon: '🧩',
+    description: 'Crea un crucigrama con palabras y definiciones'
   }
 };
 
@@ -108,6 +113,15 @@ function renderCreateForm() {
           <span class="game-type-selector-btn__icon">🎯</span>
           <span class="game-type-selector-btn__name">Ahorcado</span>
         </button>
+
+        <button
+          type="button"
+          class="game-type-selector-btn"
+          data-type="crossword"
+        >
+          <span class="game-type-selector-btn__icon">🧩</span>
+          <span class="game-type-selector-btn__name">Crucigrama</span>
+        </button>
       </div>
     </div>
 
@@ -143,6 +157,8 @@ function renderGameForm(type, gameData = null) {
     return renderWordsearchForm(gameData);
   } else if (type === 'hangman') {
     return renderHangmanForm(gameData);
+  } else if (type === 'crossword') {
+    return renderCrosswordForm(gameData);
   }
   return '<p>Tipo de juego no soportado</p>';
 }
@@ -489,6 +505,171 @@ function renderHangmanWordsList(words = []) {
 }
 
 /**
+ * Formulario de Crucigrama
+ */
+function renderCrosswordForm(gameData = null) {
+  const data = gameData || {};
+  const config = data.config || {};
+  const clues = config.clues || [];
+
+  return `
+    <form class="game-form" id="game-form" data-type="crossword">
+      <div class="form-section">
+        <h3 class="form-section__title">Información General</h3>
+
+        <div class="form-group">
+          <label for="game-title" class="form-label">Título del Crucigrama <span class="required">*</span></label>
+          <input
+            type="text"
+            id="game-title"
+            name="title"
+            class="form-input"
+            placeholder="Ej: Animales del Mar"
+            value="${escapeHtml(data.title || '')}"
+            required
+            maxlength="100"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="game-description" class="form-label">Descripción</label>
+          <textarea
+            id="game-description"
+            name="description"
+            class="form-textarea"
+            placeholder="Descripción breve del crucigrama..."
+            rows="2"
+            maxlength="200"
+          >${escapeHtml(data.description || '')}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="game-cover" class="form-label">Portada (URL de imagen)</label>
+          <input
+            type="url"
+            id="game-cover"
+            name="coverImage"
+            class="form-input"
+            placeholder="https://ejemplo.com/portada.jpg"
+            value="${escapeHtml(data.coverImage || '')}"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="game-topic" class="form-label">Temática <span class="required">*</span></label>
+            <input
+              type="text"
+              id="game-topic"
+              name="topic"
+              class="form-input"
+              placeholder="Ej: Animales, Frutas"
+              value="${escapeHtml(config.topic || data.topic || '')}"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="game-category" class="form-label">Categoría</label>
+          <select id="game-category" name="category" class="form-select">
+            <option value="General">General</option>
+            <option value="Vocabulario" ${data.category === 'Vocabulario' ? 'selected' : ''}>Vocabulario</option>
+            <option value="Gramatica" ${data.category === 'Gramatica' ? 'selected' : ''}>Gramática</option>
+            <option value="Matematicas" ${data.category === 'Matematicas' ? 'selected' : ''}>Matemáticas</option>
+            <option value="Cultura" ${data.category === 'Cultura' ? 'selected' : ''}>Cultura</option>
+            <option value="Ciencias" ${data.category === 'Ciencias' ? 'selected' : ''}>Ciencias</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__title">Palabras y Definiciones</h3>
+        <p class="form-section__hint">Añade las palabras que formarán el crucigrama. El sistema intentará cruzarlas automáticamente.</p>
+
+        <div id="crossword-clues-list">
+          ${renderCrosswordCluesList(clues)}
+        </div>
+
+        <button type="button" class="btn btn--secondary" id="add-clue-btn" style="width: 100%; margin-top: 12px;">
+          + Añadir Palabra
+        </button>
+      </div>
+
+      <div class="form-section">
+        <div class="form-group">
+          <label class="form-checkbox-label">
+            <input
+              type="checkbox"
+              id="game-published"
+              name="isPublished"
+              class="form-checkbox"
+              ${data.isPublished !== false ? 'checked' : ''}
+            />
+            <span class="form-checkbox-text">
+              <strong>Publicar juego</strong>
+              <span class="form-checkbox-hint">Los estudiantes podrán jugar este crucigrama</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="game-form-modal__footer">
+        <button type="button" class="btn btn--secondary" id="cancel-game-btn">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn--primary" id="save-game-btn">
+          ${modalState.mode === 'edit' ? 'Guardar Cambios' : 'Crear Crucigrama'}
+        </button>
+      </div>
+    </form>
+  `;
+}
+
+/**
+ * Renderiza la lista de pistas del crucigrama
+ */
+function renderCrosswordCluesList(clues = []) {
+  if (clues.length === 0) {
+    clues = [{ word: '', clue: '' }, { word: '', clue: '' }];
+  }
+
+  return clues.map((item, index) => `
+    <div class="crossword-clue-item" data-index="${index}">
+      <div class="form-row">
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Palabra ${index + 1} <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-input crossword-word-input"
+            placeholder="DELFIN"
+            value="${escapeHtml(item.word || '')}"
+            required
+          />
+        </div>
+        <div class="form-group" style="flex: 2;">
+          <label class="form-label">Definición <span class="required">*</span></label>
+          <input
+            type="text"
+            class="form-input crossword-clue-input"
+            placeholder="Mamífero marino muy inteligente"
+            value="${escapeHtml(item.clue || '')}"
+            required
+          />
+        </div>
+        ${clues.length > 2 ? `
+          <button type="button" class="btn-remove-clue" data-index="${index}" title="Eliminar">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M2 4H16M7 4V2H11V4M14 4V16H4V4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+/**
  * Wire eventos del modal
  */
 function wireModalEvents(overlay, gameData) {
@@ -563,10 +744,12 @@ function wireGameForm(overlay, gameData) {
     await handleFormSubmit(form, gameData);
   });
 
-  // Si es ahorcado, wire botones de añadir/eliminar palabras
+  // Si es ahorcado o crucigrama, wire botones de añadir/eliminar palabras
   const gameType = form.dataset.type;
   if (gameType === 'hangman') {
     wireHangmanWordButtons(overlay);
+  } else if (gameType === 'crossword') {
+    wireCrosswordClueButtons(overlay);
   }
 }
 
@@ -650,6 +833,86 @@ function wireRemoveButtons(overlay) {
 }
 
 /**
+ * Wire botones de pistas del crucigrama
+ */
+function wireCrosswordClueButtons(overlay) {
+  const addBtn = overlay.querySelector('#add-clue-btn');
+  const cluesList = overlay.querySelector('#crossword-clues-list');
+
+  if (addBtn && !addBtn.__wired) {
+    addBtn.__wired = true;
+    addBtn.addEventListener('click', () => {
+      const currentClues = Array.from(cluesList.querySelectorAll('.crossword-clue-item'));
+      const newIndex = currentClues.length;
+
+      const newClueHtml = `
+        <div class="crossword-clue-item" data-index="${newIndex}">
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Palabra ${newIndex + 1} <span class="required">*</span></label>
+              <input
+                type="text"
+                class="form-input crossword-word-input"
+                placeholder="DELFIN"
+                required
+              />
+            </div>
+            <div class="form-group" style="flex: 2;">
+              <label class="form-label">Definición <span class="required">*</span></label>
+              <input
+                type="text"
+                class="form-input crossword-clue-input"
+                placeholder="Mamífero marino muy inteligente"
+                required
+              />
+            </div>
+            <button type="button" class="btn-remove-clue" data-index="${newIndex}" title="Eliminar">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M2 4H16M7 4V2H11V4M14 4V16H4V4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `;
+
+      cluesList.insertAdjacentHTML('beforeend', newClueHtml);
+      wireRemoveClueButtons(overlay);
+    });
+  }
+
+  wireRemoveClueButtons(overlay);
+}
+
+/**
+ * Wire botones de eliminar pista del crucigrama
+ */
+function wireRemoveClueButtons(overlay) {
+  const removeButtons = overlay.querySelectorAll('.btn-remove-clue');
+
+  removeButtons.forEach(btn => {
+    if (btn.__wired) return;
+    btn.__wired = true;
+
+    btn.addEventListener('click', () => {
+      const clueItem = btn.closest('.crossword-clue-item');
+      if (clueItem) {
+        clueItem.remove();
+        // Renumerar las pistas restantes
+        const cluesList = overlay.querySelector('#crossword-clues-list');
+        const items = cluesList.querySelectorAll('.crossword-clue-item');
+        items.forEach((item, index) => {
+          item.dataset.index = index;
+          const label = item.querySelector('.form-label');
+          if (label) {
+            label.innerHTML = `Palabra ${index + 1} <span class="required">*</span>`;
+          }
+        });
+      }
+    });
+  });
+}
+
+/**
  * Maneja el submit del formulario
  */
 async function handleFormSubmit(form, gameData) {
@@ -709,6 +972,28 @@ async function handleFormSubmit(form, gameData) {
       topic: formData.get('topic'),
       maxErrors: parseInt(formData.get('maxErrors')),
       words
+    };
+  } else if (type === 'crossword') {
+    const clueItems = form.querySelectorAll('.crossword-clue-item');
+    const clues = [];
+
+    clueItems.forEach(item => {
+      const word = item.querySelector('.crossword-word-input').value.trim().toUpperCase();
+      const clue = item.querySelector('.crossword-clue-input').value.trim();
+
+      if (word && clue) {
+        clues.push({ word, clue });
+      }
+    });
+
+    if (clues.length < 2) {
+      alert('Debes incluir al menos 2 palabras con sus definiciones');
+      return;
+    }
+
+    gamePayload.config = {
+      topic: formData.get('topic'),
+      clues
     };
   }
 

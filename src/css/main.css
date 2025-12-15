@@ -49,6 +49,7 @@
 @import './themeSelection.css';
 @import './hangman.css';
 @import './wordsearch.css';
+@import './crossword.css';
 @import './ranking.css';
 
 /* 16. Responsive - Load last to override as needed */

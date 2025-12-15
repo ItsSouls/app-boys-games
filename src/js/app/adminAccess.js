@@ -35,12 +35,6 @@ const hideAdminIcons = () => {
 };
 
 export async function maybeShowSectionAdminGear(sectionName) {
-  const token = localStorage.getItem('abg_token');
-  if (!token) {
-    hideAdminIcons();
-    return;
-  }
-
   try {
     const { user } = await api.me();
     const isAdmin = user?.role === 'admin';
