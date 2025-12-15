@@ -18,12 +18,15 @@ export function setupAuthControls(options = {}) {
   const headerAuth = document.getElementById('header-auth');
   if (!loginBtn) return;
 
-  const hasToken = Boolean(localStorage.getItem('abg_token'));
-
-  // Show/hide auth buttons in header
-  if (headerAuth) {
-    headerAuth.style.display = hasToken ? 'none' : 'flex';
-  }
+  // Session check now relies on backend via cookies (no localStorage token)
+  api
+    .me()
+    .then(() => {
+      if (headerAuth) headerAuth.style.display = 'none';
+    })
+    .catch(() => {
+      if (headerAuth) headerAuth.style.display = 'flex';
+    });
 
   loginBtn.onclick = () => showLoginModal(onAuthSuccess);
 }

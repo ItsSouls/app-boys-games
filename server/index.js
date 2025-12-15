@@ -1,14 +1,8 @@
-import express from 'express';
-import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import authRoutes from './routes/auth.js';
-import adminRoutes from './routes/admin/index.js';
-import publicRoutes from './routes/public.js';
-import gamesRoutes from './routes/games.js';
-import gameStatsRoutes from './routes/gameStats.js';
+import { createApp } from './app.js';
 import { Video } from './models/Video.js';
 import { Page } from './models/Page.js';
 import { Game } from './models/Game.js';
@@ -27,21 +21,15 @@ try {
   // no-op if resolution fails
 }
 
-const app = express();
+const REQUIRED_ENV_VARS = ['JWT_SECRET'];
+const missingEnv = REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
+if (missingEnv.length) {
+  console.error(`Missing required environment variables: ${missingEnv.join(', ')}`);
+  process.exit(1);
+}
+
+const app = createApp();
 const PORT = process.env.PORT || 4000;
-const ORIGIN = process.env.CORS_ORIGIN || '*';
-const BODY_LIMIT = process.env.JSON_BODY_LIMIT || '2mb';
-
-app.use(cors({ origin: ORIGIN, credentials: true }));
-app.use(express.json({ limit: BODY_LIMIT }));
-app.use(express.urlencoded({ limit: BODY_LIMIT, extended: true }));
-
-app.get('/api/health', (req, res) => res.json({ ok: true }));
-app.use('/api/auth', authRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/public', publicRoutes);
-app.use('/api/games', gamesRoutes);
-app.use('/api/game-stats', gameStatsRoutes);
 
 async function start() {
   const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/app_boys_games';

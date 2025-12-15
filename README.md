@@ -148,3 +148,12 @@ Desarrollado con ❤️ para hacer el aprendizaje del español más divertido pa
 ---
 
 ¡Gracias por usar App Boys Games! 🎉
+
+## Configuracion de entorno del servidor
+
+1. Copia `.env.example` a `.env` y ajusta los valores a tu entorno.
+2. Define `JWT_SECRET` con una cadena aleatoria fuerte; el backend no iniciara si falta esta variable.
+3. Ajusta `MONGODB_URI`, `CORS_ORIGIN` y `VITE_API_BASE_URL` segun tu despliegue local o en produccion.
+4. Controla el rate limiting con `AUTH_RATE_WINDOW_MS` (ventana en ms) y `AUTH_RATE_MAX` (intentos por ventana).
+5. El API aplica Helmet con CSP restrictiva (`default-src 'self'`, sin frames ni object-src); adapta la configuracion si sirves contenido estatico adicional.
+6. Los tokens de sesión se envían en cookies httpOnly/SameSite=Lax; define `CORS_ORIGIN` a tu frontend exacto y asegúrate de usar `credentials: 'include'` en las peticiones.

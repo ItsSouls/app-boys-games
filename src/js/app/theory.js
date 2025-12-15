@@ -131,13 +131,8 @@ async function loadPages(sectionName) {
 
 // Verificar si el usuario es admin
 async function checkAdminStatus() {
-  const token = localStorage.getItem('abg_token');
-  if (!token) return false;
-
   try {
-    const res = await fetch(`${API_BASE}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
+    const res = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
     if (!res.ok) return false;
     const { user } = await res.json();
     return user?.role === 'admin' || user?.role === 'moderator';

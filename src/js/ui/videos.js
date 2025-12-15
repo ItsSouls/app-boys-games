@@ -8,73 +8,40 @@ import { escapeHtml, escapeAttribute } from '../utils/sanitize.js';
  */
 function convertToEmbedUrl(url) {
   if (!url) return url;
-  
-  // Si ya es embed, retornarlo tal cual
-  if (url.includes('/embed/')) {
-    return url.trim();
-  }
-  
-  let videoId = null;
-  
-  // Formato: youtube.com/watch?v=VIDEO_ID
+  if (url.includes('/embed/')) return url.trim();
   const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
-  if (watchMatch) {
-    videoId = watchMatch[1];
-  }
-  
-  // Formato: youtu.be/VIDEO_ID
-  if (!videoId) {
-    const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
-    if (shortMatch) {
-      videoId = shortMatch[1];
-    }
-  }
-  
-  // Si encontramos el ID, convertir a embed
-  if (videoId) {
-    console.log('[videos] URL convertida:', url, '->', `https://www.youtube.com/embed/${videoId}`);
-    return `https://www.youtube.com/embed/${videoId}`;
-  }
-  
-  // Si no se pudo extraer, devolver la URL original
-  return url.trim();
+  const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  const videoId = watchMatch?.[1] || shortMatch?.[1] || null;
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url.trim();
 }
 
 let cache = [];
 let isAdmin = false;
 
 export async function renderVideos(filter = '', forceUserView = false) {
-  // Check if user is admin
-  const token = localStorage.getItem('abg_token');
-  if (token) {
-    try {
-      const { user } = await (await fetch(`${API_BASE}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })).json();
+  // Check if user is admin via /auth/me (cookies)
+  try {
+    const res = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+    if (res.ok) {
+      const { user } = await res.json();
       isAdmin = user?.role === 'admin' || user?.role === 'moderator';
-    } catch {
+    } else {
       isAdmin = false;
     }
+  } catch {
+    isAdmin = false;
   }
 
-  // Show/hide admin toggle button
   const adminToggle = document.getElementById('videos-admin-gear');
-  if (adminToggle) {
-    adminToggle.classList.toggle('is-visible', isAdmin);
-  }
+  if (adminToggle) adminToggle.classList.toggle('is-visible', isAdmin);
 
-  // Show appropriate view (always start with user view)
   const userView = document.getElementById('videos-user-view');
   const adminView = document.getElementById('videos-admin-view');
-
-  // Always show user view first, admin can toggle manually
   if (userView) {
     adminView?.classList.add('hidden');
     userView?.classList.remove('hidden');
     await renderUserView(filter);
   }
-
-  // Wire view toggle buttons
   wireViewToggles();
 }
 
@@ -112,17 +79,15 @@ async function renderUserView(filter = '') {
     videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos disponibles</div>`;
   } else {
     videosGrid.innerHTML = list
-      .map(
-        (video) => {
-          const rawMedia =
-            typeof video.emoji === 'string' ? video.emoji.trim() : '';
-          const normalizedMedia = rawMedia || '🎬';
-          const mediaAttr = escapeAttribute(rawMedia || normalizedMedia);
-          const isMediaImage = isImageUrl(rawMedia);
-          const thumbnailMarkup = isMediaImage
-            ? `<img class="video-thumbnail__image" src="${escapeAttribute(rawMedia)}" alt="" loading="lazy" />`
-            : `<span class="video-thumbnail__emoji">${escapeHtml(normalizedMedia)}</span>`;
-          return `
+      .map((video) => {
+        const rawMedia = typeof video.emoji === 'string' ? video.emoji.trim() : '';
+        const normalizedMedia = rawMedia || '🎬';
+        const mediaAttr = escapeAttribute(rawMedia || normalizedMedia);
+        const isMediaImage = isImageUrl(rawMedia);
+        const thumbnailMarkup = isMediaImage
+          ? `<img class="video-thumbnail__image" src="${escapeAttribute(rawMedia)}" alt="" loading="lazy" />`
+          : `<span class="video-thumbnail__emoji">${escapeHtml(normalizedMedia)}</span>`;
+        return `
           <div class="video-card"
                data-video="${video.id || ''}"
                data-title="${(video.title || '').replace(/"/g, '&quot;')}"
@@ -138,15 +103,13 @@ async function renderUserView(filter = '') {
             </div>
           </div>
         `;
-        }
-      )
+      })
       .join('');
   }
 
   ensureGridListeners(videosGrid);
   wireSearchInput(searchInput);
   wireFilterButtons();
-  console.log(`[videos] ${list.length} videos renderizados en vista usuario`);
 }
 
 export async function renderAdminView(filter = '') {
@@ -157,10 +120,7 @@ export async function renderAdminView(filter = '') {
   const shouldReload = !cache.length || !filter;
   if (shouldReload) {
     try {
-      const token = localStorage.getItem('abg_token');
-      const res = await fetch(`${API_BASE}/public/videos`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
+      const res = await fetch(`${API_BASE}/public/videos`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         cache = (data?.videos || []).map((v) => ({
@@ -249,7 +209,6 @@ export async function renderAdminView(filter = '') {
   wireAdminSearchInput(searchInput);
   wireAdminActions();
   wireDragAndDrop();
-  console.log(`[videos] ${list.length} videos renderizados en vista admin`);
 }
 
 function ensureGridListeners(videosGrid) {
@@ -285,26 +244,19 @@ function wireAdminSearchInput(searchInput) {
 }
 
 function wireFilterButtons() {
-  // Get unique categories from cache
-  const uniqueCategories = [...new Set(cache.map(v => v.category))].sort();
-
-  // Populate categories dropdown
+  const uniqueCategories = [...new Set(cache.map((v) => v.category))].sort();
   const dropdownMenu = document.getElementById('categories-dropdown-menu');
   const dropdownText = document.getElementById('categories-dropdown-text');
   const dropdown = document.getElementById('categories-dropdown');
 
   if (dropdownMenu && uniqueCategories.length > 0) {
-    // Add "All" option
     let menuHTML = `<button class="category-item active" data-category="">Todas las categorías</button>`;
-
-    // Add each category
-    uniqueCategories.forEach(category => {
+    uniqueCategories.forEach((category) => {
       menuHTML += `<button class="category-item" data-category="${escapeAttribute(category)}">${escapeHtml(category)}</button>`;
     });
 
     dropdownMenu.innerHTML = menuHTML;
 
-    // Wire dropdown toggle
     if (dropdown && !dropdown.__wired) {
       dropdown.__wired = true;
       dropdown.addEventListener('click', (e) => {
@@ -314,32 +266,20 @@ function wireFilterButtons() {
       });
     }
 
-    // Wire category items
     const categoryItems = dropdownMenu.querySelectorAll('.category-item');
-    categoryItems.forEach(item => {
+    categoryItems.forEach((item) => {
       item.addEventListener('click', (e) => {
         e.stopPropagation();
         const category = item.dataset.category;
-
-        // Update active state
-        categoryItems.forEach(i => i.classList.remove('active'));
+        categoryItems.forEach((i) => i.classList.remove('active'));
         item.classList.add('active');
-
-        // Update dropdown text
-        if (dropdownText) {
-          dropdownText.textContent = category || 'Todas las categorías';
-        }
-
-        // Close dropdown
+        if (dropdownText) dropdownText.textContent = category || 'Todas las categorías';
         dropdown.classList.remove('active');
         dropdownMenu.classList.add('hidden');
-
-        // Filter videos
         filterVideosByCategory(category);
       });
     });
 
-    // Close dropdown when clicking outside
     document.addEventListener('click', (e) => {
       if (!dropdown.contains(e.target)) {
         dropdown.classList.remove('active');
@@ -350,15 +290,15 @@ function wireFilterButtons() {
 }
 
 function filterVideosByCategory(category) {
-  const filtered = category ? cache.filter(v => v.category === category) : cache;
+  const filtered = category ? cache.filter((v) => v.category === category) : cache;
   const videosGrid = document.getElementById('videos-grid');
 
   if (videosGrid) {
-    if (filtered.length === 0) {
+    if (!filtered.length) {
       videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos en esta categoría</div>`;
     } else {
       videosGrid.innerHTML = filtered
-        .map(video => {
+        .map((video) => {
           const rawMedia = typeof video.emoji === 'string' ? video.emoji.trim() : '';
           const normalizedMedia = rawMedia || '🎬';
           const mediaAttr = escapeAttribute(rawMedia || normalizedMedia);
@@ -385,14 +325,11 @@ function filterVideosByCategory(category) {
         })
         .join('');
     }
-
-    // Re-wire grid listeners after updating content
     ensureGridListeners(videosGrid);
   }
 }
 
 function wireViewToggles() {
-  // Wire admin toggle (user view -> admin view)
   const adminToggle = document.getElementById('videos-admin-gear');
   if (adminToggle && !adminToggle.__wired) {
     adminToggle.__wired = true;
@@ -405,7 +342,6 @@ function wireViewToggles() {
     });
   }
 
-  // Wire user toggle (admin view -> user view)
   const userToggle = document.getElementById('videos-user-toggle');
   if (userToggle && !userToggle.__wired) {
     userToggle.__wired = true;
@@ -427,9 +363,8 @@ function wireDragAndDrop() {
   let draggedRow = null;
 
   adminList.addEventListener('dragstart', (e) => {
-    const row = e.target.closest('tr[draggable="true"]');
+    const row = e.target.closest('tr[draggable=\"true\"]');
     if (!row) return;
-
     draggedRow = row;
     row.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
@@ -437,73 +372,53 @@ function wireDragAndDrop() {
   });
 
   adminList.addEventListener('dragend', (e) => {
-    const row = e.target.closest('tr[draggable="true"]');
-    if (row) {
-      row.classList.remove('dragging');
-    }
+    const row = e.target.closest('tr[draggable=\"true\"]');
+    if (row) row.classList.remove('dragging');
     draggedRow = null;
   });
 
   adminList.addEventListener('dragover', (e) => {
     e.preventDefault();
-    const row = e.target.closest('tr[draggable="true"]');
+    const row = e.target.closest('tr[draggable=\"true\"]');
     if (!row || row === draggedRow) return;
-
     const rect = row.getBoundingClientRect();
     const midpoint = rect.top + rect.height / 2;
-
-    if (e.clientY < midpoint) {
-      row.parentNode.insertBefore(draggedRow, row);
-    } else {
-      row.parentNode.insertBefore(draggedRow, row.nextSibling);
-    }
+    if (e.clientY < midpoint) row.parentNode.insertBefore(draggedRow, row);
+    else row.parentNode.insertBefore(draggedRow, row.nextSibling);
   });
 
   adminList.addEventListener('drop', async (e) => {
     e.preventDefault();
     e.stopPropagation();
-
-    // Get current order of video IDs
     const rows = adminList.querySelectorAll('tr[data-video-id]');
-    const order = Array.from(rows).map(row => row.dataset.videoId);
-
-    // Save order to backend
+    const order = Array.from(rows).map((row) => row.dataset.videoId);
     await saveVideoOrder(order);
   });
 }
 
 async function saveVideoOrder(order) {
   try {
-    const token = localStorage.getItem('abg_token');
     const res = await fetch(`${API_BASE}/admin/videos/reorder`, {
       method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ order })
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ order }),
     });
-
     if (res.ok) {
-      console.log('[videos] Orden actualizado correctamente');
-      // Update cache to reflect new order
       cache = [];
       await renderAdminView('');
     } else {
       const errorData = await res.json().catch(() => ({}));
-      console.error('[videos] Error al actualizar orden:', errorData);
-      alert('Error al guardar el orden de los videos');
+      alert(`Error al guardar el orden de los videos: ${errorData.message || errorData.error || res.status}`);
     }
   } catch (err) {
-    console.error('[videos] Error guardando orden:', err);
-    alert('Error al guardar el orden de los videos');
+    alert(`Error al guardar el orden de los videos: ${err.message}`);
   }
 }
 
 function openAddVideoModal() {
   const overlay = document.createElement('div');
   overlay.className = 'video-overlay';
-
   const modal = document.createElement('div');
   modal.className = 'admin-video-modal';
   modal.innerHTML = `
@@ -528,10 +443,10 @@ function openAddVideoModal() {
         <label for="video-emoji">Emoji o URL de Imagen</label>
         <input type="text" id="video-emoji" name="emoji" placeholder="🎬 o URL de imagen" />
       </div>
-      <div class="form-group">
-        <label for="video-category">Categoría</label>
-        <input type="text" id="video-category" name="category" value="General" required />
-      </div>
+        <div class="form-group">
+          <label for="video-category">Categoría</label>
+          <input type="text" id="video-category" name="category" value="General" required />
+        </div>
       <div class="form-actions">
         <button type="button" class="btn-cancel">Cancelar</button>
         <button type="submit" class="btn-submit">Añadir Video</button>
@@ -542,12 +457,9 @@ function openAddVideoModal() {
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
-  const close = () => {
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-  };
-
-  modal.querySelector('.video-modal__close').addEventListener('click', close);
-  modal.querySelector('.btn-cancel').addEventListener('click', close);
+  const close = () => overlay.parentNode?.removeChild(overlay);
+  modal.querySelector('.video-modal__close')?.addEventListener('click', close);
+  modal.querySelector('.btn-cancel')?.addEventListener('click', close);
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) close();
   });
@@ -557,47 +469,36 @@ function openAddVideoModal() {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
-    
-    // Convertir URL de YouTube al formato embed
     videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
 
     try {
-      const token = localStorage.getItem('abg_token');
       const res = await fetch(`${API_BASE}/admin/videos`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(videoData)
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(videoData),
       });
-
       if (res.ok) {
         close();
         cache = [];
         await renderAdminView('');
         alert('Video añadido correctamente');
-        console.log('[videos] Video añadido correctamente');
       } else {
         const errorData = await res.json().catch(() => ({}));
-        const errorMessage = errorData.message || errorData.error || `Error ${res.status}: ${res.statusText}`;
-        alert(`Error al añadir el video: ${errorMessage}`);
-        console.error('[videos] Error del servidor:', errorData);
+        alert(`Error al añadir el video: ${errorData.message || errorData.error || res.status}`);
       }
     } catch (err) {
-      console.error('[videos] Error añadiendo video:', err);
       alert(`Error al añadir el video: ${err.message}`);
     }
   });
 }
 
 function openEditVideoModal(videoId) {
-  const video = cache.find(v => v.id === videoId);
+  const video = cache.find((v) => v.id === videoId);
   if (!video) return;
 
   const overlay = document.createElement('div');
   overlay.className = 'video-overlay';
-
   const modal = document.createElement('div');
   modal.className = 'admin-video-modal';
   modal.innerHTML = `
@@ -636,12 +537,9 @@ function openEditVideoModal(videoId) {
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
-  const close = () => {
-    if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-  };
-
-  modal.querySelector('.video-modal__close').addEventListener('click', close);
-  modal.querySelector('.btn-cancel').addEventListener('click', close);
+  const close = () => overlay.parentNode?.removeChild(overlay);
+  modal.querySelector('.video-modal__close')?.addEventListener('click', close);
+  modal.querySelector('.btn-cancel')?.addEventListener('click', close);
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) close();
   });
@@ -651,35 +549,25 @@ function openEditVideoModal(videoId) {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
-    
-    // Convertir URL de YouTube al formato embed
     videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
 
     try {
-      const token = localStorage.getItem('abg_token');
       const res = await fetch(`${API_BASE}/admin/videos/${videoId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(videoData)
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(videoData),
       });
-
       if (res.ok) {
         close();
         cache = [];
         await renderAdminView('');
         alert('Video actualizado correctamente');
-        console.log('[videos] Video actualizado correctamente');
       } else {
         const errorData = await res.json().catch(() => ({}));
-        const errorMessage = errorData.message || errorData.error || `Error ${res.status}: ${res.statusText}`;
-        alert(`Error al actualizar el video: ${errorMessage}`);
-        console.error('[videos] Error del servidor:', errorData);
+        alert(`Error al actualizar el video: ${errorData.message || errorData.error || res.status}`);
       }
     } catch (err) {
-      console.error('[videos] Error actualizando video:', err);
       alert(`Error al actualizar el video: ${err.message}`);
     }
   });
@@ -687,34 +575,25 @@ function openEditVideoModal(videoId) {
 
 async function deleteVideo(videoId) {
   try {
-    const token = localStorage.getItem('abg_token');
     const res = await fetch(`${API_BASE}/admin/videos/${videoId}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+      credentials: 'include',
     });
-
     if (res.ok) {
       cache = [];
       await renderAdminView('');
-      console.log('[videos] Video eliminado correctamente');
     } else {
       const errorData = await res.json().catch(() => ({}));
-      const errorMessage = errorData.message || errorData.error || `Error ${res.status}: ${res.statusText}`;
-      alert(`Error al eliminar el video: ${errorMessage}`);
-      console.error('[videos] Error del servidor:', errorData);
+      alert(`Error al eliminar el video: ${errorData.message || errorData.error || res.status}`);
     }
   } catch (err) {
-    console.error('[videos] Error eliminando video:', err);
     alert(`Error al eliminar el video: ${err.message}`);
   }
 }
 
 function wireAdminActions() {
-  // Wire edit buttons
   const editButtons = document.querySelectorAll('.admin-action-btn.edit');
-  editButtons.forEach(btn => {
+  editButtons.forEach((btn) => {
     if (btn.__wired) return;
     btn.__wired = true;
     btn.addEventListener('click', () => {
@@ -723,9 +602,8 @@ function wireAdminActions() {
     });
   });
 
-  // Wire delete buttons
   const deleteButtons = document.querySelectorAll('.admin-action-btn.delete');
-  deleteButtons.forEach(btn => {
+  deleteButtons.forEach((btn) => {
     if (btn.__wired) return;
     btn.__wired = true;
     btn.addEventListener('click', async () => {
@@ -736,7 +614,6 @@ function wireAdminActions() {
     });
   });
 
-  // Wire add button
   const addBtn = document.getElementById('videos-admin-add');
   if (addBtn && !addBtn.__wired) {
     addBtn.__wired = true;
@@ -748,28 +625,18 @@ function wireAdminActions() {
 
 export function openVideoModal(video) {
   if (!video?.embedUrl) return;
-
   const overlay = document.createElement('div');
   overlay.className = 'video-overlay';
-
   const modal = document.createElement('div');
   modal.className = 'video-modal';
-
-  // Truncate description to 50 characters
-  const truncatedDescription = video.description && video.description.length > 50
-    ? video.description.substring(0, 50) + '...'
-    : video.description;
-
+  const truncatedDescription =
+    video.description && video.description.length > 50 ? `${video.description.substring(0, 50)}...` : video.description;
   modal.innerHTML = `
     <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="video-modal__header">
       <h3>${video.title || 'Video'}</h3>
     </header>
-    ${
-      truncatedDescription
-        ? `<p class="video-modal__description">${truncatedDescription}</p>`
-        : ''
-    }
+    ${truncatedDescription ? `<p class="video-modal__description">${truncatedDescription}</p>` : ''}
     <div class="video-modal__player">
       <iframe
         src="${video.embedUrl}?autoplay=0&rel=0&modestbranding=1&fs=1"
@@ -781,7 +648,6 @@ export function openVideoModal(video) {
       ></iframe>
     </div>
   `;
-
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
@@ -804,7 +670,5 @@ export function openVideoModal(video) {
 
 function closeVideoModal(overlay) {
   if (!overlay) overlay = document.querySelector('.video-overlay');
-  if (overlay?.parentNode) {
-    overlay.parentNode.removeChild(overlay);
-  }
+  if (overlay?.parentNode) overlay.parentNode.removeChild(overlay);
 }

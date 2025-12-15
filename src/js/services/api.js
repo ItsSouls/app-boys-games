@@ -3,23 +3,9 @@ import { API_BASE } from '../app/config.js';
 
 const BASE = API_BASE;
 
-const TOKEN_KEY = 'abg_token';
-
-function getToken() {
-	return localStorage.getItem(TOKEN_KEY) || '';
-}
-
-function setToken(token) {
-	localStorage.setItem(TOKEN_KEY, token);
-}
-
 function authHeaders(extra = {}) {
-	const token = getToken();
-	const base = { ...extra };
-	if (token) {
-		base.Authorization = `Bearer ${token}`;
-	}
-	return base;
+	// Tokens ahora viajan en cookie httpOnly; no se envía Authorization
+	return { ...extra };
 }
 
 async function handleResponse(res, fallbackMessage) {
@@ -35,27 +21,34 @@ export async function register({ name, username, password }) {
 	const res = await fetch(`${BASE}/auth/register`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
 		body: JSON.stringify({ name, username, password })
 	});
-	const data = await handleResponse(res, 'Registro fallido');
-	setToken(data.token);
-	return data;
+	return handleResponse(res, 'Registro fallido');
 }
 
 export async function login({ username, password }) {
 	const res = await fetch(`${BASE}/auth/login`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
 		body: JSON.stringify({ username, password })
 	});
-	const data = await handleResponse(res, 'Login fallido');
-	setToken(data.token);
-	return data;
+	return handleResponse(res, 'Login fallido');
+}
+
+export async function logout() {
+	const res = await fetch(`${BASE}/auth/logout`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	return handleResponse(res, 'Logout fallido');
 }
 
 export async function me() {
 	const res = await fetch(`${BASE}/auth/me`, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'No autenticado');
 }
@@ -76,7 +69,8 @@ async function getGames(filters = {}) {
 
 	const url = `${BASE}/games${params.toString() ? `?${params}` : ''}`;
 	const res = await fetch(url, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al cargar juegos');
 }
@@ -86,7 +80,8 @@ async function getGames(filters = {}) {
  */
 async function getGame(gameId) {
 	const res = await fetch(`${BASE}/games/${gameId}`, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al cargar juego');
 }
@@ -98,6 +93,7 @@ async function createGame(gameData) {
 	const res = await fetch(`${BASE}/games`, {
 		method: 'POST',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
+		credentials: 'include',
 		body: JSON.stringify(gameData)
 	});
 	return handleResponse(res, 'Error al crear juego');
@@ -110,6 +106,7 @@ async function updateGame(gameId, gameData) {
 	const res = await fetch(`${BASE}/games/${gameId}`, {
 		method: 'PUT',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
+		credentials: 'include',
 		body: JSON.stringify(gameData)
 	});
 	return handleResponse(res, 'Error al actualizar juego');
@@ -121,7 +118,8 @@ async function updateGame(gameId, gameData) {
 async function deleteGame(gameId) {
 	const res = await fetch(`${BASE}/games/${gameId}`, {
 		method: 'DELETE',
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al eliminar juego');
 }
@@ -133,6 +131,7 @@ async function saveGameAttempt(gameId, attemptData) {
 	const res = await fetch(`${BASE}/games/${gameId}/attempts`, {
 		method: 'POST',
 		headers: authHeaders({ 'Content-Type': 'application/json' }),
+		credentials: 'include',
 		body: JSON.stringify(attemptData)
 	});
 	return handleResponse(res, 'Error al guardar intento');
@@ -143,7 +142,8 @@ async function saveGameAttempt(gameId, attemptData) {
  */
 async function getGameStats(gameId) {
 	const res = await fetch(`${BASE}/games/${gameId}/stats`, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al cargar estadísticas');
 }
@@ -153,7 +153,8 @@ async function getGameStats(gameId) {
  */
 async function getGameRanking(gameId, limit = 10) {
 	const res = await fetch(`${BASE}/games/${gameId}/ranking?limit=${limit}`, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al cargar ranking');
 }
@@ -163,7 +164,8 @@ async function getGameRanking(gameId, limit = 10) {
  */
 async function getUserAllStats() {
 	const res = await fetch(`${BASE}/game-stats/me`, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al cargar estadísticas');
 }
@@ -173,7 +175,8 @@ async function getUserAllStats() {
  */
 async function getGlobalRanking(limit = 10) {
 	const res = await fetch(`${BASE}/game-stats/ranking/global?limit=${limit}`, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al cargar ranking global');
 }
@@ -183,7 +186,8 @@ async function getGlobalRanking(limit = 10) {
  */
 async function getUserGlobalPosition() {
 	const res = await fetch(`${BASE}/game-stats/ranking/global/me`, {
-		headers: authHeaders()
+		headers: authHeaders(),
+		credentials: 'include'
 	});
 	return handleResponse(res, 'Error al cargar posición');
 }
@@ -203,5 +207,6 @@ export const api = {
 	getGameRanking,
 	getUserAllStats,
 	getGlobalRanking,
-	getUserGlobalPosition
+	getUserGlobalPosition,
+	logout
 };

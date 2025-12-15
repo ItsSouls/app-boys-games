@@ -19,14 +19,6 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
     const hideHeaderUser = () => headerUser.classList.add('is-hidden');
     const showHeaderUser = () => headerUser.classList.remove('is-hidden');
 
-    const token = localStorage.getItem('abg_token');
-    if (!token) {
-      hideHeaderUser();
-      nameEl.textContent = '';
-      ensureAuthControls();
-      return;
-    }
-
     try {
       const { user } = await api.me();
       const display = user?.name || user?.username || '';
@@ -34,7 +26,7 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       nameEl.textContent = display;
       showHeaderUser();
       logoutBtn.onclick = () => {
-        localStorage.removeItem('abg_token');
+        api.logout().catch((err) => console.warn('logout failed', err));
         hideHeaderUser();
         nameEl.textContent = '';
         ensureAuthControls();
@@ -54,7 +46,6 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       }
     } catch (err) {
       console.warn('[auth] token inválido', err);
-      localStorage.removeItem('abg_token');
       hideHeaderUser();
       nameEl.textContent = '';
       ensureAuthControls();
