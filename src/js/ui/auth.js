@@ -15,18 +15,7 @@ const loginFields = [
 export function setupAuthControls(options = {}) {
   const { onAuthSuccess } = options;
   const loginBtn = document.getElementById('auth-login');
-  const headerAuth = document.getElementById('header-auth');
   if (!loginBtn) return;
-
-  // Session check now relies on backend via cookies (no localStorage token)
-  api
-    .me()
-    .then(() => {
-      if (headerAuth) headerAuth.style.display = 'none';
-    })
-    .catch(() => {
-      if (headerAuth) headerAuth.style.display = 'flex';
-    });
 
   loginBtn.onclick = () => showLoginModal(onAuthSuccess);
 }

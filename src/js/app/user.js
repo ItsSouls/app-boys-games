@@ -6,30 +6,48 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
     onAuthSuccess: async () => {},
   };
 
+  let controlsWired = false;
   const ensureAuthControls = () => {
+    if (controlsWired) return;
     setupAuthControls(authCallbacks);
+    controlsWired = true;
+  };
+
+  const headerUser = document.getElementById('header-user');
+  const nameEl = document.getElementById('user-name');
+  const logoutBtn = document.getElementById('header-logout');
+  const headerAuth = document.getElementById('header-auth');
+
+  const setHeaderState = (state, user) => {
+    if (!headerUser || !nameEl || !logoutBtn || !headerAuth) return;
+    if (state === 'checking') {
+      headerUser.classList.add('is-hidden');
+      headerAuth.style.display = 'none';
+      return;
+    }
+    if (state === 'authed') {
+      nameEl.textContent = user?.name || user?.username || '';
+      headerUser.classList.remove('is-hidden');
+      headerAuth.style.display = 'none';
+      return;
+    }
+    // unauth
+    headerUser.classList.add('is-hidden');
+    nameEl.textContent = '';
+    headerAuth.style.display = 'flex';
   };
 
   const refreshUserGreeting = async () => {
-    const headerUser = document.getElementById('header-user');
-    const nameEl = document.getElementById('user-name');
-    const logoutBtn = document.getElementById('header-logout');
-    if (!headerUser || !nameEl || !logoutBtn) return;
-
-    const hideHeaderUser = () => headerUser.classList.add('is-hidden');
-    const showHeaderUser = () => headerUser.classList.remove('is-hidden');
-
+    if (!headerUser || !nameEl || !logoutBtn || !headerAuth) return;
+    setHeaderState('checking');
     try {
       const { user } = await api.me();
       const display = user?.name || user?.username || '';
       if (!display) throw new Error('Usuario sin nombre');
-      nameEl.textContent = display;
-      showHeaderUser();
+      setHeaderState('authed', user);
       logoutBtn.onclick = () => {
         api.logout().catch((err) => console.warn('logout failed', err));
-        hideHeaderUser();
-        nameEl.textContent = '';
-        ensureAuthControls();
+        setHeaderState('unauth');
 
         // Hide all admin buttons on logout
         const adminButtons = document.querySelectorAll('[id$="-admin-toggle"], [id$="-admin-gear"]');
@@ -46,15 +64,19 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       }
     } catch (err) {
       console.warn('[auth] token inválido', err);
-      hideHeaderUser();
-      nameEl.textContent = '';
-      ensureAuthControls();
+      setHeaderState('unauth');
     }
   };
 
   const setOnAuthSuccess = (handler) => {
     authCallbacks.onAuthSuccess = handler;
   };
+
+  // Enforce header state flow from this controller
+  ensureAuthControls();
+  authCallbacks.onAuthSuccess = refreshUserGreeting;
+  setHeaderState('checking');
+  refreshUserGreeting();
 
   return {
     authCallbacks,
