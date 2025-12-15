@@ -7,6 +7,7 @@ import adminRoutes from './routes/admin/index.js';
 import publicRoutes from './routes/public.js';
 import gamesRoutes from './routes/games.js';
 import gameStatsRoutes from './routes/gameStats.js';
+import billingRoutes from './routes/billing.js';
 
 export function createApp() {
   const app = express();
@@ -45,6 +46,7 @@ export function createApp() {
   app.use('/api/public', publicRoutes);
   app.use('/api/games', gamesRoutes);
   app.use('/api/game-stats', gameStatsRoutes);
+  app.use('/api/billing', billingRoutes);
 
   return app;
 }

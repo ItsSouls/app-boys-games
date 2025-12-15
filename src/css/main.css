@@ -52,5 +52,11 @@
 @import './crossword.css';
 @import './ranking.css';
 
-/* 16. Responsive - Load last to override as needed */
+/* 16. Purchase and billing */
+@import './purchase.css';
+
+/* 17. Admin students management */
+@import './students.css';
+
+/* 18. Responsive - Load last to override as needed */
 @import './responsive.css';

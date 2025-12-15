@@ -3,6 +3,8 @@ import { createUserController } from './user.js';
 import { createNavigationController } from './navigation.js';
 import { maybeShowSectionAdminGear } from './adminAccess.js';
 import { initI18n } from '../i18n/translations.js';
+import { renderPurchase } from '../views/purchase.js';
+import { renderAdminStudents } from '../views/adminStudents.js';
 
 export function initApp() {
   console.log('App Boys Games - Aprende Español Jugando');
@@ -43,6 +45,10 @@ export function initApp() {
   router.route('/gramatica', () => navigation.showSection('gramatica'));
   router.route('/parents', () => navigation.showSection('parents'));
   router.route('/ranking', () => navigation.showSection('ranking'));
+  router.route('/purchase', () => renderPurchase());
+  router.route('/purchase/success', () => renderPurchase());
+  router.route('/purchase/cancel', () => renderPurchase());
+  router.route('/admin/students', () => renderAdminStudents());
 
   router.init();
 
@@ -105,6 +111,16 @@ export function initApp() {
       parentsLink.addEventListener('click', (event) => {
         event.preventDefault();
         router.navigate('/parents');
+      });
+    }
+
+    // Admin Students link
+    const adminStudentsLink = document.getElementById('nav-admin-students');
+    if (adminStudentsLink && !adminStudentsLink.__wired) {
+      adminStudentsLink.__wired = true;
+      adminStudentsLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        router.navigate('/admin/students');
       });
     }
 

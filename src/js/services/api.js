@@ -185,6 +185,58 @@ async function getUserGlobalPosition() {
 	return handleResponse(res, 'Error al cargar posición');
 }
 
+// ========================================
+// BILLING API
+// ========================================
+
+/**
+ * Crea una sesión de Stripe Checkout
+ */
+async function checkout() {
+	const res = await requestWithRefresh(`${BASE}/billing/checkout`, {
+		method: 'POST',
+		headers: authHeaders({ 'Content-Type': 'application/json' })
+	});
+	return handleResponse(res, 'Error al crear sesión de pago');
+}
+
+// ========================================
+// STUDENTS API (Admin)
+// ========================================
+
+/**
+ * Obtiene lista de alumnos del admin
+ */
+async function getStudents() {
+	const res = await requestWithRefresh(`${BASE}/admin/students`, {
+		headers: authHeaders()
+	});
+	return handleResponse(res, 'Error al cargar alumnos');
+}
+
+/**
+ * Crea un nuevo alumno
+ */
+async function createStudent(studentData) {
+	const res = await requestWithRefresh(`${BASE}/admin/students`, {
+		method: 'POST',
+		headers: authHeaders({ 'Content-Type': 'application/json' }),
+		body: JSON.stringify(studentData)
+	});
+	return handleResponse(res, 'Error al crear alumno');
+}
+
+/**
+ * Elimina un alumno
+ */
+async function deleteStudent(studentId) {
+	const res = await requestWithRefresh(`${BASE}/admin/students/${studentId}`, {
+		method: 'DELETE',
+		headers: authHeaders()
+	});
+	return handleResponse(res, 'Error al eliminar alumno');
+}
+
 export const api = {
 	register,
 	login,
@@ -201,5 +253,11 @@ export const api = {
 	getGameRanking,
 	getUserAllStats,
 	getGlobalRanking,
-	getUserGlobalPosition
+	getUserGlobalPosition,
+	// Billing
+	checkout,
+	// Students
+	getStudents,
+	createStudent,
+	deleteStudent
 };

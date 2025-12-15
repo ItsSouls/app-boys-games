@@ -23,6 +23,7 @@
     "marked": "^17.0.1",
     "mongoose": "^8.20.2",
     "sanitize-html": "^2.17.0",
+    "stripe": "^20.0.0",
     "vite": "^6.0.0"
   },
   "devDependencies": {

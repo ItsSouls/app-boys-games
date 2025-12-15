@@ -14,6 +14,7 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
   const nameEl = document.getElementById('user-name');
   const logoutBtn = document.getElementById('header-logout');
   const headerAuth = document.getElementById('header-auth');
+  const adminStudentsLink = document.getElementById('nav-admin-students');
 
   const setHeaderState = (state, user) => {
     if (!headerUser || !nameEl || !logoutBtn || !headerAuth) return;
@@ -42,6 +43,16 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       const display = user?.name || user?.username || '';
       if (!display) throw new Error('Usuario sin nombre');
       setHeaderState('authed', user);
+
+      // Show admin students link if user is admin
+      if (adminStudentsLink) {
+        if (user?.role === 'admin') {
+          adminStudentsLink.classList.remove('is-hidden');
+        } else {
+          adminStudentsLink.classList.add('is-hidden');
+        }
+      }
+
       logoutBtn.onclick = async () => {
         setHeaderState('checking');
         try {
@@ -58,6 +69,11 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
           btn.classList.remove('is-visible');
         });
 
+        // Hide admin students link
+        if (adminStudentsLink) {
+          adminStudentsLink.classList.add('is-hidden');
+        }
+
         if (typeof onNavigateHome === 'function') onNavigateHome();
       };
       ensureAuthControls();
@@ -68,6 +84,9 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
     } catch (err) {
       console.warn('[auth] token inválido', err);
       setHeaderState('unauth');
+      if (adminStudentsLink) {
+        adminStudentsLink.classList.add('is-hidden');
+      }
     }
   };
 
