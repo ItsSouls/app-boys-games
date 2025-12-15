@@ -11,6 +11,9 @@ import gameStatsRoutes from './routes/gameStats.js';
 export function createApp() {
   const app = express();
 
+  // Behind reverse proxies (Render, Vercel), trust x-forwarded-for for rate limiting and IP-based features
+  app.set('trust proxy', 1);
+
   const ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
   const BODY_LIMIT = process.env.JSON_BODY_LIMIT || '2mb';
 
