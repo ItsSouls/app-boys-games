@@ -5,8 +5,8 @@ export async function renderAdminStudents() {
 
   // Check if user is admin
   try {
-    const user = await api.me();
-    if (user.role !== 'admin') {
+    const { user } = await api.me();
+    if (!user || user.role !== 'admin') {
       main.innerHTML = `
         <div class="students-container">
           <div class="error-card">
