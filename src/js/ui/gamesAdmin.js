@@ -1,6 +1,5 @@
 // gamesAdmin.js - Panel de administración de juegos
 import { api } from '../services/api.js';
-import { renderGames } from '../app/games.js';
 import { openGameFormModal } from './gameFormModal.js';
 
 let adminState = {
@@ -132,7 +131,7 @@ function wireAdminEvents() {
       const adminView = document.getElementById('games-admin-view');
       userView.classList.remove('hidden');
       adminView.classList.add('hidden');
-      renderGames();
+      renderGamesLazy();
     });
   }
 
@@ -144,7 +143,7 @@ function wireAdminEvents() {
       openGameFormModal('create', null, async () => {
         await Promise.all([
           loadGames(), // Recargar lista admin
-          renderGames(adminState.games.filter(g => g.isPublished)), // Refrescar selector usuario con cache
+          renderGamesLazy(adminState.games.filter(g => g.isPublished)), // Refrescar selector usuario con cache
         ]);
       });
     });
@@ -349,7 +348,7 @@ async function deleteGame(gameId) {
     await api.deleteGame(gameId);
     await Promise.all([
       loadGames(),
-      renderGames(adminState.games.filter(g => g.isPublished)),
+      renderGamesLazy(adminState.games.filter(g => g.isPublished)),
     ]);
   } catch (error) {
     console.error('[gamesAdmin] Error deleting game:', error);
@@ -365,5 +364,9 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+async function renderGamesLazy(sourceGames) {
+  const { renderGames } = await import('../app/games.js');
+  return renderGames(sourceGames);
 }
 
