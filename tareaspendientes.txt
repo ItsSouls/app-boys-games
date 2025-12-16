@@ -1,0 +1,7 @@
+- El ranking tiene que ser de entre los estudiantes de un administrador, ya que está pensado para que haya grupos de clases
+- Los recursos (videos, vocabulario gramática y juegos) añadidos por el usuario administrador serán visibles para los alumnos asociados al profesor administrado
+- Mejorar la estética de y las redirecciones de las pantallas de compra /purchase y /admin/students
+- corregir algunas traducciones al cambiar de idioma.
+
+Archon mejorar contexto para usar el mismo Proyecto
+Archivo con todos los mcps en /proyectos

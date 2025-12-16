@@ -42,8 +42,18 @@ const authLimiter = rateLimit({
 });
 
 function signAccessToken(user) {
+  // Determine ownerAdmin: admin owns themselves, users have ownerAdmin reference
+  const ownerAdmin = user.role === 'admin' ? user._id : user.ownerAdmin;
+
   return jwt.sign(
-    { id: user._id, username: user.username, name: user.name, role: user.role },
+    {
+      id: user._id,
+      username: user.username,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      ownerAdmin: ownerAdmin
+    },
     ACCESS_SECRET,
     { expiresIn: `${ACCESS_TOKEN_TTL_SECONDS}s` }
   );
@@ -95,20 +105,35 @@ async function revokeRefreshToken(token) {
 
 router.post('/register', authLimiter, async (req, res) => {
   try {
-    const { name, username, password } = req.body;
-    if (!name || !username || !password) return res.status(400).json({ error: 'Missing fields' });
+    const { name, email, username, password } = req.body;
+    if (!name || !email || !username || !password) return res.status(400).json({ error: 'Missing fields' });
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return res.status(400).json({ error: 'Invalid email format' });
+
     const pwdError = validatePasswordStrength(password);
     if (pwdError) return res.status(400).json({ error: pwdError });
-    const exists = await User.findOne({ username });
-    if (exists) return res.status(409).json({ error: 'Username already used' });
+
+    // Check if username or email already exists
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    if (existingUser) {
+      if (existingUser.username === username) {
+        return res.status(409).json({ error: 'Username already used' });
+      }
+      if (existingUser.email === email) {
+        return res.status(409).json({ error: 'Email already used' });
+      }
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, username, passwordHash });
+    const user = await User.create({ name, email, username, passwordHash });
     const accessToken = signAccessToken(user);
     const jti = crypto.randomUUID();
     const { token: refreshToken, expiresAt } = signRefreshToken(user, jti);
     await persistRefreshToken(user._id, refreshToken, expiresAt, jti);
     setAuthCookies(res, accessToken, refreshToken);
-    res.json({ user: { id: user._id, name: user.name, username: user.username, role: user.role } });
+    res.json({ user: { id: user._id, name: user.name, email: user.email, username: user.username, role: user.role } });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Server error' });
@@ -128,7 +153,7 @@ router.post('/login', authLimiter, async (req, res) => {
     const { token: refreshToken, expiresAt } = signRefreshToken(user, jti);
     await persistRefreshToken(user._id, refreshToken, expiresAt, jti);
     setAuthCookies(res, accessToken, refreshToken);
-    res.json({ user: { id: user._id, name: user.name, username: user.username, role: user.role } });
+    res.json({ user: { id: user._id, name: user.name, email: user.email, username: user.username, role: user.role } });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: 'Server error' });

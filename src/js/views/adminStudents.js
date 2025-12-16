@@ -1,61 +1,79 @@
 import { api } from '../services/api.js';
+import { t, updatePageTranslations } from '../i18n/translations.js';
 
 export async function renderAdminStudents() {
-  const main = document.querySelector('main');
+  const container = document.getElementById('admin-students-content');
+  if (!container) return;
 
   // Check if user is admin
   try {
     const { user } = await api.me();
     if (!user || user.role !== 'admin') {
-      main.innerHTML = `
+      container.innerHTML = `
         <div class="students-container">
           <div class="error-card">
-            <h1>Acceso denegado</h1>
-            <p>Solo los administradores pueden acceder a esta sección.</p>
-            <button class="abg-btn" onclick="window.router.navigate('/')">Ir al inicio</button>
+            <h1 data-i18n="accessDenied"></h1>
+            <p data-i18n="accessDeniedDesc"></p>
+            <button class="abg-btn" id="error-home-btn" data-i18n="goToHome"></button>
           </div>
         </div>
       `;
+      updatePageTranslations();
+      // Wire error button
+      const errorBtn = document.getElementById('error-home-btn');
+      if (errorBtn) {
+        errorBtn.addEventListener('click', () => window.router.navigate('/'));
+      }
       return;
     }
   } catch (error) {
-    main.innerHTML = `
+    container.innerHTML = `
       <div class="students-container">
         <div class="error-card">
-          <h1>Error de autenticación</h1>
-          <p>Por favor, inicia sesión para continuar.</p>
-          <button class="abg-btn" onclick="window.router.navigate('/')">Ir al inicio</button>
+          <h1 data-i18n="authError"></h1>
+          <p data-i18n="authErrorDesc"></p>
+          <button class="abg-btn" id="auth-error-home-btn" data-i18n="goToHome"></button>
         </div>
       </div>
     `;
+    updatePageTranslations();
+    // Wire error button
+    const authErrorBtn = document.getElementById('auth-error-home-btn');
+    if (authErrorBtn) {
+      authErrorBtn.addEventListener('click', () => window.router.navigate('/'));
+    }
     return;
   }
 
-  main.innerHTML = `
+  container.innerHTML = `
     <div class="students-container">
       <div class="students-header">
-        <h1>Gestión de Alumnos</h1>
-        <button class="back-btn" onclick="window.router.navigate('/')">← Volver al inicio</button>
+        <button class="back-btn" id="admin-students-back-btn">← <span data-i18n="backToHome"></span></button>
+        <h1 data-i18n="studentsManagement"></h1>
       </div>
 
       <div class="students-content">
         <div class="create-student-card">
-          <h2>Crear nuevo alumno</h2>
+          <h2 data-i18n="createNewStudent"></h2>
           <form id="create-student-form">
             <div class="form-group">
-              <label for="student-name">Nombre completo</label>
+              <label for="student-name" data-i18n="fullName"></label>
               <input type="text" id="student-name" name="name" required minlength="2">
             </div>
             <div class="form-group">
-              <label for="student-username">Nombre de usuario</label>
+              <label for="student-email">Email (opcional)</label>
+              <input type="email" id="student-email" name="email" placeholder="Dejar vacío para auto-generar">
+            </div>
+            <div class="form-group">
+              <label for="student-username" data-i18n="username"></label>
               <input type="text" id="student-username" name="username" required minlength="3">
             </div>
             <div class="form-group">
-              <label for="student-password">Contraseña</label>
+              <label for="student-password" data-i18n="password"></label>
               <input type="password" id="student-password" name="password" required minlength="6">
             </div>
             <div class="form-actions">
-              <button type="submit" class="abg-btn">Crear alumno</button>
+              <button type="submit" class="abg-btn" data-i18n="createStudent"></button>
             </div>
             <div id="create-error" class="error-message" style="display: none;"></div>
           </form>
@@ -63,16 +81,26 @@ export async function renderAdminStudents() {
 
         <div class="students-list-card">
           <div class="students-list-header">
-            <h2>Lista de alumnos</h2>
-            <span id="students-count" class="students-count">Cargando...</span>
+            <h2 data-i18n="studentsList"></h2>
+            <span id="students-count" class="students-count" data-i18n="loading"></span>
           </div>
           <div id="students-list" class="students-list">
-            <div class="loading">Cargando alumnos...</div>
+            <div class="loading" data-i18n="loadingStudents"></div>
           </div>
         </div>
       </div>
     </div>
   `;
+
+  // Update translations
+  updatePageTranslations();
+
+  // Wire back button
+  const backBtn = document.getElementById('admin-students-back-btn');
+  if (backBtn && !backBtn.__wired) {
+    backBtn.__wired = true;
+    backBtn.addEventListener('click', () => window.router.navigate('/'));
+  }
 
   // Load students
   await loadStudents();
@@ -94,9 +122,10 @@ async function loadStudents() {
     if (students.length === 0) {
       listContainer.innerHTML = `
         <div class="empty-state">
-          <p>No has creado ningún alumno todavía.</p>
+          <p data-i18n="noStudentsYet"></p>
         </div>
       `;
+      updatePageTranslations();
       return;
     }
 
@@ -108,11 +137,14 @@ async function loadStudents() {
             <div class="student-name">${student.name}</div>
             <div class="student-username">@${student.username}</div>
           </div>
-          <button class="delete-btn" data-id="${student._id}">Eliminar</button>
+          <button class="delete-btn" data-id="${student._id}" data-i18n="delete"></button>
         </div>
       `
       )
       .join('');
+
+    // Update translations
+    updatePageTranslations();
 
     // Add delete handlers
     document.querySelectorAll('.delete-btn').forEach((btn) => {
@@ -125,7 +157,7 @@ async function loadStudents() {
     console.error('Error loading students:', error);
     listContainer.innerHTML = `
       <div class="error-state">
-        <p>Error al cargar los alumnos: ${error.message}</p>
+        <p>${t('loadingStudentsError')}: ${error.message}</p>
       </div>
     `;
   }
@@ -142,11 +174,17 @@ async function handleCreateStudent(e) {
     password: formData.get('password'),
   };
 
+  // Add email if provided (optional field)
+  const email = formData.get('email');
+  if (email && email.trim()) {
+    data.email = email.trim();
+  }
+
   const submitBtn = form.querySelector('button[type="submit"]');
   const errorDiv = document.getElementById('create-error');
 
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Creando...';
+  submitBtn.textContent = t('creating');
   errorDiv.style.display = 'none';
 
   try {
@@ -159,19 +197,19 @@ async function handleCreateStudent(e) {
     await loadStudents();
 
     // Show success (optional)
-    alert('Alumno creado correctamente');
+    alert(t('studentCreatedSuccess'));
   } catch (error) {
     console.error('Error creating student:', error);
-    errorDiv.textContent = error.message || 'Error al crear el alumno';
+    errorDiv.textContent = error.message || t('createStudentError');
     errorDiv.style.display = 'block';
   } finally {
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Crear alumno';
+    submitBtn.textContent = t('createStudent');
   }
 }
 
 async function handleDeleteStudent(studentId) {
-  if (!confirm('¿Estás seguro de que quieres eliminar este alumno?')) {
+  if (!confirm(t('confirmDeleteStudent'))) {
     return;
   }
 
@@ -180,6 +218,6 @@ async function handleDeleteStudent(studentId) {
     await loadStudents();
   } catch (error) {
     console.error('Error deleting student:', error);
-    alert(error.message || 'Error al eliminar el alumno');
+    alert(error.message || t('deleteStudentError'));
   }
 }

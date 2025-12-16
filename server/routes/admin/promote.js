@@ -16,9 +16,20 @@ export function createPromoteRoute(router) {
       return res.status(400).json({ error: 'Missing or invalid fields' });
     }
 
+    // Preparar update: si se promueve a admin, set ownerAdmin = user._id (self-ownership)
+    const updateFields = { role };
+    if (role === 'admin') {
+      // Primero buscamos el usuario para obtener su _id
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      updateFields.ownerAdmin = user._id;
+    }
+
     const updatedUser = await User.findOneAndUpdate(
       { username },
-      { $set: { role } },
+      { $set: updateFields },
       { new: true },
     );
     if (!updatedUser) {

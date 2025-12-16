@@ -2,6 +2,7 @@ import { api } from '../services/api.js';
 
 const registerFields = [
   { key: 'name', id: 'reg-name', placeholder: 'Nombre', type: 'text', autocomplete: 'name' },
+  { key: 'email', id: 'reg-email', placeholder: 'Email', type: 'email', autocomplete: 'email' },
   { key: 'username', id: 'reg-username', placeholder: 'Usuario', type: 'text', autocomplete: 'username' },
   { key: 'password', id: 'reg-pass', placeholder: 'Contraseña', type: 'password', autocomplete: 'new-password' },
   { key: 'passwordConfirm', id: 'reg-pass2', placeholder: 'Repite contraseña', type: 'password', autocomplete: 'new-password' },
@@ -19,7 +20,7 @@ export function setupAuthControls(options = {}) {
   loginBtn.onclick = () => showLoginModal(options.onAuthSuccess);
 }
 
-function showLoginModal(onAuthSuccess) {
+export function showLoginModal(onAuthSuccess) {
   const overlay = document.createElement('div');
   overlay.style.cssText =
     'position:fixed;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:2000;padding:16px;';
@@ -120,9 +121,15 @@ function showLoginModal(onAuthSuccess) {
         const values = getValues();
 
         if (isRegisterMode) {
-          const { name, username, password, passwordConfirm } = values;
-          if (!name || !username || !password || !passwordConfirm) {
+          const { name, email, username, password, passwordConfirm } = values;
+          if (!name || !email || !username || !password || !passwordConfirm) {
             setError('Completa todos los campos.');
+            return;
+          }
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            setError('Formato de email inválido.');
             return;
           }
           if (password.length < 6) {
@@ -134,7 +141,7 @@ function showLoginModal(onAuthSuccess) {
             return;
           }
 
-          await api.register({ name, username, password });
+          await api.register({ name, email, username, password });
           close();
           if (typeof onAuthSuccess === 'function') await onAuthSuccess();
         } else {

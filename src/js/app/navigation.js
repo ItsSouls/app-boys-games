@@ -8,6 +8,8 @@ const PAGE_SELECTORS = [
   '#gramatica-page',
   '#parents-page',
   '#ranking-page',
+  '#purchase-page',
+  '#admin-students-page',
 ];
 
 export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear }) {
@@ -38,6 +40,8 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
       'gramatica': 'gramatica-page',
       'parents': 'parents-page',
       'ranking': 'ranking-page',
+      'purchase': 'purchase-page',
+      'admin/students': 'admin-students-page',
     };
 
     const pageId = pageMap[sectionName];
@@ -58,6 +62,12 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
     } else if (sectionName === 'ranking') {
       const { renderRanking } = await import('../ui/ranking.js');
       await renderRanking();
+    } else if (sectionName === 'purchase') {
+      const { renderPurchase } = await import('../views/purchase.js');
+      await renderPurchase();
+    } else if (sectionName === 'admin/students') {
+      const { renderAdminStudents } = await import('../views/adminStudents.js');
+      await renderAdminStudents();
     }
 
     if (typeof maybeShowAdminGear === 'function') {

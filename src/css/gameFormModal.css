@@ -303,6 +303,37 @@
   display: block;
 }
 
+/* Crossword clue remove button - same styles as word remove */
+.btn-remove-clue {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--color-error);
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-base);
+  margin: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: none;
+}
+
+.btn-remove-clue:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.btn-remove-clue svg {
+  display: block;
+}
+
+.crossword-clue-item .form-row {
+  grid-template-columns: repeat(2, minmax(220px, 1fr)) auto;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
 /* Modal Footer */
 .game-form-modal__footer {
   padding: var(--spacing-4);

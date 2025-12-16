@@ -23,6 +23,14 @@ const userGameStatsSchema = new mongoose.Schema({
   averageScore: { type: Number, default: 0 },     // Puntuación media
 
   lastPlayedAt: { type: Date },
+
+  // Multi-tenant: aislar rankings por profesor
+  ownerAdmin: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    index: true
+  },
 }, { timestamps: true });
 
 // Índice único para evitar duplicados
@@ -31,6 +39,10 @@ userGameStatsSchema.index({ user: 1, game: 1 }, { unique: true });
 // Índices para rankings
 userGameStatsSchema.index({ totalScore: -1 }); // Ranking por puntuación total
 userGameStatsSchema.index({ bestScore: -1 });  // Ranking por mejor puntuación
+
+// Índices para rankings multi-tenant (por ownerAdmin)
+userGameStatsSchema.index({ ownerAdmin: 1, totalScore: -1 });
+userGameStatsSchema.index({ ownerAdmin: 1, bestScore: -1 });
 
 // Método para actualizar las estadísticas después de un intento
 userGameStatsSchema.methods.updateAfterAttempt = function(attempt) {

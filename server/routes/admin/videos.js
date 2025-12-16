@@ -15,7 +15,13 @@ const normalizeVideoPayload = ({ title, description, embedUrl, emoji, category }
 
 videosRouter.get('/', async (req, res) => {
   try {
-    const list = await Video.find()
+    // Multi-tenant: filtrar por ownerAdmin (salvo superadmin)
+    const filter = { isPublic: false }; // No devolver contenido público en rutas admin
+    if (!req.user.isSuperAdmin) {
+      filter.ownerAdmin = req.user.ownerAdmin;
+    }
+
+    const list = await Video.find(filter)
       .sort({ order: 1, createdAt: -1 })
       .limit(200);
     res.json({ videos: list });
@@ -31,6 +37,10 @@ videosRouter.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Missing title or embedUrl' });
     }
 
+    // Solo el superadmin puede crear contenido público
+    const isPublic = req.user.isSuperAdmin && req.body.isPublic === true;
+    const ownerAdmin = isPublic ? null : req.user.ownerAdmin;
+
     const highestOrder = await Video.findOne().sort({ order: -1 }).select('order').lean();
     const nextOrder = (highestOrder?.order ?? 0) + 1;
 
@@ -38,6 +48,8 @@ videosRouter.post('/', async (req, res) => {
       ...payload,
       order: nextOrder,
       createdBy: req.user.id,
+      ownerAdmin: ownerAdmin,
+      isPublic: isPublic,
     });
 
     res.json({ ok: true, video });
@@ -54,9 +66,15 @@ videosRouter.put('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Missing title or embedUrl' });
     }
 
-    const video = await Video.findByIdAndUpdate(id, { $set: payload }, { new: true });
+    // Verificar ownership: solo puede editar su propio contenido (salvo superadmin)
+    const filter = { _id: id };
+    if (!req.user.isSuperAdmin) {
+      filter.ownerAdmin = req.user.ownerAdmin;
+    }
+
+    const video = await Video.findOneAndUpdate(filter, { $set: payload }, { new: true });
     if (!video) {
-      return res.status(404).json({ error: 'Video not found' });
+      return res.status(404).json({ error: 'Video not found or access denied' });
     }
     res.json({ ok: true, video });
   } catch (error) {
@@ -67,9 +85,16 @@ videosRouter.put('/:id', async (req, res) => {
 videosRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await Video.findByIdAndDelete(id);
+
+    // Verificar ownership: solo puede borrar su propio contenido (salvo superadmin)
+    const filter = { _id: id };
+    if (!req.user.isSuperAdmin) {
+      filter.ownerAdmin = req.user.ownerAdmin;
+    }
+
+    const deleted = await Video.findOneAndDelete(filter);
     if (!deleted) {
-      return res.status(404).json({ error: 'Video not found' });
+      return res.status(404).json({ error: 'Video not found or access denied' });
     }
     res.json({ ok: true });
   } catch (error) {
@@ -84,9 +109,12 @@ videosRouter.patch('/reorder', async (req, res) => {
       return res.status(400).json({ error: 'Provide a non-empty order array' });
     }
 
+    // Solo reordenar videos propios (salvo superadmin)
+    const ownerFilter = req.user.isSuperAdmin ? {} : { ownerAdmin: req.user.ownerAdmin };
+
     const updates = order.map((videoId, index) => ({
       updateOne: {
-        filter: { _id: videoId },
+        filter: { _id: videoId, ...ownerFilter },
         update: { $set: { order: index + 1 } },
       },
     }));

@@ -53,7 +53,20 @@ async function renderUserView(filter = '') {
   const shouldReload = !cache.length || !filter;
   if (shouldReload) {
     try {
-      const res = await fetch(`${API_BASE}/public/videos`);
+      // Multi-tenant: verificar si hay usuario autenticado
+      let isAuthenticated = false;
+      try {
+        const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+        isAuthenticated = authRes.ok;
+      } catch {
+        isAuthenticated = false;
+      }
+
+      // Si está autenticado, usar ruta /api/videos para ver videos de su ownerAdmin
+      // Si no está autenticado, usar ruta pública
+      const endpoint = isAuthenticated ? `${API_BASE}/videos` : `${API_BASE}/public/videos`;
+      const res = await fetch(endpoint, { credentials: 'include' });
+
       if (res.ok) {
         const data = await res.json();
         cache = (data?.videos || []).map((v) => ({
@@ -120,7 +133,8 @@ export async function renderAdminView(filter = '') {
   const shouldReload = !cache.length || !filter;
   if (shouldReload) {
     try {
-      const res = await fetch(`${API_BASE}/public/videos`, { credentials: 'include' });
+      // Multi-tenant: usar ruta admin para ver videos propios del admin
+      const res = await fetch(`${API_BASE}/admin/videos`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
         cache = (data?.videos || []).map((v) => ({

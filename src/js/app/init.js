@@ -3,8 +3,8 @@ import { createUserController } from './user.js';
 import { createNavigationController } from './navigation.js';
 import { maybeShowSectionAdminGear } from './adminAccess.js';
 import { initI18n } from '../i18n/translations.js';
-import { renderPurchase } from '../views/purchase.js';
-import { renderAdminStudents } from '../views/adminStudents.js';
+import { showLoginModal } from '../ui/auth.js';
+import { api } from '../services/api.js';
 
 export function initApp() {
   console.log('App Boys Games - Aprende Español Jugando');
@@ -45,10 +45,10 @@ export function initApp() {
   router.route('/gramatica', () => navigation.showSection('gramatica'));
   router.route('/parents', () => navigation.showSection('parents'));
   router.route('/ranking', () => navigation.showSection('ranking'));
-  router.route('/purchase', () => renderPurchase());
-  router.route('/purchase/success', () => renderPurchase());
-  router.route('/purchase/cancel', () => renderPurchase());
-  router.route('/admin/students', () => renderAdminStudents());
+  router.route('/purchase', () => navigation.showSection('purchase'));
+  router.route('/purchase/success', () => navigation.showSection('purchase'));
+  router.route('/purchase/cancel', () => navigation.showSection('purchase'));
+  router.route('/admin/students', () => navigation.showSection('admin/students'));
 
   router.init();
 
@@ -121,6 +121,29 @@ export function initApp() {
       adminStudentsLink.addEventListener('click', (event) => {
         event.preventDefault();
         router.navigate('/admin/students');
+      });
+    }
+
+    // Purchase link
+    const purchaseLink = document.getElementById('nav-purchase');
+    if (purchaseLink && !purchaseLink.__wired) {
+      purchaseLink.__wired = true;
+      purchaseLink.addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        // Check if user is authenticated
+        try {
+          await api.me();
+          // User is authenticated, navigate to purchase page
+          router.navigate('/purchase');
+        } catch (err) {
+          // User is not authenticated, show login/register modal
+          showLoginModal(async () => {
+            // After successful authentication, navigate to purchase page
+            await userController.refreshUserGreeting();
+            router.navigate('/purchase');
+          });
+        }
       });
     }
 

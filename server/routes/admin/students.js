@@ -32,7 +32,7 @@ router.get('/', auth, requireAdmin, async (req, res) => {
 router.post('/', auth, requireAdmin, async (req, res) => {
   try {
     const adminId = req.user.id;
-    const { name, username, password } = req.body;
+    const { name, username, password, email } = req.body;
 
     // Validate required fields
     if (!name || !username || !password) {
@@ -49,6 +49,17 @@ router.post('/', auth, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters long' });
     }
 
+    // Generate email if not provided (auto-generated for student accounts)
+    const studentEmail = email || `${username}@student.elrinconespanol.local`;
+
+    // Validate email format if provided
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
+    }
+
     // Check student limit
     const studentCount = await User.countDocuments({ ownerAdmin: adminId });
     if (studentCount >= MAX_STUDENTS_PER_ADMIN) {
@@ -57,10 +68,15 @@ router.post('/', auth, requireAdmin, async (req, res) => {
       });
     }
 
-    // Check if username already exists
-    const existingUser = await User.findOne({ username });
+    // Check if username or email already exists
+    const existingUser = await User.findOne({ $or: [{ username }, { email: studentEmail }] });
     if (existingUser) {
-      return res.status(400).json({ error: 'Username already exists' });
+      if (existingUser.username === username) {
+        return res.status(400).json({ error: 'Username already exists' });
+      }
+      if (existingUser.email === studentEmail) {
+        return res.status(400).json({ error: 'Email already exists' });
+      }
     }
 
     // Hash password
@@ -69,6 +85,7 @@ router.post('/', auth, requireAdmin, async (req, res) => {
     // Create student
     const student = await User.create({
       name,
+      email: studentEmail,
       username,
       passwordHash,
       role: 'user',
@@ -79,6 +96,7 @@ router.post('/', auth, requireAdmin, async (req, res) => {
       student: {
         _id: student._id,
         name: student.name,
+        email: student.email,
         username: student.username,
         role: student.role,
         ownerAdmin: student.ownerAdmin,

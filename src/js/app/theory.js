@@ -115,7 +115,22 @@ function getBadgeClass(category) {
 // Cargar páginas desde el backend
 async function loadPages(sectionName) {
   try {
-    const res = await fetch(API_BASE + '/public/pages?section=' + encodeURIComponent(sectionName));
+    // Multi-tenant: verificar si hay usuario autenticado
+    let isAuthenticated = false;
+    try {
+      const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+      isAuthenticated = authRes.ok;
+    } catch {
+      isAuthenticated = false;
+    }
+
+    // Si está autenticado, usar ruta /api/pages para ver páginas de su ownerAdmin
+    // Si no está autenticado, usar ruta pública
+    const endpoint = isAuthenticated
+      ? `${API_BASE}/pages?section=${encodeURIComponent(sectionName)}`
+      : `${API_BASE}/public/pages?section=${encodeURIComponent(sectionName)}`;
+
+    const res = await fetch(endpoint, { credentials: 'include' });
     if (!res.ok) throw new Error('Sin contenido');
     const data = await res.json();
     const pages = Array.isArray(data?.pages) ? data.pages : [];

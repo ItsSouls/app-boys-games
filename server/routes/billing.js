@@ -49,7 +49,7 @@ router.post('/checkout', auth, async (req, res) => {
       ],
       success_url: `${frontendBaseUrl}/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${frontendBaseUrl}/purchase/cancel`,
-      customer_email: user.username, // Using username as email-like identifier
+      customer_email: user.email,
       metadata: {
         userId: userId.toString(),
       },

@@ -6,6 +6,28 @@
   max-width: 600px;
   margin: 3rem auto;
   padding: 0 1.5rem;
+  position: relative;
+}
+
+.purchase-container .back-btn {
+  position: absolute;
+  top: -2.5rem;
+  left: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: color var(--transition-base);
+  font-family: var(--font-family-base);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.purchase-container .back-btn:hover {
+  color: var(--color-primary);
 }
 
 .purchase-card,
