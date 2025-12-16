@@ -1,6 +1,7 @@
 // games.js - Pantalla de selección de tipos de juegos
 import { api } from '../services/api.js';
 import { openThemeSelection } from '../ui/themeSelection.js';
+import { API_BASE } from './config.js';
 
 // Definición de tipos de juegos disponibles
 const GAME_TYPES = [
@@ -55,8 +56,6 @@ let gamesCache = {};
  * @param {Array|null} preloadedGames - lista opcional de juegos ya obtenida
  */
 export async function renderGames(preloadedGames = null) {
-  console.log('[games] Rendering games selection screen');
-
   const grid = document.getElementById('games-grid');
   if (!grid) {
     console.error('[games] Games grid not found');
@@ -68,7 +67,31 @@ export async function renderGames(preloadedGames = null) {
 
   // Obtener conteo de juegos por tipo
   try {
-    const games = preloadedGames || await api.getGames({ isPublished: true });
+    let games;
+    if (preloadedGames) {
+      games = preloadedGames;
+    } else {
+      // Multi-tenant: verificar si hay usuario autenticado
+      let isAuthenticated = false;
+      try {
+        const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+        isAuthenticated = authRes.ok;
+      } catch {
+        isAuthenticated = false;
+      }
+
+      console.log('[games] Rendering games selection screen', isAuthenticated ? '(authenticated)' : '(public)');
+
+      // Si está autenticado, usar API autenticada para ver juegos de su ownerAdmin
+      // Si no está autenticado, usar API pública
+      if (isAuthenticated) {
+        games = await api.getGames({ isPublished: true });
+      } else {
+        const response = await api.getPublicGames();
+        games = response.games || [];
+      }
+    }
+
     gamesCache = {};
 
     // Agrupar por tipo
@@ -163,8 +186,8 @@ function openGameThemeSelection(gameType) {
 /**
  * Inicializa la vista de juegos
  */
-export function initGames(user) {
-  console.log('[games] Initializing games view', user);
+export function initGames() {
+  console.log('[games] Initializing games view');
 
   // Botón volver
   const backBtn = document.getElementById('games-back-btn');
@@ -175,6 +198,6 @@ export function initGames(user) {
     });
   }
 
-  // Renderizar juegos
+  // Renderizar juegos (detecta automáticamente si el usuario está autenticado)
   renderGames();
 }

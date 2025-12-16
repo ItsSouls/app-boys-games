@@ -9,6 +9,8 @@ import { Game } from './models/Game.js';
 import { GameAttempt } from './models/GameAttempt.js';
 import { UserGameStats } from './models/UserGameStats.js';
 import { RefreshToken } from './models/RefreshToken.js';
+import { Purchase } from './models/Purchase.js';
+import { User } from './models/User.js';
 
 // Load environment variables
 dotenv.config(); // loads .env by default if present
@@ -43,6 +45,8 @@ async function start() {
     await GameAttempt.syncIndexes();
     await UserGameStats.syncIndexes();
     await RefreshToken.syncIndexes();
+    await Purchase.syncIndexes();
+    await User.syncIndexes();
     console.log('Indexes synchronized');
   } catch (e) {
     console.warn('Failed to sync indexes', e?.message || e);

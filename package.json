@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "node server/index.js"
+    "server": "node --env-file=.env.local server/index.js",
+    "migrate:emails": "node --env-file=.env.local server/scripts/migrateUserEmails.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -23,6 +24,7 @@
     "marked": "^17.0.1",
     "mongoose": "^8.20.2",
     "sanitize-html": "^2.17.0",
+    "stripe": "^20.0.0",
     "vite": "^6.0.0"
   },
   "devDependencies": {

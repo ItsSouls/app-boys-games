@@ -85,7 +85,13 @@ const extractPageFields = (body = {}) => {
 pagesRouter.get('/', async (req, res) => {
   try {
     const { section, topic } = req.query || {};
-    const filter = {};
+
+    // Multi-tenant: filtrar por ownerAdmin (salvo superadmin)
+    const filter = { isPublic: false }; // No devolver contenido público en rutas admin
+    if (!req.user.isSuperAdmin) {
+      filter.ownerAdmin = req.user.ownerAdmin;
+    }
+
     if (section) filter.section = section;
     if (topic) filter.topic = topic;
 
@@ -123,11 +129,17 @@ pagesRouter.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Topic is required' });
     }
 
+    // Multi-tenant: solo superadmin puede crear contenido público
+    const isPublic = req.user.isSuperAdmin && req.body.isPublic === true;
+    const ownerAdmin = isPublic ? null : req.user.ownerAdmin;
+
     const page = await Page.create({
       section,
       ...payload,
       createdBy: req.user.id,
       updatedBy: req.user.id,
+      ownerAdmin: ownerAdmin,
+      isPublic: isPublic,
     });
 
     res.status(201).json({ ok: true, page });
@@ -144,19 +156,25 @@ pagesRouter.put('/:id', async (req, res) => {
       return res.status(400).json({ error: 'Topic cannot be empty' });
     }
 
+    // Multi-tenant: verificar ownership (salvo superadmin)
+    const filter = { _id: id };
+    if (!req.user.isSuperAdmin) {
+      filter.ownerAdmin = req.user.ownerAdmin;
+    }
+
     const update = {
       ...payload,
       updatedBy: req.user.id,
     };
 
-    const page = await Page.findByIdAndUpdate(
-      id,
+    const page = await Page.findOneAndUpdate(
+      filter,
       { $set: update },
       { new: true },
     );
 
     if (!page) {
-      return res.status(404).json({ error: 'Page not found' });
+      return res.status(404).json({ error: 'Page not found or access denied' });
     }
 
     res.json({ ok: true, page });
@@ -168,9 +186,16 @@ pagesRouter.put('/:id', async (req, res) => {
 pagesRouter.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const page = await Page.findByIdAndDelete(id);
+
+    // Multi-tenant: verificar ownership (salvo superadmin)
+    const filter = { _id: id };
+    if (!req.user.isSuperAdmin) {
+      filter.ownerAdmin = req.user.ownerAdmin;
+    }
+
+    const page = await Page.findOneAndDelete(filter);
     if (!page) {
-      return res.status(404).json({ error: 'Page not found' });
+      return res.status(404).json({ error: 'Page not found or access denied' });
     }
     res.json({ ok: true });
   } catch (error) {
@@ -188,9 +213,12 @@ pagesRouter.patch('/reorder', async (req, res) => {
       return res.status(400).json({ error: 'Provide a non-empty order array' });
     }
 
+    // Multi-tenant: solo reordenar pages propias (salvo superadmin)
+    const ownerFilter = req.user.isSuperAdmin ? {} : { ownerAdmin: req.user.ownerAdmin };
+
     const updates = order.map((pageId, index) => ({
       updateOne: {
-        filter: { _id: pageId, section },
+        filter: { _id: pageId, section, ...ownerFilter },
         update: { $set: { order: index + 1, updatedBy: req.user.id } },
       },
     }));

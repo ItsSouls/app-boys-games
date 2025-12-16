@@ -241,6 +241,14 @@
   white-space: nowrap;
 }
 
+/* Button variant needs reset */
+button.header-nav-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 .header-nav-link:hover {
   color: var(--color-primary);
 }

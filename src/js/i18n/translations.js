@@ -10,6 +10,7 @@ export const translations = {
     login: 'Iniciar sesión',
     logout: 'Salir',
     greeting: 'Hola,',
+    students: '⚙️ Alumnos',
     
     // Hero
     heroTitle: '¡Hola, amigo!',
@@ -26,6 +27,8 @@ export const translations = {
     vocabularyDesc: 'Aprende nuevas palabras',
     grammar: 'Gramática',
     grammarDesc: 'Reglas y ejemplos',
+    purchaseLicense: 'Comprar Licencia',
+    purchaseLicenseDesc: 'Acceso completo y gestión de alumnos',
     
     // Videos section
     back: 'Volver',
@@ -81,6 +84,47 @@ export const translations = {
     privacy: 'Política de Privacidad',
     contact: 'Contacto',
     
+    // Purchase/Billing
+    purchaseLicenseTitle: 'Licencia App Boys Games',
+    purchaseFeature1: 'Acceso completo a todas las funciones',
+    purchaseFeature2: 'Crea hasta 30 cuentas para tus alumnos',
+    purchaseFeature3: 'Panel de administración completo',
+    purchaseFeature4: 'Seguimiento del progreso de los alumnos',
+    purchaseButton: 'Comprar licencia',
+    purchaseDisclaimer: 'Pago seguro procesado por Stripe',
+    processing: 'Procesando...',
+    purchaseError: 'Error al crear la sesión de pago',
+    purchaseSuccess: '¡Pago completado!',
+    purchaseSuccessDesc: 'Tu licencia se está activando. Tu cuenta será actualizada a admin en breve.',
+    purchaseSuccessNote: 'Por favor, cierra sesión y vuelve a iniciar sesión para ver los cambios.',
+    purchaseCanceled: 'Pago cancelado',
+    purchaseCanceledDesc: 'No se ha realizado ningún cargo. Puedes volver a intentarlo cuando quieras.',
+    tryAgain: 'Volver a intentar',
+    goToHome: 'Ir al inicio',
+
+    // Students Management
+    studentsManagement: 'Gestión de Alumnos',
+    backToHome: 'Volver al inicio',
+    createNewStudent: 'Crear nuevo alumno',
+    fullName: 'Nombre completo',
+    username: 'Nombre de usuario',
+    password: 'Contraseña',
+    createStudent: 'Crear alumno',
+    studentsList: 'Lista de alumnos',
+    loadingStudents: 'Cargando alumnos...',
+    noStudentsYet: 'No has creado ningún alumno todavía.',
+    delete: 'Eliminar',
+    loadingStudentsError: 'Error al cargar los alumnos',
+    creating: 'Creando...',
+    studentCreatedSuccess: 'Alumno creado correctamente',
+    createStudentError: 'Error al crear el alumno',
+    confirmDeleteStudent: '¿Estás seguro de que quieres eliminar este alumno?',
+    deleteStudentError: 'Error al eliminar el alumno',
+    accessDenied: 'Acceso denegado',
+    accessDeniedDesc: 'Solo los administradores pueden acceder a esta sección.',
+    authError: 'Error de autenticación',
+    authErrorDesc: 'Por favor, inicia sesión para continuar.',
+
     // Common
     loading: 'Cargando...',
     error: 'Error al cargar contenido.',
@@ -94,6 +138,7 @@ export const translations = {
     login: 'Sign in',
     logout: 'Sign out',
     greeting: 'Hello,',
+    students: '⚙️ Students',
     
     // Hero
     heroTitle: 'Hello, friend!',
@@ -110,6 +155,8 @@ export const translations = {
     vocabularyDesc: 'Learn new words',
     grammar: 'Grammar',
     grammarDesc: 'Rules and examples',
+    purchaseLicense: 'Purchase License',
+    purchaseLicenseDesc: 'Full access and student management',
     
     // Videos section
     back: 'Back',
@@ -165,6 +212,47 @@ export const translations = {
     privacy: 'Privacy Policy',
     contact: 'Contact',
     
+    // Purchase/Billing
+    purchaseLicenseTitle: 'App Boys Games License',
+    purchaseFeature1: 'Full access to all features',
+    purchaseFeature2: 'Create up to 30 student accounts',
+    purchaseFeature3: 'Complete admin panel',
+    purchaseFeature4: 'Track student progress',
+    purchaseButton: 'Purchase license',
+    purchaseDisclaimer: 'Secure payment processed by Stripe',
+    processing: 'Processing...',
+    purchaseError: 'Error creating payment session',
+    purchaseSuccess: 'Payment completed!',
+    purchaseSuccessDesc: 'Your license is being activated. Your account will be upgraded to admin shortly.',
+    purchaseSuccessNote: 'Please log out and log back in to see the changes.',
+    purchaseCanceled: 'Payment canceled',
+    purchaseCanceledDesc: 'No charge was made. You can try again whenever you want.',
+    tryAgain: 'Try again',
+    goToHome: 'Go to home',
+
+    // Students Management
+    studentsManagement: 'Student Management',
+    backToHome: 'Back to home',
+    createNewStudent: 'Create new student',
+    fullName: 'Full name',
+    username: 'Username',
+    password: 'Password',
+    createStudent: 'Create student',
+    studentsList: 'Students list',
+    loadingStudents: 'Loading students...',
+    noStudentsYet: 'You haven\'t created any students yet.',
+    delete: 'Delete',
+    loadingStudentsError: 'Error loading students',
+    creating: 'Creating...',
+    studentCreatedSuccess: 'Student created successfully',
+    createStudentError: 'Error creating student',
+    confirmDeleteStudent: 'Are you sure you want to delete this student?',
+    deleteStudentError: 'Error deleting student',
+    accessDenied: 'Access denied',
+    accessDeniedDesc: 'Only administrators can access this section.',
+    authError: 'Authentication error',
+    authErrorDesc: 'Please log in to continue.',
+
     // Common
     loading: 'Loading...',
     error: 'Error loading content.',

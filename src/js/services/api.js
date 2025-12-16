@@ -36,12 +36,12 @@ async function requestWithRefresh(url, options = {}, { skipRetry } = {}) {
 	return res;
 }
 
-export async function register({ name, username, password }) {
+export async function register({ name, email, username, password }) {
 	const res = await fetch(`${BASE}/auth/register`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
-		body: JSON.stringify({ name, username, password })
+		body: JSON.stringify({ name, email, username, password })
 	});
 	return handleResponse(res, 'Registro fallido');
 }
@@ -72,11 +72,51 @@ export async function me() {
 }
 
 // ========================================
-// GAMES API
+// PUBLIC API (for non-authenticated users)
 // ========================================
 
 /**
- * Obtiene todos los juegos con filtros opcionales
+ * Obtiene contenido público: juegos (solo isPublic=true)
+ */
+async function getPublicGames(filters = {}) {
+	const params = new URLSearchParams();
+	if (filters.type) params.append('type', filters.type);
+	if (filters.category) params.append('category', filters.category);
+	if (filters.topic) params.append('topic', filters.topic);
+
+	const url = `${BASE}/public/games${params.toString() ? `?${params}` : ''}`;
+	const res = await fetch(url, { credentials: 'include' });
+	return handleResponse(res, 'Error al cargar juegos públicos');
+}
+
+/**
+ * Obtiene contenido público: videos (solo isPublic=true)
+ */
+async function getPublicVideos() {
+	const res = await fetch(`${BASE}/public/videos`, { credentials: 'include' });
+	return handleResponse(res, 'Error al cargar videos públicos');
+}
+
+/**
+ * Obtiene contenido público: pages/teoría (solo isPublic=true)
+ */
+async function getPublicPages(filters = {}) {
+	const params = new URLSearchParams();
+	if (filters.section) params.append('section', filters.section);
+	if (filters.topic) params.append('topic', filters.topic);
+
+	const url = `${BASE}/public/pages${params.toString() ? `?${params}` : ''}`;
+	const res = await fetch(url, { credentials: 'include' });
+	return handleResponse(res, 'Error al cargar teoría pública');
+}
+
+// ========================================
+// GAMES API (for authenticated users)
+// ========================================
+
+/**
+ * Obtiene todos los juegos con filtros opcionales (autenticado)
+ * Multi-tenant: devuelve solo juegos del ownerAdmin del usuario
  */
 async function getGames(filters = {}) {
 	const params = new URLSearchParams();
@@ -185,12 +225,68 @@ async function getUserGlobalPosition() {
 	return handleResponse(res, 'Error al cargar posición');
 }
 
+// ========================================
+// BILLING API
+// ========================================
+
+/**
+ * Crea una sesión de Stripe Checkout
+ */
+async function checkout() {
+	const res = await requestWithRefresh(`${BASE}/billing/checkout`, {
+		method: 'POST',
+		headers: authHeaders({ 'Content-Type': 'application/json' })
+	});
+	return handleResponse(res, 'Error al crear sesión de pago');
+}
+
+// ========================================
+// STUDENTS API (Admin)
+// ========================================
+
+/**
+ * Obtiene lista de alumnos del admin
+ */
+async function getStudents() {
+	const res = await requestWithRefresh(`${BASE}/admin/students`, {
+		headers: authHeaders()
+	});
+	return handleResponse(res, 'Error al cargar alumnos');
+}
+
+/**
+ * Crea un nuevo alumno
+ */
+async function createStudent(studentData) {
+	const res = await requestWithRefresh(`${BASE}/admin/students`, {
+		method: 'POST',
+		headers: authHeaders({ 'Content-Type': 'application/json' }),
+		body: JSON.stringify(studentData)
+	});
+	return handleResponse(res, 'Error al crear alumno');
+}
+
+/**
+ * Elimina un alumno
+ */
+async function deleteStudent(studentId) {
+	const res = await requestWithRefresh(`${BASE}/admin/students/${studentId}`, {
+		method: 'DELETE',
+		headers: authHeaders()
+	});
+	return handleResponse(res, 'Error al eliminar alumno');
+}
+
 export const api = {
 	register,
 	login,
 	logout,
 	me,
-	// Games
+	// Public (non-authenticated)
+	getPublicGames,
+	getPublicVideos,
+	getPublicPages,
+	// Games (authenticated)
 	getGames,
 	getGame,
 	createGame,
@@ -201,5 +297,11 @@ export const api = {
 	getGameRanking,
 	getUserAllStats,
 	getGlobalRanking,
-	getUserGlobalPosition
+	getUserGlobalPosition,
+	// Billing
+	checkout,
+	// Students
+	getStudents,
+	createStudent,
+	deleteStudent
 };

@@ -7,12 +7,14 @@ const router = express.Router();
 /**
  * GET /api/game-stats/me
  * Obtiene todas las estadísticas del usuario autenticado
+ * Multi-tenant: filtrar por ownerAdmin
  */
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const userId = req.user._id;
+    const ownerAdmin = req.user.ownerAdmin;
 
-    const stats = await gameService.getUserAllStats(userId);
+    const stats = await gameService.getUserAllStats(userId, ownerAdmin);
 
     // Calcular totales
     const summary = {
@@ -32,12 +34,16 @@ router.get('/me', authMiddleware, async (req, res) => {
 /**
  * GET /api/game-stats/ranking/global
  * Obtiene el ranking global de todos los jugadores
+ * Multi-tenant: filtrar por ownerAdmin (salvo superadmin)
  */
-router.get('/ranking/global', async (req, res) => {
+router.get('/ranking/global', authMiddleware, async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
 
-    const ranking = await gameService.getGlobalRanking(limit);
+    // Multi-tenant: solo superadmin ve ranking global sin filtro
+    const ownerAdmin = req.user.isSuperAdmin ? null : req.user.ownerAdmin;
+
+    const ranking = await gameService.getGlobalRanking(limit, ownerAdmin);
 
     res.json(ranking);
   } catch (error) {
@@ -49,13 +55,17 @@ router.get('/ranking/global', async (req, res) => {
 /**
  * GET /api/game-stats/ranking/global/me
  * Obtiene la posición del usuario en el ranking global
+ * Multi-tenant: posición dentro de su ownerAdmin (salvo superadmin)
  */
 router.get('/ranking/global/me', authMiddleware, async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Obtener todos los rankings ordenados
-    const allRankings = await gameService.getGlobalRanking(1000); // Límite alto para obtener todos
+    // Multi-tenant: solo superadmin ve ranking global sin filtro
+    const ownerAdmin = req.user.isSuperAdmin ? null : req.user.ownerAdmin;
+
+    // Obtener todos los rankings ordenados (filtrados por ownerAdmin)
+    const allRankings = await gameService.getGlobalRanking(1000, ownerAdmin); // Límite alto para obtener todos
 
     // Encontrar la posición del usuario
     const userPosition = allRankings.findIndex(r => r.userId.toString() === userId.toString());

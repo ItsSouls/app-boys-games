@@ -30,6 +30,8 @@
           <div class="header-actions">
             <a href="#" class="header-nav-link" id="nav-ranking" data-section="ranking">🏆 Ranking</a>
             <a href="#" class="header-nav-link" id="nav-parents" data-section="parents" data-i18n="forParents"></a>
+            <button class="header-nav-link is-hidden" id="nav-admin-students" title="Gestión de alumnos"><span data-i18n="students">Alumnos</span></button>
+            <button class="header-nav-link is-hidden" id="nav-purchase" title="Comprar Licencia">💳 <span data-i18n="purchaseLicense">Comprar Licencia</span></button>
             <button class="lang-toggle" id="lang-toggle" aria-label="Cambiar idioma">🇬🇧 EN</button>
             <div id="header-user" class="header-user is-hidden">
               <span class="user-greet"><span data-i18n="greeting"></span> <strong id="user-name"></strong></span>
@@ -440,6 +442,20 @@
                 <!-- Se llena dinámicamente -->
               </div>
             </section>
+          </div>
+
+          <!-- Purchase Page -->
+          <div id="purchase-page" class="page-view hidden">
+            <div id="purchase-content">
+              <!-- Se llena dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Admin Students Page -->
+          <div id="admin-students-page" class="page-view hidden">
+            <div id="admin-students-content">
+              <!-- Se llena dinámicamente -->
+            </div>
           </div>
         </div>
       </main>

@@ -44,6 +44,22 @@ const gameSchema = new mongoose.Schema({
   isPublished: { type: Boolean, default: true, index: true },
   order: { type: Number, default: 0, index: true },
 
+  // Multi-tenant: cada admin gestiona su propio contenido
+  ownerAdmin: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+    index: true
+  },
+
+  // Contenido público: solo para usuarios no autenticados
+  // Público siempre tiene ownerAdmin=null
+  isPublic: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
+
   // Auditoría
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -53,5 +69,7 @@ const gameSchema = new mongoose.Schema({
 gameSchema.index({ type: 1, topic: 1 });
 gameSchema.index({ category: 1, isPublished: 1 });
 gameSchema.index({ isPublished: 1, order: 1 });
+gameSchema.index({ ownerAdmin: 1, isPublished: 1 });
+gameSchema.index({ isPublic: 1, ownerAdmin: 1 });
 
 export const Game = mongoose.model('Game', gameSchema);

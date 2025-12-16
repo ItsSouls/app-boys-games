@@ -124,6 +124,7 @@
 }
 
 .abg-modal {
+  position: relative;
   background: #ffffff;
   border-radius: 18px;
   width: 92%;
@@ -231,7 +232,7 @@
 .abg-actions {
   display: flex;
   gap: 12px;
-  justify-content: flex-end;
+  justify-content: center;
   margin-top: 12px;
 }
 

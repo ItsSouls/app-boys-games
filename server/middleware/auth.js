@@ -18,20 +18,38 @@ function extractToken(req) {
 async function attachUser(decoded, req) {
   try {
     const u = await User.findById(decoded.id).lean();
+    const role = u?.role || decoded.role || 'user';
+
+    // Determine ownerAdmin: admin owns themselves, users have ownerAdmin reference
+    const ownerAdmin = role === 'admin' ? decoded.id : (u?.ownerAdmin || decoded.ownerAdmin);
+
+    // Check if user is superadmin (configurable via env var)
+    const superadminUsername = process.env.SUPERADMIN_USERNAME || 'superadmin';
+    const isSuperAdmin = decoded.username === superadminUsername;
+
     req.user = {
       _id: decoded.id,
       id: decoded.id,
       username: decoded.username,
       name: decoded.name,
-      role: u?.role || decoded.role || 'user',
+      role: role,
+      ownerAdmin: ownerAdmin,
+      isSuperAdmin: isSuperAdmin,
     };
   } catch {
+    const role = decoded.role || 'user';
+    const ownerAdmin = role === 'admin' ? decoded.id : decoded.ownerAdmin;
+    const superadminUsername = process.env.SUPERADMIN_USERNAME || 'superadmin';
+    const isSuperAdmin = decoded.username === superadminUsername;
+
     req.user = {
       _id: decoded.id,
       id: decoded.id,
       username: decoded.username,
       name: decoded.name,
-      role: decoded.role || 'user',
+      role: role,
+      ownerAdmin: ownerAdmin,
+      isSuperAdmin: isSuperAdmin,
     };
   }
 }

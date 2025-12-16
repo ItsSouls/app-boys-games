@@ -141,7 +141,7 @@ export const gameService = {
   /**
    * Crea un nuevo juego
    */
-  async createGame(gameData, userId) {
+  async createGame(gameData, userId, ownerAdmin, isSuperAdmin) {
     const { type, config } = gameData;
 
     // Validar configuración
@@ -150,11 +150,17 @@ export const gameService = {
       throw new Error(`Configuración inválida: ${validation.errors.join(', ')}`);
     }
 
+    // Multi-tenant: determinar ownerAdmin e isPublic
+    const isPublic = isSuperAdmin && gameData.isPublic === true;
+    const finalOwnerAdmin = isPublic ? null : ownerAdmin;
+
     // Crear juego
     const game = new Game({
       ...gameData,
       createdBy: userId,
-      updatedBy: userId
+      updatedBy: userId,
+      ownerAdmin: finalOwnerAdmin,
+      isPublic: isPublic
     });
 
     await game.save();
@@ -163,11 +169,18 @@ export const gameService = {
 
   /**
    * Actualiza un juego existente
+   * Multi-tenant: verifica ownership
    */
-  async updateGame(gameId, updateData, userId) {
-    const game = await Game.findById(gameId);
+  async updateGame(gameId, updateData, userId, ownerAdmin, isSuperAdmin) {
+    // Multi-tenant: verificar ownership
+    const filter = { _id: gameId };
+    if (!isSuperAdmin) {
+      filter.ownerAdmin = ownerAdmin;
+    }
+
+    const game = await Game.findOne(filter);
     if (!game) {
-      throw new Error('Juego no encontrado');
+      throw new Error('Juego no encontrado o acceso denegado');
     }
 
     // Si se actualiza la configuración, validarla
@@ -176,6 +189,12 @@ export const gameService = {
       if (!validation.valid) {
         throw new Error(`Configuración inválida: ${validation.errors.join(', ')}`);
       }
+    }
+
+    // No permitir cambiar ownerAdmin o isPublic después de creado (salvo superadmin)
+    if (!isSuperAdmin) {
+      delete updateData.ownerAdmin;
+      delete updateData.isPublic;
     }
 
     Object.assign(game, updateData);
@@ -187,6 +206,7 @@ export const gameService = {
 
   /**
    * Obtiene juegos con filtros
+   * Multi-tenant: los filtros ya incluyen ownerAdmin e isPublic si es necesario
    */
   async getGames(filters = {}) {
     const query = {};
@@ -195,6 +215,10 @@ export const gameService = {
     if (filters.category) query.category = filters.category;
     if (filters.topic) query.topic = new RegExp(filters.topic, 'i');
     if (filters.isPublished !== undefined) query.isPublished = filters.isPublished;
+
+    // Multi-tenant filters (passed from route)
+    if (filters.ownerAdmin !== undefined) query.ownerAdmin = filters.ownerAdmin;
+    if (filters.isPublic !== undefined) query.isPublic = filters.isPublic;
 
     const games = await Game.find(query)
       .populate('createdBy', 'name email')
@@ -221,11 +245,18 @@ export const gameService = {
 
   /**
    * Elimina un juego
+   * Multi-tenant: verifica ownership
    */
-  async deleteGame(gameId) {
-    const game = await Game.findByIdAndDelete(gameId);
+  async deleteGame(gameId, ownerAdmin, isSuperAdmin) {
+    // Multi-tenant: verificar ownership
+    const filter = { _id: gameId };
+    if (!isSuperAdmin) {
+      filter.ownerAdmin = ownerAdmin;
+    }
+
+    const game = await Game.findOneAndDelete(filter);
     if (!game) {
-      throw new Error('Juego no encontrado');
+      throw new Error('Juego no encontrado o acceso denegado');
     }
 
     // Opcional: eliminar intentos y estadísticas relacionadas
@@ -237,8 +268,9 @@ export const gameService = {
 
   /**
    * Guarda un intento de juego
+   * Multi-tenant: incluye ownerAdmin del usuario
    */
-  async saveGameAttempt(attemptData) {
+  async saveGameAttempt(attemptData, ownerAdmin) {
     const { game: gameId, user: userId, score, maxScore, completed, durationSeconds, metadata } = attemptData;
 
     // Verificar que el juego existe
@@ -255,14 +287,15 @@ export const gameService = {
       maxScore,
       completed,
       durationSeconds: durationSeconds || 0,
-      metadata: metadata || {}
+      metadata: metadata || {},
+      ownerAdmin: ownerAdmin || null // null para usuarios no autenticados
     });
 
     await attempt.save();
 
     // Si el usuario está autenticado, actualizar estadísticas
-    if (userId) {
-      await this.updateUserGameStats(userId, gameId, attempt);
+    if (userId && ownerAdmin) {
+      await this.updateUserGameStats(userId, gameId, attempt, ownerAdmin);
     }
 
     return attempt;
@@ -270,15 +303,17 @@ export const gameService = {
 
   /**
    * Actualiza las estadísticas del usuario para un juego
+   * Multi-tenant: incluye ownerAdmin
    */
-  async updateUserGameStats(userId, gameId, attempt) {
+  async updateUserGameStats(userId, gameId, attempt, ownerAdmin) {
     let stats = await UserGameStats.findOne({ user: userId, game: gameId });
 
     if (!stats) {
       // Crear nuevas estadísticas
       stats = new UserGameStats({
         user: userId,
-        game: gameId
+        game: gameId,
+        ownerAdmin: ownerAdmin
       });
     }
 
@@ -300,9 +335,17 @@ export const gameService = {
 
   /**
    * Obtiene todas las estadísticas de un usuario
+   * Multi-tenant: filtrar por ownerAdmin
    */
-  async getUserAllStats(userId) {
-    const stats = await UserGameStats.find({ user: userId })
+  async getUserAllStats(userId, ownerAdmin) {
+    const filter = { user: userId };
+
+    // Multi-tenant: filtrar por ownerAdmin
+    if (ownerAdmin) {
+      filter.ownerAdmin = ownerAdmin;
+    }
+
+    const stats = await UserGameStats.find(filter)
       .populate('game', 'title type topic iconEmoji')
       .sort({ totalScore: -1 });
 
@@ -311,9 +354,24 @@ export const gameService = {
 
   /**
    * Obtiene el ranking global (top jugadores por puntuación total)
+   * Multi-tenant: filtrar por ownerAdmin
    */
-  async getGlobalRanking(limit = 10) {
-    const rankings = await UserGameStats.aggregate([
+  async getGlobalRanking(limit = 10, ownerAdmin = null) {
+    const matchStage = {};
+
+    // Multi-tenant: filtrar por ownerAdmin
+    if (ownerAdmin) {
+      matchStage.ownerAdmin = ownerAdmin;
+    }
+
+    const pipeline = [];
+
+    // Agregar filtro si existe
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+
+    pipeline.push(
       {
         $group: {
           _id: '$user',
@@ -342,16 +400,26 @@ export const gameService = {
           gamesCompleted: 1
         }
       }
-    ]);
+    );
+
+    const rankings = await UserGameStats.aggregate(pipeline);
 
     return rankings;
   },
 
   /**
    * Obtiene el ranking de un juego específico
+   * Multi-tenant: filtrar por ownerAdmin
    */
-  async getGameRanking(gameId, limit = 10) {
-    const rankings = await UserGameStats.find({ game: gameId })
+  async getGameRanking(gameId, limit = 10, ownerAdmin = null) {
+    const filter = { game: gameId };
+
+    // Multi-tenant: filtrar por ownerAdmin
+    if (ownerAdmin) {
+      filter.ownerAdmin = ownerAdmin;
+    }
+
+    const rankings = await UserGameStats.find(filter)
       .populate('user', 'name')
       .sort({ bestScore: -1 })
       .limit(limit);
