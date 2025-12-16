@@ -1,7 +1,7 @@
-import { API_BASE } from '../../app/config.js';
+import { API_BASE } from '../../core/config.js';
 import EasyMDE from 'easymde';
 import 'easymde/dist/easymde.min.css';
-import { formatTheoryDate, renderTheory, sanitizeIdForUrl } from '../../app/theory.js';
+import { formatTheoryDate, renderTheory, sanitizeIdForUrl } from '../../pages/theory.js';
 import { createFeedback } from '../../utils/feedback.js';
 
 const sectionLabel = (section) => (section === 'gramatica' ? 'Gramática' : 'Vocabulario');

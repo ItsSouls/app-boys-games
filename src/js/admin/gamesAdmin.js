@@ -1,6 +1,6 @@
 // gamesAdmin.js - Panel de administración de juegos
 import { api } from '../services/api.js';
-import { openGameFormModal } from './gameFormModal.js';
+import { openGameFormModal } from '../components/gameFormModal.js';
 
 let adminState = {
   games: [],
@@ -366,7 +366,7 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 async function renderGamesLazy(sourceGames) {
-  const { renderGames } = await import('../app/games.js');
+  const { renderGames } = await import('../pages/games.js');
   return renderGames(sourceGames);
 }
 

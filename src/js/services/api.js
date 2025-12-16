@@ -1,5 +1,5 @@
 // Frontend API client for Auth
-import { API_BASE } from '../app/config.js';
+import { API_BASE } from '../core/config.js';
 
 const BASE = API_BASE;
 

@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-import { API_BASE } from './config.js';
-import { openTheoryAdminModal } from '../ui/admin/theoryModal.js';
+import { API_BASE } from '../core/config.js';
+import { openTheoryAdminModal } from '../admin/theoryModal.js';
 
 // Configurar marked para tablas y GFM (GitHub Flavored Markdown)
 marked.setOptions({

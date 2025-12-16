@@ -1,5 +1,5 @@
 import { api } from '../services/api.js';
-import { setupAuthControls } from '../ui/auth.js';
+import { setupAuthControls } from '../components/auth.js';
 
 export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
   const authCallbacks = {

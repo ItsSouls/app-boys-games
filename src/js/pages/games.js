@@ -1,7 +1,7 @@
 // games.js - Pantalla de selección de tipos de juegos
 import { api } from '../services/api.js';
-import { openThemeSelection } from '../ui/themeSelection.js';
-import { API_BASE } from './config.js';
+import { openThemeSelection } from '../components/themeSelection.js';
+import { API_BASE } from '../core/config.js';
 
 // Definición de tipos de juegos disponibles
 const GAME_TYPES = [

@@ -1,9 +1,9 @@
-import { router } from '../router.js';
+import { router } from './router.js';
 import { createUserController } from './user.js';
 import { createNavigationController } from './navigation.js';
-import { maybeShowSectionAdminGear } from './adminAccess.js';
+import { maybeShowSectionAdminGear } from '../admin/adminAccess.js';
 import { initI18n } from '../i18n/translations.js';
-import { showLoginModal } from '../ui/auth.js';
+import { showLoginModal } from '../components/auth.js';
 import { api } from '../services/api.js';
 
 export function initApp() {

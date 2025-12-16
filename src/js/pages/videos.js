@@ -1,4 +1,4 @@
-import { API_BASE } from '../app/config.js';
+import { API_BASE } from '../core/config.js';
 import { isImageUrl } from '../utils/validators.js';
 import { escapeHtml, escapeAttribute } from '../utils/sanitize.js';
 
