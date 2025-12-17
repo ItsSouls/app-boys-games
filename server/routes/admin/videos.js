@@ -39,9 +39,11 @@ videosRouter.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Missing title or embedUrl' });
     }
 
-    // Admins normales: pueden marcar como público para sus estudiantes (con ownerAdmin)
-    // Superadmin: puede crear contenido verdaderamente público (sin ownerAdmin)
-    const ownerAdmin = req.user.ownerAdmin;
+    // Dos tipos de contenido público:
+    // 1. Superadmin + isPublic=true → contenido público GLOBAL para usuarios NO autenticados (ownerAdmin=null)
+    // 2. Admin normal + isPublic=true → contenido visible para SUS estudiantes (ownerAdmin=suId)
+    const isSuperadminPublicContent = req.user.isSuperAdmin && payload.isPublic === true;
+    const ownerAdmin = isSuperadminPublicContent ? null : req.user.ownerAdmin;
 
     const highestOrder = await Video.findOne().sort({ order: -1 }).select('order').lean();
     const nextOrder = (highestOrder?.order ?? 0) + 1;
