@@ -252,17 +252,6 @@
   font-weight: var(--font-weight-semibold);
 }
 
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 /* Videos Grid - User View - YouTube-style */
 .videos-grid {
   display: grid;
