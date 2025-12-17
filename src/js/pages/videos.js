@@ -133,15 +133,26 @@ export async function renderAdminView(filter = '') {
       const res = await fetch(`${API_BASE}/admin/videos`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
-        cache = (data?.videos || []).map((v) => ({
-          id: v._id,
-          title: v.title,
-          description: v.description,
-          embedUrl: v.embedUrl,
-          emoji: v.emoji,
-          category: v.category || 'General',
-          status: v.status || 'published',
-        }));
+        cache = (data?.videos || []).map((v) => {
+          const derivedIsPublic =
+            v.isPublic !== undefined
+              ? v.isPublic
+              : v.isPublished !== undefined
+              ? v.isPublished
+              : v.status
+              ? v.status === 'published'
+              : false;
+          return {
+            id: v._id,
+            title: v.title,
+            description: v.description,
+            embedUrl: v.embedUrl,
+            emoji: v.emoji,
+            category: v.category || 'General',
+            status: v.status || (derivedIsPublic ? 'published' : 'draft'),
+            isPublic: derivedIsPublic,
+          };
+        });
       } else {
         cache = [];
       }
@@ -165,8 +176,9 @@ export async function renderAdminView(filter = '') {
           ? `<img src="${escapeAttribute(rawMedia)}" alt="" loading="lazy" />`
           : `<span>${escapeHtml(normalizedMedia)}</span>`;
 
-        const statusClass = video.status === 'published' ? 'published' : 'draft';
-        const statusText = video.status === 'published' ? 'Publicado' : 'Borrador';
+        const isVideoPublic = video.isPublic ?? video.status === 'published';
+        const statusClass = isVideoPublic ? 'published' : 'draft';
+        const statusText = isVideoPublic ? 'Publicado' : 'Oculto';
 
         return `
           <tr draggable="true" data-video-id="${video.id}">
@@ -528,13 +540,14 @@ function openEditVideoModal(videoId) {
   overlay.className = 'video-overlay';
   const modal = document.createElement('div');
   modal.className = 'admin-video-modal';
+  const isVideoPublic = video.isPublic ?? video.status === 'published';
   modal.innerHTML = `
     <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="admin-modal__header">
       <h3>Editar Video</h3>
       <div class="vocabulario-admin__toggle">
         <span class="vocabulario-admin__toggle-label">Visible para el alumnado</span>
-        <div class="vocabulario-admin__toggle-switch ${video.isPublic ? 'is-active' : ''}" id="edit-video-published-toggle"></div>
+        <div class="vocabulario-admin__toggle-switch ${isVideoPublic ? 'is-active' : ''}" id="edit-video-published-toggle"></div>
       </div>
     </header>
     <form class="admin-video-form" id="edit-video-form">
@@ -576,7 +589,7 @@ function openEditVideoModal(videoId) {
   });
 
   // Toggle isPublic state
-  let isPublic = video.isPublic !== false; // Default to existing value
+  let isPublic = isVideoPublic; // Default to existing value
   const publishedToggle = modal.querySelector('#edit-video-published-toggle');
   publishedToggle.addEventListener('click', () => {
     isPublic = !isPublic;
@@ -606,7 +619,6 @@ function openEditVideoModal(videoId) {
         close();
         cache = [];
         await renderAdminView('');
-        alert('Video actualizado correctamente');
       } else {
         const errorData = await res.json().catch(() => ({}));
         alert(`Error al actualizar el video: ${errorData.message || errorData.error || res.status}`);
