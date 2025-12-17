@@ -435,6 +435,10 @@ function openAddVideoModal() {
     <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="admin-modal__header">
       <h3>Añadir Nuevo Video</h3>
+      <div class="vocabulario-admin__toggle">
+        <span class="vocabulario-admin__toggle-label">Visible para el alumnado</span>
+        <div class="vocabulario-admin__toggle-switch is-active" id="add-video-published-toggle"></div>
+      </div>
     </header>
     <form class="admin-video-form" id="add-video-form">
       <div class="form-group">
@@ -474,12 +478,25 @@ function openAddVideoModal() {
     if (e.target === overlay) close();
   });
 
+  // Toggle isPublic state
+  let isPublic = true; // Default to published
+  const publishedToggle = modal.querySelector('#add-video-published-toggle');
+  publishedToggle.addEventListener('click', () => {
+    isPublic = !isPublic;
+    if (isPublic) {
+      publishedToggle.classList.add('is-active');
+    } else {
+      publishedToggle.classList.remove('is-active');
+    }
+  });
+
   const form = modal.querySelector('#add-video-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
     videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
+    videoData.isPublic = isPublic; // Add isPublic state
 
     try {
       const res = await fetch(`${API_BASE}/admin/videos`, {
@@ -515,6 +532,10 @@ function openEditVideoModal(videoId) {
     <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="admin-modal__header">
       <h3>Editar Video</h3>
+      <div class="vocabulario-admin__toggle">
+        <span class="vocabulario-admin__toggle-label">Visible para el alumnado</span>
+        <div class="vocabulario-admin__toggle-switch ${video.isPublic ? 'is-active' : ''}" id="edit-video-published-toggle"></div>
+      </div>
     </header>
     <form class="admin-video-form" id="edit-video-form">
       <div class="form-group">
@@ -554,12 +575,25 @@ function openEditVideoModal(videoId) {
     if (e.target === overlay) close();
   });
 
+  // Toggle isPublic state
+  let isPublic = video.isPublic !== false; // Default to existing value
+  const publishedToggle = modal.querySelector('#edit-video-published-toggle');
+  publishedToggle.addEventListener('click', () => {
+    isPublic = !isPublic;
+    if (isPublic) {
+      publishedToggle.classList.add('is-active');
+    } else {
+      publishedToggle.classList.remove('is-active');
+    }
+  });
+
   const form = modal.querySelector('#edit-video-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
     videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
+    videoData.isPublic = isPublic; // Add isPublic state
 
     try {
       const res = await fetch(`${API_BASE}/admin/videos/${videoId}`, {

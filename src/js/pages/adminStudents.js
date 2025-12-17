@@ -48,7 +48,7 @@ export async function renderAdminStudents() {
   container.innerHTML = `
     <div class="students-container">
       <div class="students-header">
-        <button class="back-btn" id="admin-students-back-btn">← <span data-i18n="backToHome"></span></button>
+        <button class="back-btn" id="admin-students-back-btn">← <span data-i18n="back"></span></button>
         <h1 data-i18n="studentsManagement"></h1>
       </div>
 
