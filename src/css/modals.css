@@ -23,9 +23,58 @@
   gap: 16px;
 }
 
-/* Close button - uses .modal-close-btn from common-components.css */
 .video-modal__close {
-  /* Inherits from .modal-close-btn */
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: var(--color-primary);
+  color: transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  position: absolute;
+}
+
+.video-modal__close:hover {
+  transform: scale(1.1);
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+
+.video-modal__close::before,
+.video-modal__close::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: #fff;
+  border-radius: 999px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: background 0.2s ease;
+}
+
+.video-modal__close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.video-modal__close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.video-modal__close:hover::before,
+.video-modal__close:hover::after {
+  background: #fff;
 }
 
 .video-modal__header h3 {
@@ -100,9 +149,56 @@
   margin: 0;
 }
 
-/* Close button - uses .modal-close-btn from common-components.css */
 .abg-modal-close {
-  /* Inherits from .modal-close-btn */
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: var(--color-primary);
+  color: transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.abg-modal-close:hover {
+  transform: scale(1.1);
+  background: var(--color-primary-dark);
+}
+
+.abg-modal-close::before,
+.abg-modal-close::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: #fff;
+  border-radius: 999px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: background 0.2s ease;
+}
+
+.abg-modal-close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.abg-modal-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.abg-modal-close:hover::before,
+.abg-modal-close:hover::after {
+  background: #fff;
 }
 
 .abg-form {
@@ -638,12 +734,44 @@
   gap: 16px;
 }
 
-/* Form groups - use .form-group from common-components.css */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
 
 .form-actions {
   display: flex;
   gap: 12px;
-  justify-content: center;
+  justify-content: flex-end;
   margin-top: 8px;
 }
 

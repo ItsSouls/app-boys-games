@@ -14,30 +14,91 @@
   margin: 0 auto;
 }
 
-/* Vocabulario Hero - uses .section-hero, .section-back-btn, .section-hero__content, .section-hero__title, .section-hero__subtitle from common-components.css */
+/* Vocabulario Hero */
 .vocabulario-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-4);
   margin-bottom: var(--spacing-4);
+  flex-wrap: wrap;
+  position: relative;
 }
 
 .vocabulario-back-btn {
-  /* Inherits from .section-back-btn */
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  background: none;
+  border: none;
+  padding: var(--spacing-2) var(--spacing-3);
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border-radius: var(--radius-sm);
+}
+
+.vocabulario-back-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+}
+
+.vocabulario-back-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .vocabulario-hero-content {
-  /* Inherits from .section-hero__content */
+  flex: 1;
+  min-width: 300px;
+  margin-top: var(--spacing-8);
 }
 
 .vocabulario-hero__title {
-  /* Inherits from .section-hero__title */
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+  line-height: 1.2;
 }
 
 .vocabulario-hero__subtitle {
-  /* Inherits from .section-hero__subtitle */
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--color-primary);
+  margin: 0;
+  font-weight: var(--font-weight-regular);
 }
 
-/* Admin Toggle Button - uses .admin-toggle-btn from common-components.css */
+/* Admin Toggle Button */
 .vocabulario-admin-toggle {
-  /* Inherits from .admin-toggle-btn */
+  display: none;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 12px 24px;
+  background: var(--color-white);
+  border: 2px solid var(--color-border-medium);
+  border-radius: var(--radius-full);
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+}
+
+.vocabulario-admin-toggle.is-visible {
+  display: flex;
+}
+
+.vocabulario-admin-toggle:hover {
+  border-color: var(--color-primary);
+  background: rgba(0, 217, 126, 0.05);
+  color: var(--color-primary);
 }
 
 .vocabulario-admin-toggle svg {
@@ -57,17 +118,43 @@
   width: 100%;
 }
 
-/* Search Bar - uses .section-search-bar and .section-search-icon from common-components.css */
+/* Search Bar */
 .vocabulario-search-bar {
-  /* Inherits from .section-search-bar */
+  position: relative;
+  flex: 0 0 auto;
+  width: 400px;
 }
 
 .vocabulario-search-icon {
-  /* Inherits from .section-search-icon */
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
 }
 
 .vocabulario-search-bar input {
+  width: 100%;
   padding: 14px 20px 14px 52px;
+  border: 2px solid var(--color-border-medium);
+  border-radius: 50px;
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background: rgba(0, 217, 126, 0.05);
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+.vocabulario-search-bar input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.vocabulario-search-bar input:focus {
+  border-color: var(--color-primary);
+  background: var(--color-white);
+  box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
 }
 
 .vocabulario-filters {
@@ -117,20 +204,99 @@
   margin-left: auto;
 }
 
-/* Dropdown - uses .section-dropdown__toggle, .section-dropdown__menu, .section-dropdown__item from common-components.css */
 .vocabulario-dropdown__toggle {
-  /* Inherits from .section-dropdown__toggle */
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 12px 20px;
+  background: rgba(0, 217, 126, 0.08);
+  border: 2px solid transparent;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+  min-width: 200px;
+  justify-content: space-between;
+}
+
+.vocabulario-dropdown__toggle:hover {
+  background: rgba(0, 217, 126, 0.12);
+  border-color: var(--color-primary);
+}
+
+.vocabulario-dropdown.active .vocabulario-dropdown__toggle {
+  border-color: var(--color-primary);
+  background: rgba(0, 217, 126, 0.12);
+}
+
+.vocabulario-dropdown__toggle svg {
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-base);
+}
+
+.vocabulario-dropdown.active .vocabulario-dropdown__toggle svg {
+  transform: rotate(180deg);
 }
 
 .vocabulario-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 8px);
   right: 0;
+  min-width: 100%;
+  background: var(--color-white);
+  border: 2px solid var(--color-border-light);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-2);
+  z-index: 100;
   max-height: 400px;
   overflow-y: auto;
-  /* Other properties inherited from .section-dropdown__menu */
+  animation: slideDown 0.2s ease-out;
+}
+
+.vocabulario-dropdown__menu.hidden {
+  display: none;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .vocabulario-dropdown__item {
-  /* Inherits from .section-dropdown__item */
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+  text-align: left;
+}
+
+.vocabulario-dropdown__item:hover {
+  background: rgba(0, 217, 126, 0.08);
+  color: var(--color-primary);
+}
+
+.vocabulario-dropdown__item.active {
+  background: rgba(0, 217, 126, 0.12);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
 }
 
 /* Vocabulario Grid */
@@ -365,9 +531,55 @@
   position: relative;
 }
 
-/* Close button - uses .admin-close-btn from common-components.css */
+/* Botón de cerrar del modal admin - Diseño profesional */
 .theory-admin__close-btn {
-  /* Inherits from .admin-close-btn */
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: auto;
+  user-select: none;
+  transition: all var(--transition-base);
+  padding: 0;
+}
+
+.theory-admin__close-btn::before,
+.theory-admin__close-btn::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: all var(--transition-base);
+}
+
+.theory-admin__close-btn::before {
+  transform: rotate(45deg);
+}
+
+.theory-admin__close-btn::after {
+  transform: rotate(-45deg);
+}
+
+.theory-admin__close-btn:hover {
+  background: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+.theory-admin__close-btn:active {
+  transform: scale(0.95);
 }
 
 /* Sidebar izquierdo (25% ancho) */
@@ -625,17 +837,52 @@
   margin: 0;
 }
 
-/* Toggle switch - uses .toggle-switch-group, .toggle-switch-label, .toggle-switch from common-components.css */
+/* Toggle Visible para el alumnado - Ahora en la esquina superior derecha */
 .vocabulario-admin__toggle {
-  /* Inherits from .toggle-switch-group */
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
 }
 
 .vocabulario-admin__toggle-label {
-  /* Inherits from .toggle-switch-label */
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
 }
 
 .vocabulario-admin__toggle-switch {
-  /* Inherits from .toggle-switch */
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.vocabulario-admin__toggle-switch.is-active {
+  background: var(--color-primary);
+}
+
+.vocabulario-admin__toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition-base);
+}
+
+.vocabulario-admin__toggle-switch.is-active::after {
+  transform: translateX(20px);
 }
 
 /* Campos del formulario */
