@@ -70,10 +70,6 @@
   border-color: var(--color-primary);
 }
 
-.form-actions {
-  margin-top: 1.5rem;
-}
-
 .error-message {
   background: #FEE2E2;
   color: #DC2626;

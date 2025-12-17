@@ -14,95 +14,30 @@
    USER VIEW
    ============================================ */
 
-/* Videos Hero */
+/* Videos Hero - uses .section-hero, .section-back-btn, .section-hero__content, .section-hero__title, .section-hero__subtitle from common-components.css */
 .videos-hero {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-4);
   margin-bottom: var(--spacing-8);
-  flex-wrap: wrap;
-  position: relative;
 }
 
 .videos-back-btn {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-1);
-  background: none;
-  border: none;
-  padding: var(--spacing-2) var(--spacing-3);
-  color: var(--color-text-secondary);
-  font-size: 0.95rem;
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 8px;
-}
-
-.videos-back-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: var(--color-text-primary);
-}
-
-.videos-back-btn svg {
-  width: 20px;
-  height: 20px;
+  /* Inherits from .section-back-btn */
 }
 
 .videos-hero-content {
-  flex: 1;
-  min-width: 300px;
-  margin-top: var(--spacing-8);
+  /* Inherits from .section-hero__content */
 }
 
 .videos-hero__title {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--spacing-2) 0;
-  line-height: 1.2;
+  /* Inherits from .section-hero__title */
 }
 
 .videos-hero__subtitle {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  color: var(--color-primary);
-  margin: 0;
-  font-weight: var(--font-weight-regular);
+  /* Inherits from .section-hero__subtitle */
 }
 
-/* Admin Toggle Button */
+/* Admin Toggle Button - uses .admin-toggle-btn from common-components.css */
 .videos-admin-toggle {
-  display: none;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: 12px 24px;
-  background: var(--color-white);
-  border: 2px solid var(--color-border-medium);
-  border-radius: 50px;
-  font-size: 0.95rem;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  font-family: var(--font-family-base);
-}
-
-.videos-admin-toggle.is-visible {
-  display: flex;
-}
-
-.videos-admin-toggle:hover {
-  border-color: var(--color-primary);
-  background: rgba(0, 217, 126, 0.05);
-  color: var(--color-primary);
-}
-
-.videos-admin-toggle svg {
-  stroke: currentColor;
+  /* Inherits from .admin-toggle-btn */
 }
 
 /* Videos Controls */
@@ -117,43 +52,13 @@
   width: 100%;
 }
 
-/* Search Bar */
+/* Search Bar - uses .section-search-bar and .section-search-icon from common-components.css */
 .videos-search-bar {
-  position: relative;
-  flex: 0 0 auto;
-  width: 400px;
+  /* Inherits from .section-search-bar */
 }
 
 .videos-search-icon {
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
-
-.videos-search-bar input {
-  width: 100%;
-  padding: 16px 20px 16px 52px;
-  border: 2px solid var(--color-border-medium);
-  border-radius: 50px;
-  font-size: 1rem;
-  font-family: var(--font-family-base);
-  color: var(--color-text-primary);
-  background: rgba(0, 217, 126, 0.05);
-  outline: none;
-  transition: all var(--transition-base);
-}
-
-.videos-search-bar input::placeholder {
-  color: var(--color-text-muted);
-}
-
-.videos-search-bar input:focus {
-  border-color: var(--color-primary);
-  background: var(--color-white);
-  box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
+  /* Inherits from .section-search-icon */
 }
 
 /* Filters */
@@ -166,101 +71,21 @@
   flex-wrap: wrap;
 }
 
+/* Dropdown menu - uses .section-dropdown, .section-dropdown__toggle, .section-dropdown__menu, .section-dropdown__item from common-components.css */
 .categories-dropdown-container {
-  position: relative;
+  /* Inherits from .section-dropdown */
 }
 
 .filter-dropdown {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  padding: 12px 20px;
-  background: rgba(0, 217, 126, 0.08);
-  border: 2px solid transparent;
-  border-radius: 50px;
-  font-size: 0.95rem;
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  font-family: var(--font-family-base);
-  min-width: 200px;
-  justify-content: space-between;
-}
-
-.filter-dropdown:hover {
-  background: rgba(0, 217, 126, 0.12);
-  border-color: var(--color-primary);
-}
-
-.filter-dropdown.active {
-  border-color: var(--color-primary);
-  background: rgba(0, 217, 126, 0.12);
-}
-
-.filter-dropdown svg {
-  color: var(--color-text-secondary);
-  transition: transform var(--transition-base);
-}
-
-.filter-dropdown.active svg {
-  transform: rotate(180deg);
+  /* Inherits from .section-dropdown__toggle */
 }
 
 .categories-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 0;
-  min-width: 100%;
-  background: var(--color-white);
-  border: 2px solid var(--color-border-light);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  padding: var(--spacing-2);
-  z-index: 100;
-  animation: slideDown 0.2s ease-out;
-}
-
-.categories-dropdown-menu.hidden {
-  display: none;
+  /* Inherits from .section-dropdown__menu */
 }
 
 .category-item {
-  display: block;
-  width: 100%;
-  padding: 12px 16px;
-  background: transparent;
-  border: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  font-family: var(--font-family-base);
-  text-align: left;
-}
-
-.category-item:hover {
-  background: rgba(0, 217, 126, 0.08);
-  color: var(--color-primary);
-}
-
-.category-item.active {
-  background: rgba(0, 217, 126, 0.12);
-  color: var(--color-primary);
-  font-weight: var(--font-weight-semibold);
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  /* Inherits from .section-dropdown__item */
 }
 
 /* Videos Grid - User View - YouTube-style */
@@ -470,37 +295,13 @@
   flex-wrap: wrap;
 }
 
+/* Admin search bar - uses .admin-search-bar and .admin-search-icon from common-components.css */
 .admin-search-bar {
-  position: relative;
-  flex: 1;
-  min-width: 300px;
+  /* Inherits from common-components.css */
 }
 
 .admin-search-icon {
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
-
-.admin-search-bar input {
-  width: 100%;
-  padding: 14px 20px 14px 52px;
-  border: 2px solid var(--color-border-medium);
-  border-radius: 50px;
-  font-size: 0.95rem;
-  font-family: var(--font-family-base);
-  color: var(--color-text-primary);
-  background: var(--color-white);
-  outline: none;
-  transition: all var(--transition-base);
-}
-
-.admin-search-bar input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
+  /* Inherits from common-components.css */
 }
 
 .admin-filter-btn {
