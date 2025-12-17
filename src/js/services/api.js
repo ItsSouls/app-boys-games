@@ -2,10 +2,12 @@
 import { API_BASE } from '../core/config.js';
 
 const BASE = API_BASE;
+const ME_TTL_MS = 30000;
+let meCache = null;
 
 function authHeaders(extra = {}) {
-	// Tokens viajan en cookie httpOnly; no se envía Authorization
-	return { ...extra };
+  // Tokens viajan en cookie httpOnly; no se envia Authorization
+  return { ...extra };
 }
 
 async function handleResponse(res, fallbackMessage) {
@@ -18,22 +20,38 @@ async function handleResponse(res, fallbackMessage) {
 }
 
 async function refreshSession() {
-	const res = await fetch(`${BASE}/auth/refresh`, {
-		method: 'POST',
-		credentials: 'include'
-	});
-	return res.ok;
+  const res = await fetch(`${BASE}/auth/refresh`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  return res.ok;
 }
 
 async function requestWithRefresh(url, options = {}, { skipRetry } = {}) {
-	const res = await fetch(url, { credentials: 'include', ...options });
-	if (res.status === 401 && !skipRetry) {
-		const refreshed = await refreshSession().catch(() => false);
-		if (refreshed) {
-			return requestWithRefresh(url, options, { skipRetry: true });
-		}
-	}
-	return res;
+  const res = await fetch(url, { credentials: 'include', ...options });
+  if (res.status === 401 && !skipRetry) {
+    const refreshed = await refreshSession().catch(() => false);
+    if (refreshed) {
+      return requestWithRefresh(url, options, { skipRetry: true });
+    }
+  }
+  return res;
+}
+
+function setMeCache(data) {
+  meCache = { data, timestamp: Date.now() };
+}
+
+function isMeCacheValid() {
+  return meCache && Date.now() - meCache.timestamp < ME_TTL_MS;
+}
+
+export function getCachedMe() {
+  return isMeCacheValid() ? meCache.data : null;
+}
+
+export function clearMeCache() {
+  meCache = null;
 }
 
 export async function register({ name, email, username, password }) {
@@ -47,28 +65,37 @@ export async function register({ name, email, username, password }) {
 }
 
 export async function login({ username, password }) {
-	const res = await fetch(`${BASE}/auth/login`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		credentials: 'include',
-		body: JSON.stringify({ username, password })
-	});
-	return handleResponse(res, 'Login fallido');
+  const res = await fetch(`${BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ username, password })
+  });
+  const data = await handleResponse(res, 'Login fallido');
+  setMeCache(data);
+  return data;
 }
 
 export async function logout() {
-	const res = await fetch(`${BASE}/auth/logout`, {
-		method: 'POST',
-		credentials: 'include'
-	});
-	return handleResponse(res, 'Logout fallido');
+  clearMeCache();
+  const res = await fetch(`${BASE}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  return handleResponse(res, 'Logout fallido');
 }
 
-export async function me() {
-	const res = await requestWithRefresh(`${BASE}/auth/me`, {
-		headers: authHeaders()
-	});
-	return handleResponse(res, 'No autenticado');
+export async function me(options = {}) {
+  const force = options.force === true;
+  if (!force && isMeCacheValid()) {
+    return meCache.data;
+  }
+  const res = await requestWithRefresh(`${BASE}/auth/me`, {
+    headers: authHeaders()
+  });
+  const data = await handleResponse(res, 'No autenticado');
+  setMeCache(data);
+  return data;
 }
 
 // ========================================
@@ -278,30 +305,32 @@ async function deleteStudent(studentId) {
 }
 
 export const api = {
-	register,
-	login,
-	logout,
-	me,
-	// Public (non-authenticated)
-	getPublicGames,
-	getPublicVideos,
-	getPublicPages,
-	// Games (authenticated)
-	getGames,
-	getGame,
-	createGame,
-	updateGame,
-	deleteGame,
-	saveGameAttempt,
-	getGameStats,
-	getGameRanking,
-	getUserAllStats,
-	getGlobalRanking,
-	getUserGlobalPosition,
-	// Billing
-	checkout,
-	// Students
-	getStudents,
-	createStudent,
-	deleteStudent
+  register,
+  login,
+  logout,
+  me,
+  getCachedMe,
+  clearMeCache,
+  // Public (non-authenticated)
+  getPublicGames,
+  getPublicVideos,
+  getPublicPages,
+  // Games (authenticated)
+  getGames,
+  getGame,
+  createGame,
+  updateGame,
+  deleteGame,
+  saveGameAttempt,
+  getGameStats,
+  getGameRanking,
+  getUserAllStats,
+  getGlobalRanking,
+  getUserGlobalPosition,
+  // Billing
+  checkout,
+  // Students
+  getStudents,
+  createStudent,
+  deleteStudent
 };

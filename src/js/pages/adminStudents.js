@@ -117,7 +117,11 @@ async function loadStudents() {
   try {
     const { students, count, limit } = await api.getStudents();
 
-    countElement.textContent = `${count} / ${limit} alumnos`;
+    // Fijar contador y evitar que i18n lo sobreescriba
+    if (countElement) {
+      countElement.removeAttribute('data-i18n');
+      countElement.textContent = `${count} / ${limit} alumnos`;
+    }
 
     if (students.length === 0) {
       listContainer.innerHTML = `

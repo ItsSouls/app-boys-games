@@ -1,8 +1,13 @@
 Comprobar
 - El ranking tiene que ser de entre los estudiantes de un administrador, ya que está pensado para que haya grupos de clases
+- Mejorar estructura del frontend
 
 Por hacer
-Archon mejorar contexto para usar el mismo Proyecto
-Archivo con todos los mcps en /proyectos
-Mejorar estructura del frontend
-Diagrama de Modelado del sistema.
+PRIORITARIO: minimizar las llamadas a /auth/me cuando no sean necesarias (5 en videos, 4 en juegos,5 en gramática y vocabulario, 4 en alumnos, 3 en para padres, 3 en ranking)
+
+1. Quitar campos innecesarios de la base de datos y crear Diagrama de Modelado del sistema.
+2. Que los usuarios no puedan tener un nombre igual al de otro
+3. Que la contraseña no sea tan restrictiva o en su defecto indique qué falta para cumplir los requisitos
+4. centrar los mensajes cuando no hay contenido
+5. Archon mejorar contexto para usar el mismo Proyecto
+6. Archivo con todos los mcps en /proyectos

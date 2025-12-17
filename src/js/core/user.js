@@ -16,6 +16,7 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
   const headerAuth = document.getElementById('header-auth');
   const adminStudentsLink = document.getElementById('nav-admin-students');
   const purchaseLink = document.getElementById('nav-purchase');
+  let currentUser = null;
 
   const setHeaderState = (state, user) => {
     if (!headerUser || !nameEl || !logoutBtn || !headerAuth) return;
@@ -48,6 +49,7 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       const { user } = await api.me();
       const display = user?.name || user?.username || '';
       if (!display) throw new Error('Usuario sin nombre');
+      currentUser = user;
       setHeaderState('authed', user);
 
       // Show admin students link if user is admin
@@ -71,6 +73,8 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       logoutBtn.onclick = async () => {
         setHeaderState('checking');
         try {
+          currentUser = null;
+          api.clearMeCache();
           await api.logout();
         } catch (err) {
           console.warn('logout failed', err);
@@ -103,6 +107,8 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
       }
     } catch (err) {
       console.warn('[auth] token inválido', err);
+      currentUser = null;
+      api.clearMeCache();
       setHeaderState('unauth');
       if (adminStudentsLink) {
         adminStudentsLink.classList.add('is-hidden');
@@ -113,6 +119,12 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
 
   const setOnAuthSuccess = (handler) => {
     authCallbacks.onAuthSuccess = handler;
+  };
+
+  const getCurrentUser = () => {
+    if (currentUser) return currentUser;
+    const cached = api.getCachedMe();
+    return cached?.user || null;
   };
 
   // Enforce header state flow from this controller
@@ -126,5 +138,6 @@ export function createUserController({ onNavigateHome, maybeShowAdminGear }) {
     ensureAuthControls,
     refreshUserGreeting,
     setOnAuthSuccess,
+    getCurrentUser,
   };
 }

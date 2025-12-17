@@ -1,7 +1,6 @@
 // games.js - Pantalla de selección de tipos de juegos
 import { api } from '../services/api.js';
 import { openThemeSelection } from '../components/themeSelection.js';
-import { API_BASE } from '../core/config.js';
 
 // Definición de tipos de juegos disponibles
 const GAME_TYPES = [
@@ -71,11 +70,11 @@ export async function renderGames(preloadedGames = null) {
     if (preloadedGames) {
       games = preloadedGames;
     } else {
-      // Multi-tenant: verificar si hay usuario autenticado
+      // Multi-tenant: verificar si hay usuario autenticado (cacheado)
       let isAuthenticated = false;
       try {
-        const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-        isAuthenticated = authRes.ok;
+        const data = await api.me();
+        isAuthenticated = Boolean(data?.user);
       } catch {
         isAuthenticated = false;
       }

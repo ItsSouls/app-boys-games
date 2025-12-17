@@ -24,6 +24,7 @@ export function initApp() {
   navigation = createNavigationController({
     refreshUserGreeting: () => userController.refreshUserGreeting(),
     maybeShowAdminGear: maybeShowSectionAdminGear,
+    getCurrentUser: () => userController.getCurrentUser(),
   });
 
   userController.setOnAuthSuccess(async () => {

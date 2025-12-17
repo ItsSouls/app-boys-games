@@ -1,4 +1,5 @@
 import { API_BASE } from '../core/config.js';
+import { api } from '../services/api.js';
 import { isImageUrl } from '../utils/validators.js';
 import { escapeHtml, escapeAttribute } from '../utils/sanitize.js';
 
@@ -17,20 +18,20 @@ function convertToEmbedUrl(url) {
 
 let cache = [];
 let isAdmin = false;
+let sessionUser = null;
 
-export async function renderVideos(filter = '', forceUserView = false) {
-  // Check if user is admin via /auth/me (cookies)
+async function getUserSafe({ force = false } = {}) {
   try {
-    const res = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-    if (res.ok) {
-      const { user } = await res.json();
-      isAdmin = user?.role === 'admin' || user?.role === 'moderator';
-    } else {
-      isAdmin = false;
-    }
+    const data = await api.me({ force });
+    return data?.user || null;
   } catch {
-    isAdmin = false;
+    return null;
   }
+}
+
+export async function renderVideos({ filter = '', forceUserView = false, currentUser = null } = {}) {
+  sessionUser = currentUser || (await getUserSafe());
+  isAdmin = sessionUser?.role === 'admin' || sessionUser?.role === 'moderator';
 
   const adminToggle = document.getElementById('videos-admin-gear');
   if (adminToggle) adminToggle.classList.toggle('is-visible', isAdmin);
@@ -53,15 +54,10 @@ async function renderUserView(filter = '') {
   const shouldReload = !cache.length || !filter;
   if (shouldReload) {
     try {
-      // Multi-tenant: verificar si hay usuario autenticado
-      let isAuthenticated = false;
-      try {
-        const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-        isAuthenticated = authRes.ok;
-      } catch {
-        isAuthenticated = false;
+      if (!sessionUser) {
+        sessionUser = await getUserSafe();
       }
-
+      const isAuthenticated = Boolean(sessionUser);
       // Si está autenticado, usar ruta /api/videos para ver videos de su ownerAdmin
       // Si no está autenticado, usar ruta pública
       const endpoint = isAuthenticated ? `${API_BASE}/videos` : `${API_BASE}/public/videos`;
@@ -89,7 +85,7 @@ async function renderUserView(filter = '') {
   const list = term ? cache.filter((video) => video.title.toLowerCase().includes(term)) : cache;
 
   if (!list.length) {
-    videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos disponibles</div>`;
+    videosGrid.innerHTML = `<div class="videos-grid__empty">No hay videos disponibles</div>`;
   } else {
     videosGrid.innerHTML = list
       .map((video) => {
@@ -309,7 +305,7 @@ function filterVideosByCategory(category) {
 
   if (videosGrid) {
     if (!filtered.length) {
-      videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos en esta categoría</div>`;
+      videosGrid.innerHTML = `<div class="videos-grid__empty">No hay videos en esta categoría</div>`;
     } else {
       videosGrid.innerHTML = filtered
         .map((video) => {

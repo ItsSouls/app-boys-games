@@ -1,6 +1,7 @@
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import { API_BASE } from '../core/config.js';
+import { api } from '../services/api.js';
 import { openTheoryAdminModal } from '../admin/theoryModal.js';
 
 // Configurar marked para tablas y GFM (GitHub Flavored Markdown)
@@ -115,11 +116,11 @@ function getBadgeClass(category) {
 // Cargar páginas desde el backend
 async function loadPages(sectionName) {
   try {
-    // Multi-tenant: verificar si hay usuario autenticado
+    // Multi-tenant: verificar si hay usuario autenticado (cacheado)
     let isAuthenticated = false;
     try {
-      const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-      isAuthenticated = authRes.ok;
+      const data = await api.me();
+      isAuthenticated = Boolean(data?.user);
     } catch {
       isAuthenticated = false;
     }
@@ -147,9 +148,7 @@ async function loadPages(sectionName) {
 // Verificar si el usuario es admin
 async function checkAdminStatus() {
   try {
-    const res = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-    if (!res.ok) return false;
-    const { user } = await res.json();
+    const { user } = await api.me();
     return user?.role === 'admin' || user?.role === 'moderator';
   } catch {
     return false;

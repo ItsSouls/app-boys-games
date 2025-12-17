@@ -12,7 +12,7 @@ const PAGE_SELECTORS = [
   '#admin-students-page',
 ];
 
-export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear }) {
+export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear, getCurrentUser }) {
   const hideAllPages = () => {
     PAGE_SELECTORS.forEach((selector) => {
       document.querySelector(selector)?.classList.add('hidden');
@@ -53,7 +53,7 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
 
     if (sectionName === 'videos') {
       const { renderVideos } = await import('../pages/videos.js');
-      await renderVideos();
+      await renderVideos({ currentUser: typeof getCurrentUser === 'function' ? getCurrentUser() : null });
     } else if (sectionName === 'games') {
       const { initGames } = await import('../pages/games.js');
       initGames();
