@@ -1,0 +1,530 @@
+/**
+ * Common Components - Shared Styles
+ * Uses multiple selectors to consolidate duplicated code
+ */
+
+/* ============================================
+   CLOSE BUTTONS (3 duplicated versions)
+   ============================================ */
+
+/* Circular close buttons with X icon */
+.video-modal__close,
+.abg-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: none;
+  background: var(--color-primary);
+  color: transparent;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.video-modal__close:hover,
+.abg-modal-close:hover {
+  transform: scale(1.1);
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+
+.video-modal__close::before,
+.video-modal__close::after,
+.abg-modal-close::before,
+.abg-modal-close::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: #fff;
+  border-radius: 999px;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+  transition: background 0.2s ease;
+}
+
+.video-modal__close::before,
+.abg-modal-close::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.video-modal__close::after,
+.abg-modal-close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.video-modal__close:hover::before,
+.video-modal__close:hover::after,
+.abg-modal-close:hover::before,
+.abg-modal-close:hover::after {
+  background: #fff;
+}
+
+/* Minimal admin close button */
+.theory-admin__close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  font-size: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: auto;
+  user-select: none;
+  transition: all var(--transition-base);
+  padding: 0;
+}
+
+.theory-admin__close-btn::before,
+.theory-admin__close-btn::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: all var(--transition-base);
+}
+
+.theory-admin__close-btn::before {
+  transform: rotate(45deg);
+}
+
+.theory-admin__close-btn::after {
+  transform: rotate(-45deg);
+}
+
+.theory-admin__close-btn:hover {
+  background: var(--color-gray-100);
+  color: var(--color-text-primary);
+}
+
+.theory-admin__close-btn:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   HERO SECTIONS (complete duplication)
+   ============================================ */
+
+.videos-hero,
+.vocabulario-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-8);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.vocabulario-hero {
+  margin-bottom: var(--spacing-4);
+}
+
+.videos-hero-content,
+.vocabulario-hero-content {
+  flex: 1;
+  min-width: 300px;
+  margin-top: var(--spacing-8);
+}
+
+.videos-hero__title,
+.vocabulario-hero__title {
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+  line-height: 1.2;
+}
+
+.videos-hero__subtitle,
+.vocabulario-hero__subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--color-primary);
+  margin: 0;
+  font-weight: var(--font-weight-regular);
+}
+
+/* ============================================
+   BACK BUTTONS (complete duplication)
+   ============================================ */
+
+.videos-back-btn,
+.vocabulario-back-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  background: none;
+  border: none;
+  padding: var(--spacing-2) var(--spacing-3);
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.vocabulario-back-btn {
+  border-radius: var(--radius-sm);
+}
+
+.videos-back-btn:hover,
+.vocabulario-back-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-primary);
+}
+
+.videos-back-btn svg,
+.vocabulario-back-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ============================================
+   SEARCH BARS (complete duplication)
+   ============================================ */
+
+.videos-search-bar,
+.vocabulario-search-bar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 400px;
+}
+
+.videos-search-icon,
+.vocabulario-search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.videos-search-bar input,
+.vocabulario-search-bar input {
+  width: 100%;
+  padding: 16px 20px 16px 52px;
+  border: 2px solid var(--color-border-medium);
+  border-radius: 50px;
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background: rgba(0, 217, 126, 0.05);
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+.vocabulario-search-bar input {
+  padding: 14px 20px 14px 52px;
+}
+
+.videos-search-bar input::placeholder,
+.vocabulario-search-bar input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.videos-search-bar input:focus,
+.vocabulario-search-bar input:focus {
+  border-color: var(--color-primary);
+  background: var(--color-white);
+  box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
+}
+
+/* ============================================
+   ADMIN TOGGLE BUTTONS (complete duplication)
+   ============================================ */
+
+.videos-admin-toggle,
+.vocabulario-admin-toggle {
+  display: none;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 12px 24px;
+  background: var(--color-white);
+  border: 2px solid var(--color-border-medium);
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+}
+
+.vocabulario-admin-toggle {
+  border-radius: var(--radius-full);
+}
+
+.videos-admin-toggle.is-visible,
+.vocabulario-admin-toggle.is-visible {
+  display: flex;
+}
+
+.videos-admin-toggle:hover,
+.vocabulario-admin-toggle:hover {
+  border-color: var(--color-primary);
+  background: rgba(0, 217, 126, 0.05);
+  color: var(--color-primary);
+}
+
+.videos-admin-toggle svg,
+.vocabulario-admin-toggle svg {
+  stroke: currentColor;
+}
+
+.vocabulario-admin-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ============================================
+   DROPDOWN MENUS (complete duplication)
+   ============================================ */
+
+.filter-dropdown,
+.vocabulario-dropdown__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 12px 20px;
+  background: rgba(0, 217, 126, 0.08);
+  border: 2px solid transparent;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+  min-width: 200px;
+  justify-content: space-between;
+}
+
+.filter-dropdown:hover,
+.vocabulario-dropdown__toggle:hover {
+  background: rgba(0, 217, 126, 0.12);
+  border-color: var(--color-primary);
+}
+
+.filter-dropdown.active,
+.vocabulario-dropdown.active .vocabulario-dropdown__toggle {
+  border-color: var(--color-primary);
+  background: rgba(0, 217, 126, 0.12);
+}
+
+.filter-dropdown svg,
+.vocabulario-dropdown__toggle svg {
+  color: var(--color-text-secondary);
+  transition: transform var(--transition-base);
+}
+
+.filter-dropdown.active svg,
+.vocabulario-dropdown.active .vocabulario-dropdown__toggle svg {
+  transform: rotate(180deg);
+}
+
+.categories-dropdown-menu,
+.vocabulario-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 100%;
+  background: var(--color-white);
+  border: 2px solid var(--color-border-light);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-2);
+  z-index: 100;
+  animation: slideDown 0.2s ease-out;
+}
+
+.vocabulario-dropdown__menu {
+  right: 0;
+  left: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.categories-dropdown-menu.hidden,
+.vocabulario-dropdown__menu.hidden {
+  display: none;
+}
+
+.category-item,
+.vocabulario-dropdown__item {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: var(--font-family-base);
+  text-align: left;
+}
+
+.category-item:hover,
+.vocabulario-dropdown__item:hover {
+  background: rgba(0, 217, 126, 0.08);
+  color: var(--color-primary);
+}
+
+.category-item.active,
+.vocabulario-dropdown__item.active {
+  background: rgba(0, 217, 126, 0.12);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* ============================================
+   TOGGLE SWITCHES (only in vocabulario)
+   ============================================ */
+
+.vocabulario-admin__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.vocabulario-admin__toggle-label {
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+.vocabulario-admin__toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  background: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+
+.vocabulario-admin__toggle-switch.is-active {
+  background: var(--color-primary);
+}
+
+.vocabulario-admin__toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition-base);
+}
+
+.vocabulario-admin__toggle-switch.is-active::after {
+  transform: translateX(20px);
+}
+
+/* ============================================
+   FORM FIELDS (2 sets in modals.css)
+   ============================================ */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: var(--font-family-base);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.15);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ============================================
+   ADMIN SEARCH BARS (admin variant)
+   ============================================ */
+
+.admin-search-bar {
+  position: relative;
+  flex: 1;
+  min-width: 300px;
+}
+
+.admin-search-icon {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.admin-search-bar input {
+  width: 100%;
+  padding: 14px 20px 14px 52px;
+  border: 2px solid var(--color-border-medium);
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background: var(--color-white);
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+.admin-search-bar input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
+}

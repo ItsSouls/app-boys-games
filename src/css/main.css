@@ -21,6 +21,7 @@
 /* 6. Components - Reusable UI elements */
 @import './components.css';
 @import './header.css';
+@import './common-components.css';
 
 /* 7. Theory and educational content */
 @import './theory-cards.css';
