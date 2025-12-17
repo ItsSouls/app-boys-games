@@ -75,7 +75,15 @@ videosRouter.put('/:id', async (req, res) => {
       filter.ownerAdmin = req.user.ownerAdmin;
     }
 
-    const video = await Video.findOneAndUpdate(filter, { $set: payload }, { new: true });
+    // Ajustar ownerAdmin según el usuario:
+    // - Superadmin: siempre ownerAdmin=null (público o privado)
+    // - Admin normal: mantener ownerAdmin existente (siempre su ID)
+    const updatePayload = { ...payload };
+    if (req.user.isSuperAdmin) {
+      updatePayload.ownerAdmin = null;
+    }
+
+    const video = await Video.findOneAndUpdate(filter, { $set: updatePayload }, { new: true });
     if (!video) {
       return res.status(404).json({ error: 'Video not found or access denied' });
     }
