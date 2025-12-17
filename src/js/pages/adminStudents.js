@@ -48,7 +48,11 @@ export async function renderAdminStudents() {
   container.innerHTML = `
     <div class="students-container">
       <div class="students-header">
-        <button class="back-btn" id="admin-students-back-btn">← <span data-i18n="back"></span></button>
+        <button class="back-btn" id="admin-students-back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          <span data-i18n="back"></span></button>
         <h1 data-i18n="studentsManagement"></h1>
       </div>
 

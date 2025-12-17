@@ -5,18 +5,20 @@ export const videosRouter = express.Router();
 
 const DEFAULT_EMOJI = '🎬';
 
-const normalizeVideoPayload = ({ title, description, embedUrl, emoji, category }) => ({
+const normalizeVideoPayload = ({ title, description, embedUrl, emoji, category, isPublic }) => ({
   title: title?.trim(),
   description: description ? String(description).trim() : '',
   embedUrl: embedUrl?.trim(),
   emoji: emoji && emoji.trim() ? emoji.trim() : DEFAULT_EMOJI,
   category: category && category.trim() ? category.trim() : 'General',
+  isPublic: isPublic === true,
 });
 
 videosRouter.get('/', async (req, res) => {
   try {
     // Multi-tenant: filtrar por ownerAdmin (salvo superadmin)
-    const filter = { isPublic: false }; // No devolver contenido público en rutas admin
+    // Admin ve todos sus videos (públicos y privados)
+    const filter = {};
     if (!req.user.isSuperAdmin) {
       filter.ownerAdmin = req.user.ownerAdmin;
     }
@@ -37,9 +39,9 @@ videosRouter.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Missing title or embedUrl' });
     }
 
-    // Solo el superadmin puede crear contenido público
-    const isPublic = req.user.isSuperAdmin && req.body.isPublic === true;
-    const ownerAdmin = isPublic ? null : req.user.ownerAdmin;
+    // Admins normales: pueden marcar como público para sus estudiantes (con ownerAdmin)
+    // Superadmin: puede crear contenido verdaderamente público (sin ownerAdmin)
+    const ownerAdmin = req.user.ownerAdmin;
 
     const highestOrder = await Video.findOne().sort({ order: -1 }).select('order').lean();
     const nextOrder = (highestOrder?.order ?? 0) + 1;
@@ -49,7 +51,6 @@ videosRouter.post('/', async (req, res) => {
       order: nextOrder,
       createdBy: req.user.id,
       ownerAdmin: ownerAdmin,
-      isPublic: isPublic,
     });
 
     res.json({ ok: true, video });

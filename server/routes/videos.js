@@ -12,10 +12,11 @@ const router = express.Router();
 router.get('/', authMiddleware, async (req, res) => {
   try {
     // Multi-tenant: filtrar por ownerAdmin (salvo superadmin)
-    const filter = { isPublic: false }; // No devolver contenido público en rutas autenticadas
+    // Solo mostrar videos marcados como públicos (visibles para estudiantes)
+    const filter = { isPublic: true };
 
     if (req.user.isSuperAdmin) {
-      // Superadmin ve todo el contenido privado
+      // Superadmin ve todos los videos públicos
     } else {
       filter.ownerAdmin = req.user.ownerAdmin;
     }
