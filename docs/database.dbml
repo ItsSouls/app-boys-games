@@ -1,0 +1,175 @@
+// ERD generated from current MongoDB models (App-Boys-Games)
+// Syntax: dbdiagram.io (DBML)
+
+Table users {
+  id           objectid [pk]
+  name         string   [not null]
+  email        string   [unique, note: 'nullable; unique when present']
+  username     string   [not null, unique]
+  password_hash string  [not null]
+  role         string   [note: 'user | admin']
+  owner_admin_id objectid [ref: > users.id, note: 'admin that owns this user; null for superadmin/public']
+  created_at   datetime
+  updated_at   datetime
+}
+
+Table refresh_tokens {
+  id          objectid [pk]
+  user_id     objectid [not null, ref: > users.id]
+  token_hash  string   [not null, unique]
+  jti         string   [not null, unique]
+  expires_at  datetime [not null]
+  revoked_at  datetime
+  replaced_by string
+  created_at  datetime
+  updated_at  datetime
+}
+
+Table games {
+  id           objectid [pk]
+  type         string   [not null, note: 'matching | hangman | wordsearch | crossword | multichoice | bubbles']
+  title        string   [not null]
+  description  string
+  instructions string
+  topic        string   [not null]
+  category     string   [note: 'Vocabulario | Gramatica | Matematicas | Cultura | Ciencias | General']
+  cover_image  string
+  icon_emoji   string
+  config       json     [not null, note: 'game-specific settings']
+  is_published boolean  [default: true]
+  order        int      [default: 0]
+  owner_admin_id objectid [ref: > users.id, note: 'tenant admin; null for public']
+  is_public    boolean  [default: false]
+  created_by   objectid [not null, ref: > users.id]
+  updated_by   objectid [ref: > users.id]
+  created_at   datetime
+  updated_at   datetime
+
+  indexes {
+    (type, topic)
+    (category, is_published)
+    (is_published, order)
+    (owner_admin_id, is_published)
+    (is_public, owner_admin_id)
+  }
+}
+
+Table game_attempts {
+  id              objectid [pk]
+  game_id         objectid [not null, ref: > games.id]
+  user_id         objectid [ref: > users.id, note: 'null for guest']
+  score           int      [default: 0]
+  max_score       int      [not null]
+  percentage      int
+  completed       boolean  [default: false]
+  duration_seconds int     [default: 0]
+  metadata        json     [note: 'per-mode attempt details']
+  owner_admin_id  objectid [ref: > users.id, note: 'tenant admin; null for guest/public']
+  created_at      datetime
+  updated_at      datetime
+
+  indexes {
+    (user_id, game_id, created_at)
+    (game_id, score)
+    (created_at)
+    (user_id, created_at)
+    (owner_admin_id, game_id, score)
+    (owner_admin_id, created_at)
+  }
+}
+
+Table user_game_stats {
+  id             objectid [pk]
+  user_id        objectid [not null, ref: > users.id]
+  game_id        objectid [not null, ref: > games.id]
+  best_score     int      [default: 0]
+  best_percentage int     [default: 0]
+  total_score    int      [default: 0]
+  attempts_count int      [default: 0]
+  completed_count int     [default: 0]
+  average_score  int      [default: 0]
+  last_played_at datetime
+  owner_admin_id objectid [not null, ref: > users.id]
+  created_at     datetime
+  updated_at     datetime
+
+  indexes {
+    (user_id, game_id) [unique]
+    (total_score)
+    (best_score)
+    (owner_admin_id, total_score)
+    (owner_admin_id, best_score)
+  }
+}
+
+Table videos {
+  id            objectid [pk]
+  title         string   [not null]
+  description   string
+  embed_url     string   [not null]
+  emoji         string
+  category      string   [note: 'default General']
+  order         int      [default: 0]
+  created_by    objectid [not null, ref: > users.id]
+  owner_admin_id objectid [ref: > users.id]
+  is_public     boolean  [default: false]
+  created_at    datetime
+  updated_at    datetime
+}
+
+Table pages {
+  id           objectid [pk]
+  section      string   [not null, note: 'vocabulario | gramatica']
+  topic        string   [not null]
+  category     string   [note: 'Bloque 1...']
+  summary      string
+  cover_image  string
+  content      text
+  resources    json     [note: 'array of {label,url}']
+  is_published boolean  [default: true]
+  order        int      [default: 0]
+  owner_admin_id objectid [ref: > users.id]
+  is_public    boolean  [default: false]
+  created_by   objectid [not null, ref: > users.id]
+  updated_by   objectid [ref: > users.id]
+  created_at   datetime
+  updated_at   datetime
+
+  indexes {
+    (section, topic) [unique]
+    (section, order)
+    (owner_admin_id, section)
+    (is_public, owner_admin_id)
+  }
+}
+
+Table purchases {
+  id               objectid [pk]
+  user_id          objectid [not null, ref: > users.id]
+  status           string   [not null, note: 'pending | active']
+  stripe_session_id string  [not null, unique]
+  stripe_customer_id string
+  price_id         string   [not null]
+  amount           int      [not null, note: 'cents']
+  currency         string   [not null, default: 'usd']
+  created_at       datetime
+  updated_at       datetime
+}
+
+Ref: users.owner_admin_id > users.id
+Ref: refresh_tokens.user_id > users.id
+Ref: games.owner_admin_id > users.id
+Ref: games.created_by > users.id
+Ref: games.updated_by > users.id
+Ref: game_attempts.user_id > users.id
+Ref: game_attempts.game_id > games.id
+Ref: game_attempts.owner_admin_id > users.id
+Ref: user_game_stats.user_id > users.id
+Ref: user_game_stats.game_id > games.id
+Ref: user_game_stats.owner_admin_id > users.id
+Ref: videos.created_by > users.id
+Ref: videos.owner_admin_id > users.id
+Ref: pages.owner_admin_id > users.id
+Ref: pages.created_by > users.id
+Ref: pages.updated_by > users.id
+Ref: purchases.user_id > users.id

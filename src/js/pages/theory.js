@@ -85,6 +85,21 @@ const state = {
   },
 };
 
+// Cache de usuario para evitar múltiples llamadas a /auth/me
+let theoryUserCache = null;
+
+async function getTheoryUser() {
+  if (!theoryUserCache) {
+    try {
+      const data = await api.me();
+      theoryUserCache = data?.user || null;
+    } catch {
+      theoryUserCache = null;
+    }
+  }
+  return theoryUserCache;
+}
+
 export const formatTheoryDate = (value) => {
   if (!value) return '';
   const date = new Date(value);
@@ -117,13 +132,8 @@ function getBadgeClass(category) {
 async function loadPages(sectionName) {
   try {
     // Multi-tenant: verificar si hay usuario autenticado (cacheado)
-    let isAuthenticated = false;
-    try {
-      const data = await api.me();
-      isAuthenticated = Boolean(data?.user);
-    } catch {
-      isAuthenticated = false;
-    }
+    const user = await getTheoryUser();
+    const isAuthenticated = Boolean(user);
 
     // Si está autenticado, usar ruta /api/pages para ver páginas de su ownerAdmin
     // Si no está autenticado, usar ruta pública
@@ -148,7 +158,7 @@ async function loadPages(sectionName) {
 // Verificar si el usuario es admin
 async function checkAdminStatus() {
   try {
-    const { user } = await api.me();
+    const user = await getTheoryUser();
     return user?.role === 'admin' || user?.role === 'moderator';
   } catch {
     return false;
