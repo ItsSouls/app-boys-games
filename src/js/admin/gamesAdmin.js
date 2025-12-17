@@ -317,7 +317,7 @@ function wireRowEvents() {
       openGameFormModal('edit', gameId, async () => {
         await Promise.all([
           loadGames(), // Recargar lista admin
-          renderGames(adminState.games.filter(g => g.isPublished)), // Refrescar selector usuario con cache
+          renderGamesLazy(adminState.games.filter(g => g.isPublished)), // Refrescar selector usuario con cache
         ]);
       });
     });
