@@ -222,6 +222,13 @@
   box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.15);
 }
 
+.abg-password-hint {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  min-height: 1.1rem;
+  margin-top: 4px;
+}
+
 .abg-error {
   color: #e74c3c;
   font-size: 0.9rem;

@@ -4,8 +4,6 @@ Comprobar
 
 Por hacer
 PRIORITARIO: 
-2. Que los usuarios no puedan tener un nombre igual al de otro
-3. Que la contraseña no sea tan restrictiva o en su defecto indique qué falta para cumplir los requisitos
 4. centrar los mensajes cuando no hay contenido
 5. Migrar el frontend a otro framework tipo angular o react.
 5. Archon mejorar contexto para usar el mismo Proyecto

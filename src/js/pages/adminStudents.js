@@ -76,6 +76,7 @@ export async function renderAdminStudents() {
               <label for="student-password" data-i18n="password"></label>
               <input type="password" id="student-password" name="password" required minlength="6">
             </div>
+            <div id="student-password-hint" class="password-hint" aria-live="polite"></div>
             <div class="form-actions">
               <button type="submit" class="abg-btn" data-i18n="createStudent"></button>
             </div>
@@ -111,6 +112,22 @@ export async function renderAdminStudents() {
 
   // Add form submit handler
   const form = document.getElementById('create-student-form');
+  const passwordInput = form.querySelector('#student-password');
+  const passwordHintEl = document.getElementById('student-password-hint');
+  if (passwordInput && passwordHintEl && !passwordInput.__hintWired) {
+    passwordInput.__hintWired = true;
+    const updatePasswordHint = () => {
+      const pwd = passwordInput.value || '';
+      if (pwd.length < 6) {
+        const remaining = Math.max(0, 6 - pwd.length);
+        passwordHintEl.textContent = `Mínimo 6 caracteres (faltan ${remaining})`;
+      } else {
+        passwordHintEl.textContent = '';
+      }
+    };
+    passwordInput.addEventListener('input', updatePasswordHint);
+    updatePasswordHint();
+  }
   form.addEventListener('submit', handleCreateStudent);
 }
 
