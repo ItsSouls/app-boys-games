@@ -1,5 +1,5 @@
 // themeSelection.js - Pantalla de selección de temáticas
-import { maybeShowSectionAdminGear } from '../app/adminAccess.js';
+import { maybeShowSectionAdminGear } from '../admin/adminAccess.js';
 
 let previousGamesUserView = null;
 let currentGames = [];
@@ -142,7 +142,7 @@ function wireThemeEvents() {
         previousGamesUserView = null;
       }
 
-      import('../app/games.js').then(module => {
+      import('../pages/games.js').then(module => {
         module.renderGames?.();
       });
 
@@ -181,7 +181,7 @@ function wireThemeEvents() {
               container.innerHTML = previousGamesUserView;
               previousGamesUserView = null;
             }
-            import('../app/games.js').then(mod => mod.renderGames?.());
+            import('../pages/games.js').then(mod => mod.renderGames?.());
             maybeShowSectionAdminGear('games');
           }
         });

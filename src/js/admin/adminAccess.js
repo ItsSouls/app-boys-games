@@ -1,6 +1,6 @@
 import { api } from '../services/api.js';
-import { openTheoryAdminModal } from '../ui/admin/theoryModal.js';
-import { openAdminView } from '../ui/gamesAdmin.js';
+import { openTheoryAdminModal } from './theoryModal.js';
+import { openAdminView } from './gamesAdmin.js';
 
 // Handler for videos admin view (toggles to admin view)
 function toggleVideosAdminView() {
@@ -12,7 +12,7 @@ function toggleVideosAdminView() {
     adminView.classList.remove('hidden');
 
     // Import and call renderAdminView dynamically
-    import('../ui/videos.js').then(module => {
+    import('../pages/videos.js').then(module => {
       if (module.renderAdminView) {
         module.renderAdminView('');
       }

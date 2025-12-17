@@ -5,6 +5,30 @@
 
 export const translations = {
   es: {
+    // Auth
+    authLoginTitle: 'Iniciar sesión',
+    authRegisterTitle: 'Crear cuenta',
+    authLoginHelper: 'Usa tu usuario y contraseña.',
+    authRegisterHelper: 'Usuario y contraseña para guardar tus puntos.',
+    authSubmitLogin: 'Entrar',
+    authSubmitRegister: 'Crear cuenta',
+    authSwitchToLogin: '¿Ya tienes cuenta? Inicia sesión',
+    authSwitchToRegister: '¿Eres nuevo? Crea tu cuenta',
+    authCancel: 'Cancelar',
+    email: 'Email',
+    confirmPassword: 'Repite contraseña',
+    authMinChars: 'Mínimo 6 caracteres (faltan {n})',
+    authNeedUpper: 'Falta 1 mayúscula',
+    authNeedSymbol: 'Falta 1 símbolo',
+    authPasswordsMustMatch: 'Las contraseñas deben coincidir',
+    authFillAllFields: 'Completa todos los campos.',
+    authInvalidEmail: 'Formato de email inválido.',
+    authPasswordLength: 'La contraseña necesita al menos 6 caracteres.',
+    authPasswordRequirement: 'La contraseña debe incluir al menos 1 mayúscula y 1 símbolo.',
+    authPasswordMismatch: 'Las contraseñas no coinciden.',
+    authRegisterFailed: 'Registro fallido. ¿Usuario ya registrado? ¿Backend activo?',
+    authLoginFailed: 'Login fallido. Revisa usuario/contraseña y que el backend está activo.',
+
     // Header
     forParents: 'Para Padres',
     login: 'Iniciar sesión',
@@ -133,6 +157,30 @@ export const translations = {
   },
   
   en: {
+    // Auth
+    authLoginTitle: 'Sign in',
+    authRegisterTitle: 'Create account',
+    authLoginHelper: 'Use your username and password.',
+    authRegisterHelper: 'Username and password to save your points.',
+    authSubmitLogin: 'Sign in',
+    authSubmitRegister: 'Create account',
+    authSwitchToLogin: 'Already have an account? Sign in',
+    authSwitchToRegister: 'New here? Create your account',
+    authCancel: 'Cancel',
+    email: 'Email',
+    confirmPassword: 'Repeat password',
+    authMinChars: 'Minimum 6 characters (missing {n})',
+    authNeedUpper: 'Missing 1 uppercase letter',
+    authNeedSymbol: 'Missing 1 symbol',
+    authPasswordsMustMatch: 'Passwords must match',
+    authFillAllFields: 'Fill in all fields.',
+    authInvalidEmail: 'Invalid email format.',
+    authPasswordLength: 'Password needs at least 6 characters.',
+    authPasswordRequirement: 'Password must include at least 1 uppercase and 1 symbol.',
+    authPasswordMismatch: 'Passwords do not match.',
+    authRegisterFailed: 'Signup failed. Already registered? Backend up?',
+    authLoginFailed: 'Login failed. Check username/password and that the backend is up.',
+
     // Header
     forParents: 'For Parents',
     login: 'Sign in',

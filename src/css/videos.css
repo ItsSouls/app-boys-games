@@ -271,6 +271,17 @@
   animation: fadeIn 0.6s ease-out;
 }
 
+.videos-grid__empty {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
 @media (min-width: 1200px) {
   .videos-grid {
     gap: 32px 24px;

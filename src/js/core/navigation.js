@@ -1,4 +1,4 @@
-import { renderTheory } from './theory.js';
+import { renderTheory } from '../pages/theory.js';
 
 const PAGE_SELECTORS = [
   '#home-page',
@@ -12,7 +12,7 @@ const PAGE_SELECTORS = [
   '#admin-students-page',
 ];
 
-export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear }) {
+export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear, getCurrentUser }) {
   const hideAllPages = () => {
     PAGE_SELECTORS.forEach((selector) => {
       document.querySelector(selector)?.classList.add('hidden');
@@ -52,21 +52,21 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
     page.classList.remove('hidden');
 
     if (sectionName === 'videos') {
-      const { renderVideos } = await import('../ui/videos.js');
-      await renderVideos();
+      const { renderVideos } = await import('../pages/videos.js');
+      await renderVideos({ currentUser: typeof getCurrentUser === 'function' ? getCurrentUser() : null });
     } else if (sectionName === 'games') {
-      const { initGames } = await import('./games.js');
+      const { initGames } = await import('../pages/games.js');
       initGames();
     } else if (sectionName === 'vocabulario' || sectionName === 'gramatica') {
       await renderTheory(sectionName);
     } else if (sectionName === 'ranking') {
-      const { renderRanking } = await import('../ui/ranking.js');
+      const { renderRanking } = await import('../pages/ranking.js');
       await renderRanking();
     } else if (sectionName === 'purchase') {
-      const { renderPurchase } = await import('../views/purchase.js');
+      const { renderPurchase } = await import('../pages/purchase.js');
       await renderPurchase();
     } else if (sectionName === 'admin/students') {
-      const { renderAdminStudents } = await import('../views/adminStudents.js');
+      const { renderAdminStudents } = await import('../pages/adminStudents.js');
       await renderAdminStudents();
     }
 

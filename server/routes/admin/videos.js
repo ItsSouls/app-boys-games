@@ -5,18 +5,20 @@ export const videosRouter = express.Router();
 
 const DEFAULT_EMOJI = '🎬';
 
-const normalizeVideoPayload = ({ title, description, embedUrl, emoji, category }) => ({
+const normalizeVideoPayload = ({ title, description, embedUrl, emoji, category, isPublic }) => ({
   title: title?.trim(),
   description: description ? String(description).trim() : '',
   embedUrl: embedUrl?.trim(),
   emoji: emoji && emoji.trim() ? emoji.trim() : DEFAULT_EMOJI,
   category: category && category.trim() ? category.trim() : 'General',
+  isPublic: isPublic === true,
 });
 
 videosRouter.get('/', async (req, res) => {
   try {
     // Multi-tenant: filtrar por ownerAdmin (salvo superadmin)
-    const filter = { isPublic: false }; // No devolver contenido público en rutas admin
+    // Admin ve todos sus videos (públicos y privados)
+    const filter = {};
     if (!req.user.isSuperAdmin) {
       filter.ownerAdmin = req.user.ownerAdmin;
     }
@@ -37,9 +39,11 @@ videosRouter.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Missing title or embedUrl' });
     }
 
-    // Solo el superadmin puede crear contenido público
-    const isPublic = req.user.isSuperAdmin && req.body.isPublic === true;
-    const ownerAdmin = isPublic ? null : req.user.ownerAdmin;
+    // Dos tipos de contenido público:
+    // 1. Superadmin + isPublic=true → contenido público GLOBAL para usuarios NO autenticados (ownerAdmin=null)
+    // 2. Admin normal + isPublic=true → contenido visible para SUS estudiantes (ownerAdmin=suId)
+    const isSuperadminPublicContent = req.user.isSuperAdmin && payload.isPublic === true;
+    const ownerAdmin = isSuperadminPublicContent ? null : req.user.ownerAdmin;
 
     const highestOrder = await Video.findOne().sort({ order: -1 }).select('order').lean();
     const nextOrder = (highestOrder?.order ?? 0) + 1;
@@ -49,7 +53,6 @@ videosRouter.post('/', async (req, res) => {
       order: nextOrder,
       createdBy: req.user.id,
       ownerAdmin: ownerAdmin,
-      isPublic: isPublic,
     });
 
     res.json({ ok: true, video });
@@ -72,7 +75,15 @@ videosRouter.put('/:id', async (req, res) => {
       filter.ownerAdmin = req.user.ownerAdmin;
     }
 
-    const video = await Video.findOneAndUpdate(filter, { $set: payload }, { new: true });
+    // Ajustar ownerAdmin según el usuario:
+    // - Superadmin: siempre ownerAdmin=null (público o privado)
+    // - Admin normal: mantener ownerAdmin existente (siempre su ID)
+    const updatePayload = { ...payload };
+    if (req.user.isSuperAdmin) {
+      updatePayload.ownerAdmin = null;
+    }
+
+    const video = await Video.findOneAndUpdate(filter, { $set: updatePayload }, { new: true });
     if (!video) {
       return res.status(404).json({ error: 'Video not found or access denied' });
     }

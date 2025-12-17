@@ -1,7 +1,15 @@
+Comprobar
 - El ranking tiene que ser de entre los estudiantes de un administrador, ya que está pensado para que haya grupos de clases
-- Los recursos (videos, vocabulario gramática y juegos) añadidos por el usuario administrador serán visibles para los alumnos asociados al profesor administrado
-- Mejorar la estética de y las redirecciones de las pantallas de compra /purchase y /admin/students
-- corregir algunas traducciones al cambiar de idioma.
 
-Archon mejorar contexto para usar el mismo Proyecto
-Archivo con todos los mcps en /proyectos
+
+Por hacer
+PRIORITARIO: 
+4. centrar los mensajes cuando no hay contenido
+5. Migrar el frontend a otro framework tipo angular o react.
+5. Archon mejorar contexto para usar el mismo Proyecto
+6. Archivo con todos los mcps en /proyectos
+
+1. Quitar campos innecesarios de la base de datos y crear Diagrama de Modelado del sistema:
+- Elimina iconEmoji de games (ahorro: ~8 bytes × nº de juegos)
+- Elimina createdBy/updatedBy (ahorro: ~48 bytes × nº de contenidos)
+- Total ahorro: < 1KB por cada 10 documentos (insignificante)

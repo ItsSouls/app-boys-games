@@ -1,16 +1,17 @@
 import { api } from '../services/api.js';
+import { t } from '../i18n/translations.js';
 
-const registerFields = [
-  { key: 'name', id: 'reg-name', placeholder: 'Nombre', type: 'text', autocomplete: 'name' },
-  { key: 'email', id: 'reg-email', placeholder: 'Email', type: 'email', autocomplete: 'email' },
-  { key: 'username', id: 'reg-username', placeholder: 'Usuario', type: 'text', autocomplete: 'username' },
-  { key: 'password', id: 'reg-pass', placeholder: 'Contraseña', type: 'password', autocomplete: 'new-password' },
-  { key: 'passwordConfirm', id: 'reg-pass2', placeholder: 'Repite contraseña', type: 'password', autocomplete: 'new-password' },
+const getRegisterFields = () => [
+  { key: 'name', id: 'reg-name', placeholder: t('fullName'), type: 'text', autocomplete: 'name' },
+  { key: 'email', id: 'reg-email', placeholder: t('email'), type: 'email', autocomplete: 'email' },
+  { key: 'username', id: 'reg-username', placeholder: t('username'), type: 'text', autocomplete: 'username' },
+  { key: 'password', id: 'reg-pass', placeholder: t('password'), type: 'password', autocomplete: 'new-password' },
+  { key: 'passwordConfirm', id: 'reg-pass2', placeholder: t('confirmPassword'), type: 'password', autocomplete: 'new-password' },
 ];
 
-const loginFields = [
-  { key: 'username', id: 'login-username', placeholder: 'Usuario', type: 'text', autocomplete: 'username' },
-  { key: 'password', id: 'login-pass', placeholder: 'Contraseña', type: 'password', autocomplete: 'current-password' },
+const getLoginFields = () => [
+  { key: 'username', id: 'login-username', placeholder: t('username'), type: 'text', autocomplete: 'username' },
+  { key: 'password', id: 'login-pass', placeholder: t('password'), type: 'password', autocomplete: 'current-password' },
 ];
 
 export function setupAuthControls(options = {}) {
@@ -31,15 +32,11 @@ export function showLoginModal(onAuthSuccess) {
   let isRegisterMode = false;
 
   const renderModal = () => {
-    const fields = isRegisterMode ? registerFields : loginFields;
-    const title = isRegisterMode ? 'Crear cuenta' : 'Iniciar sesión';
-    const helper = isRegisterMode
-      ? 'Usuario y contraseña para guardar tus puntos.'
-      : 'Usa tu usuario y contraseña.';
-    const submitLabel = isRegisterMode ? 'Crear cuenta' : 'Entrar';
-    const switchText = isRegisterMode
-      ? '¿Ya tienes cuenta? Inicia sesión'
-      : '¿Eres nuevo? Crea tu cuenta';
+    const fields = isRegisterMode ? getRegisterFields() : getLoginFields();
+    const title = isRegisterMode ? t('authRegisterTitle') : t('authLoginTitle');
+    const helper = isRegisterMode ? t('authRegisterHelper') : t('authLoginHelper');
+    const submitLabel = isRegisterMode ? t('authSubmitRegister') : t('authSubmitLogin');
+    const switchText = isRegisterMode ? t('authSwitchToLogin') : t('authSwitchToRegister');
 
     modal.innerHTML = `
       <div class="abg-modal-header">
@@ -48,7 +45,9 @@ export function showLoginModal(onAuthSuccess) {
       </div>
       ${helper ? `<p class="abg-helper">${helper}</p>` : ''}
       <form class="abg-form">
-        ${fields.map(field => `
+        ${fields
+          .map(
+            (field) => `
           <input
             id="${field.id}"
             class="abg-input"
@@ -57,10 +56,13 @@ export function showLoginModal(onAuthSuccess) {
             autocomplete="${field.autocomplete || 'off'}"
             data-field="${field.key}"
           />
-        `).join('')}
+        `
+          )
+          .join('')}
+        ${isRegisterMode ? '<div class="abg-password-hint" aria-live="polite"></div>' : ''}
         <div class="abg-error"></div>
         <div class="abg-actions">
-          <button type="button" class="abg-btn abg-btn-ghost">Cancelar</button>
+          <button type="button" class="abg-btn abg-btn-ghost">${t('authCancel')}</button>
           <button type="submit" class="abg-btn abg-btn-primary">${submitLabel}</button>
         </div>
       </form>
@@ -76,6 +78,7 @@ export function showLoginModal(onAuthSuccess) {
     const errorEl = modal.querySelector('.abg-error');
     const submitBtn = modal.querySelector('.abg-btn-primary');
     const switchBtn = modal.querySelector('.abg-switch-btn');
+    const passwordHintEl = modal.querySelector('.abg-password-hint');
 
     const close = () => {
       if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
@@ -83,8 +86,12 @@ export function showLoginModal(onAuthSuccess) {
 
     closeBtn.addEventListener('click', close);
     cancelBtn.addEventListener('click', close);
+    let downOnOverlay = false;
+    overlay.addEventListener('mousedown', (event) => {
+      downOnOverlay = event.target === overlay;
+    });
     overlay.addEventListener('click', (event) => {
-      if (event.target === overlay) close();
+      if (downOnOverlay && event.target === overlay) close();
     });
 
     switchBtn.addEventListener('click', () => {
@@ -112,6 +119,36 @@ export function showLoginModal(onAuthSuccess) {
       });
     };
 
+    const updatePasswordHint = () => {
+      if (!isRegisterMode || !passwordHintEl) return;
+      const passInput = form.querySelector('[data-field="password"]');
+      const pass2Input = form.querySelector('[data-field="passwordConfirm"]');
+      const pass = passInput?.value || '';
+      const pass2 = pass2Input?.value || '';
+      const messages = [];
+      if (pass.length < 6) {
+        const remaining = Math.max(0, 6 - pass.length);
+        messages.push(t('authMinChars').replace('{n}', remaining));
+      }
+      if (!/[A-Z]/.test(pass)) {
+        messages.push(t('authNeedUpper'));
+      }
+      if (!/[^A-Za-z0-9]/.test(pass)) {
+        messages.push(t('authNeedSymbol'));
+      }
+      if (pass2 && pass !== pass2) {
+        messages.push(t('authPasswordsMustMatch'));
+      }
+      passwordHintEl.textContent = messages.join(' · ');
+    };
+
+    if (isRegisterMode && passwordHintEl) {
+      form.querySelectorAll('[data-field="password"], [data-field="passwordConfirm"]').forEach((input) => {
+        input.addEventListener('input', updatePasswordHint);
+      });
+      updatePasswordHint();
+    }
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       setError('');
@@ -123,21 +160,27 @@ export function showLoginModal(onAuthSuccess) {
         if (isRegisterMode) {
           const { name, email, username, password, passwordConfirm } = values;
           if (!name || !email || !username || !password || !passwordConfirm) {
-            setError('Completa todos los campos.');
+            setError(t('authFillAllFields'));
             return;
           }
           // Validate email format
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
           if (!emailRegex.test(email)) {
-            setError('Formato de email inválido.');
+            setError(t('authInvalidEmail'));
             return;
           }
+          const hasUpper = /[A-Z]/.test(password);
+          const hasSymbol = /[^A-Za-z0-9]/.test(password);
           if (password.length < 6) {
-            setError('La contraseña necesita al menos 6 caracteres.');
+            setError(t('authPasswordLength'));
+            return;
+          }
+          if (!hasUpper || !hasSymbol) {
+            setError(t('authPasswordRequirement'));
             return;
           }
           if (password !== passwordConfirm) {
-            setError('Las contraseñas no coinciden.');
+            setError(t('authPasswordMismatch'));
             return;
           }
 
@@ -147,7 +190,7 @@ export function showLoginModal(onAuthSuccess) {
         } else {
           const { username, password } = values;
           if (!username || !password) {
-            setError('Completa todos los campos.');
+            setError(t('authFillAllFields'));
             return;
           }
 
@@ -157,11 +200,7 @@ export function showLoginModal(onAuthSuccess) {
         }
       } catch (error) {
         console.error('auth failed', error);
-        setError(
-          isRegisterMode
-            ? 'Registro fallido. ¿Usuario ya registrado? ¿Backend activo?'
-            : 'Login fallido. Revisa usuario/contraseña y que el backend está activo.'
-        );
+        setError(isRegisterMode ? t('authRegisterFailed') : t('authLoginFailed'));
       } finally {
         setBusy(false);
       }

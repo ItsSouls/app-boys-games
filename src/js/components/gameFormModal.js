@@ -58,11 +58,16 @@ export async function openGameFormModal(mode = 'create', gameId = null, onSucces
 
   const isEdit = mode === 'edit';
   const title = isEdit ? 'Editar Juego' : 'Añadir Nuevo Juego';
+  const isPublished = isEdit ? (gameData?.isPublished !== false) : true;
 
   overlay.innerHTML = `
     <div class="game-form-modal">
       <div class="game-form-modal__header">
         <h2 class="game-form-modal__title">${title}</h2>
+        <div class="vocabulario-admin__toggle">
+          <span class="vocabulario-admin__toggle-label">Visible para el alumnado</span>
+          <div class="vocabulario-admin__toggle-switch ${isPublished ? 'is-active' : ''}" id="game-published-toggle"></div>
+        </div>
         <button class="game-form-modal__close" aria-label="Cerrar">&times;</button>
       </div>
 
@@ -294,24 +299,6 @@ PERRO, GATO, PAJARO, CONEJO, HAMSTER"
         </div>
       </div>
 
-      <div class="form-section">
-        <div class="form-group">
-          <label class="form-checkbox-label">
-            <input
-              type="checkbox"
-              id="game-published"
-              name="isPublished"
-              class="form-checkbox"
-              ${data.isPublished !== false ? 'checked' : ''}
-            />
-            <span class="form-checkbox-text">
-              <strong>Publicar juego</strong>
-              <span class="form-checkbox-hint">Los estudiantes podrán jugar este juego</span>
-            </span>
-          </label>
-        </div>
-      </div>
-
       <div class="game-form-modal__footer">
         <button type="button" class="btn btn--secondary" id="cancel-game-btn">
           Cancelar
@@ -429,24 +416,6 @@ function renderHangmanForm(gameData = null) {
         <button type="button" class="btn btn--secondary" id="add-word-btn" style="width: 100%; margin-top: 12px;">
           + Añadir Palabra
         </button>
-      </div>
-
-      <div class="form-section">
-        <div class="form-group">
-          <label class="form-checkbox-label">
-            <input
-              type="checkbox"
-              id="game-published"
-              name="isPublished"
-              class="form-checkbox"
-              ${data.isPublished !== false ? 'checked' : ''}
-            />
-            <span class="form-checkbox-text">
-              <strong>Publicar juego</strong>
-              <span class="form-checkbox-hint">Los estudiantes podrán jugar este juego</span>
-            </span>
-          </label>
-        </div>
       </div>
 
       <div class="game-form-modal__footer">
@@ -596,24 +565,6 @@ function renderCrosswordForm(gameData = null) {
         </button>
       </div>
 
-      <div class="form-section">
-        <div class="form-group">
-          <label class="form-checkbox-label">
-            <input
-              type="checkbox"
-              id="game-published"
-              name="isPublished"
-              class="form-checkbox"
-              ${data.isPublished !== false ? 'checked' : ''}
-            />
-            <span class="form-checkbox-text">
-              <strong>Publicar juego</strong>
-              <span class="form-checkbox-hint">Los estudiantes podrán jugar este crucigrama</span>
-            </span>
-          </label>
-        </div>
-      </div>
-
       <div class="game-form-modal__footer">
         <button type="button" class="btn btn--secondary" id="cancel-game-btn">
           Cancelar
@@ -692,6 +643,23 @@ function wireModalEvents(overlay, gameData) {
     }
   };
   document.addEventListener('keydown', escHandler);
+
+  // Wire toggle isPublished
+  let isPublished = modalState.mode === 'edit' ? (gameData?.isPublished !== false) : true;
+  const publishedToggle = overlay.querySelector('#game-published-toggle');
+  if (publishedToggle) {
+    publishedToggle.addEventListener('click', () => {
+      isPublished = !isPublished;
+      if (isPublished) {
+        publishedToggle.classList.add('is-active');
+      } else {
+        publishedToggle.classList.remove('is-active');
+      }
+    });
+  }
+  // Store isPublished in modalState so it can be accessed during form submit
+  modalState.isPublished = isPublished;
+  modalState.getIsPublished = () => isPublished;
 
   // Si es modo creación, wire selección de tipo
   if (modalState.mode === 'create') {
@@ -927,7 +895,7 @@ async function handleFormSubmit(form, gameData) {
     coverImage: (formData.get('coverImage') || '').trim(),
     topic: formData.get('topic'),
     category: formData.get('category') || 'General',
-    isPublished: formData.get('isPublished') === 'on',
+    isPublished: modalState.getIsPublished ? modalState.getIsPublished() : true,
     config: {}
   };
 

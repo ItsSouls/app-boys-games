@@ -48,7 +48,11 @@ export async function renderAdminStudents() {
   container.innerHTML = `
     <div class="students-container">
       <div class="students-header">
-        <button class="back-btn" id="admin-students-back-btn">← <span data-i18n="backToHome"></span></button>
+        <button class="back-btn" id="admin-students-back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          <span data-i18n="back"></span></button>
         <h1 data-i18n="studentsManagement"></h1>
       </div>
 
@@ -72,6 +76,7 @@ export async function renderAdminStudents() {
               <label for="student-password" data-i18n="password"></label>
               <input type="password" id="student-password" name="password" required minlength="6">
             </div>
+            <div id="student-password-hint" class="password-hint" aria-live="polite"></div>
             <div class="form-actions">
               <button type="submit" class="abg-btn" data-i18n="createStudent"></button>
             </div>
@@ -107,6 +112,22 @@ export async function renderAdminStudents() {
 
   // Add form submit handler
   const form = document.getElementById('create-student-form');
+  const passwordInput = form.querySelector('#student-password');
+  const passwordHintEl = document.getElementById('student-password-hint');
+  if (passwordInput && passwordHintEl && !passwordInput.__hintWired) {
+    passwordInput.__hintWired = true;
+    const updatePasswordHint = () => {
+      const pwd = passwordInput.value || '';
+      if (pwd.length < 6) {
+        const remaining = Math.max(0, 6 - pwd.length);
+        passwordHintEl.textContent = `Mínimo 6 caracteres (faltan ${remaining})`;
+      } else {
+        passwordHintEl.textContent = '';
+      }
+    };
+    passwordInput.addEventListener('input', updatePasswordHint);
+    updatePasswordHint();
+  }
   form.addEventListener('submit', handleCreateStudent);
 }
 
@@ -117,7 +138,11 @@ async function loadStudents() {
   try {
     const { students, count, limit } = await api.getStudents();
 
-    countElement.textContent = `${count} / ${limit} alumnos`;
+    // Fijar contador y evitar que i18n lo sobreescriba
+    if (countElement) {
+      countElement.removeAttribute('data-i18n');
+      countElement.textContent = `${count} / ${limit} alumnos`;
+    }
 
     if (students.length === 0) {
       listContainer.innerHTML = `

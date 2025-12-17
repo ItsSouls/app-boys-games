@@ -1,4 +1,5 @@
-import { API_BASE } from '../app/config.js';
+import { API_BASE } from '../core/config.js';
+import { api } from '../services/api.js';
 import { isImageUrl } from '../utils/validators.js';
 import { escapeHtml, escapeAttribute } from '../utils/sanitize.js';
 
@@ -17,20 +18,20 @@ function convertToEmbedUrl(url) {
 
 let cache = [];
 let isAdmin = false;
+let sessionUser = null;
 
-export async function renderVideos(filter = '', forceUserView = false) {
-  // Check if user is admin via /auth/me (cookies)
+async function getUserSafe({ force = false } = {}) {
   try {
-    const res = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-    if (res.ok) {
-      const { user } = await res.json();
-      isAdmin = user?.role === 'admin' || user?.role === 'moderator';
-    } else {
-      isAdmin = false;
-    }
+    const data = await api.me({ force });
+    return data?.user || null;
   } catch {
-    isAdmin = false;
+    return null;
   }
+}
+
+export async function renderVideos({ filter = '', forceUserView = false, currentUser = null } = {}) {
+  sessionUser = currentUser || (await getUserSafe());
+  isAdmin = sessionUser?.role === 'admin' || sessionUser?.role === 'moderator';
 
   const adminToggle = document.getElementById('videos-admin-gear');
   if (adminToggle) adminToggle.classList.toggle('is-visible', isAdmin);
@@ -53,15 +54,10 @@ async function renderUserView(filter = '') {
   const shouldReload = !cache.length || !filter;
   if (shouldReload) {
     try {
-      // Multi-tenant: verificar si hay usuario autenticado
-      let isAuthenticated = false;
-      try {
-        const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-        isAuthenticated = authRes.ok;
-      } catch {
-        isAuthenticated = false;
+      if (!sessionUser) {
+        sessionUser = await getUserSafe();
       }
-
+      const isAuthenticated = Boolean(sessionUser);
       // Si está autenticado, usar ruta /api/videos para ver videos de su ownerAdmin
       // Si no está autenticado, usar ruta pública
       const endpoint = isAuthenticated ? `${API_BASE}/videos` : `${API_BASE}/public/videos`;
@@ -89,7 +85,7 @@ async function renderUserView(filter = '') {
   const list = term ? cache.filter((video) => video.title.toLowerCase().includes(term)) : cache;
 
   if (!list.length) {
-    videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos disponibles</div>`;
+    videosGrid.innerHTML = `<div class="videos-grid__empty">No hay videos disponibles</div>`;
   } else {
     videosGrid.innerHTML = list
       .map((video) => {
@@ -137,15 +133,26 @@ export async function renderAdminView(filter = '') {
       const res = await fetch(`${API_BASE}/admin/videos`, { credentials: 'include' });
       if (res.ok) {
         const data = await res.json();
-        cache = (data?.videos || []).map((v) => ({
-          id: v._id,
-          title: v.title,
-          description: v.description,
-          embedUrl: v.embedUrl,
-          emoji: v.emoji,
-          category: v.category || 'General',
-          status: v.status || 'published',
-        }));
+        cache = (data?.videos || []).map((v) => {
+          const derivedIsPublic =
+            v.isPublic !== undefined
+              ? v.isPublic
+              : v.isPublished !== undefined
+              ? v.isPublished
+              : v.status
+              ? v.status === 'published'
+              : false;
+          return {
+            id: v._id,
+            title: v.title,
+            description: v.description,
+            embedUrl: v.embedUrl,
+            emoji: v.emoji,
+            category: v.category || 'General',
+            status: v.status || (derivedIsPublic ? 'published' : 'draft'),
+            isPublic: derivedIsPublic,
+          };
+        });
       } else {
         cache = [];
       }
@@ -169,8 +176,9 @@ export async function renderAdminView(filter = '') {
           ? `<img src="${escapeAttribute(rawMedia)}" alt="" loading="lazy" />`
           : `<span>${escapeHtml(normalizedMedia)}</span>`;
 
-        const statusClass = video.status === 'published' ? 'published' : 'draft';
-        const statusText = video.status === 'published' ? 'Publicado' : 'Borrador';
+        const isVideoPublic = video.isPublic ?? video.status === 'published';
+        const statusClass = isVideoPublic ? 'published' : 'draft';
+        const statusText = isVideoPublic ? 'Publicado' : 'Oculto';
 
         return `
           <tr draggable="true" data-video-id="${video.id}">
@@ -309,7 +317,7 @@ function filterVideosByCategory(category) {
 
   if (videosGrid) {
     if (!filtered.length) {
-      videosGrid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--color-text-muted);font-size:1.1rem;">No hay videos en esta categoría</div>`;
+      videosGrid.innerHTML = `<div class="videos-grid__empty">No hay videos en esta categoría</div>`;
     } else {
       videosGrid.innerHTML = filtered
         .map((video) => {
@@ -439,6 +447,10 @@ function openAddVideoModal() {
     <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="admin-modal__header">
       <h3>Añadir Nuevo Video</h3>
+      <div class="vocabulario-admin__toggle">
+        <span class="vocabulario-admin__toggle-label">Visible para el alumnado</span>
+        <div class="vocabulario-admin__toggle-switch is-active" id="add-video-published-toggle"></div>
+      </div>
     </header>
     <form class="admin-video-form" id="add-video-form">
       <div class="form-group">
@@ -478,12 +490,25 @@ function openAddVideoModal() {
     if (e.target === overlay) close();
   });
 
+  // Toggle isPublic state
+  let isPublic = true; // Default to published
+  const publishedToggle = modal.querySelector('#add-video-published-toggle');
+  publishedToggle.addEventListener('click', () => {
+    isPublic = !isPublic;
+    if (isPublic) {
+      publishedToggle.classList.add('is-active');
+    } else {
+      publishedToggle.classList.remove('is-active');
+    }
+  });
+
   const form = modal.querySelector('#add-video-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
     videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
+    videoData.isPublic = isPublic; // Add isPublic state
 
     try {
       const res = await fetch(`${API_BASE}/admin/videos`, {
@@ -515,10 +540,15 @@ function openEditVideoModal(videoId) {
   overlay.className = 'video-overlay';
   const modal = document.createElement('div');
   modal.className = 'admin-video-modal';
+  const isVideoPublic = video.isPublic ?? video.status === 'published';
   modal.innerHTML = `
     <button type="button" class="video-modal__close" aria-label="Cerrar">&times;</button>
     <header class="admin-modal__header">
       <h3>Editar Video</h3>
+      <div class="vocabulario-admin__toggle">
+        <span class="vocabulario-admin__toggle-label">Visible para el alumnado</span>
+        <div class="vocabulario-admin__toggle-switch ${isVideoPublic ? 'is-active' : ''}" id="edit-video-published-toggle"></div>
+      </div>
     </header>
     <form class="admin-video-form" id="edit-video-form">
       <div class="form-group">
@@ -558,12 +588,25 @@ function openEditVideoModal(videoId) {
     if (e.target === overlay) close();
   });
 
+  // Toggle isPublic state
+  let isPublic = isVideoPublic; // Default to existing value
+  const publishedToggle = modal.querySelector('#edit-video-published-toggle');
+  publishedToggle.addEventListener('click', () => {
+    isPublic = !isPublic;
+    if (isPublic) {
+      publishedToggle.classList.add('is-active');
+    } else {
+      publishedToggle.classList.remove('is-active');
+    }
+  });
+
   const form = modal.querySelector('#edit-video-form');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const videoData = Object.fromEntries(formData.entries());
     videoData.embedUrl = convertToEmbedUrl(videoData.embedUrl);
+    videoData.isPublic = isPublic; // Add isPublic state
 
     try {
       const res = await fetch(`${API_BASE}/admin/videos/${videoId}`, {
@@ -576,7 +619,6 @@ function openEditVideoModal(videoId) {
         close();
         cache = [];
         await renderAdminView('');
-        alert('Video actualizado correctamente');
       } else {
         const errorData = await res.json().catch(() => ({}));
         alert(`Error al actualizar el video: ${errorData.message || errorData.error || res.status}`);

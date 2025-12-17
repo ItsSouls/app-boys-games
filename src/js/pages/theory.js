@@ -1,7 +1,8 @@
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-import { API_BASE } from './config.js';
-import { openTheoryAdminModal } from '../ui/admin/theoryModal.js';
+import { API_BASE } from '../core/config.js';
+import { api } from '../services/api.js';
+import { openTheoryAdminModal } from '../admin/theoryModal.js';
 
 // Configurar marked para tablas y GFM (GitHub Flavored Markdown)
 marked.setOptions({
@@ -84,6 +85,21 @@ const state = {
   },
 };
 
+// Cache de usuario para evitar múltiples llamadas a /auth/me
+let theoryUserCache = null;
+
+async function getTheoryUser() {
+  if (!theoryUserCache) {
+    try {
+      const data = await api.me();
+      theoryUserCache = data?.user || null;
+    } catch {
+      theoryUserCache = null;
+    }
+  }
+  return theoryUserCache;
+}
+
 export const formatTheoryDate = (value) => {
   if (!value) return '';
   const date = new Date(value);
@@ -115,14 +131,9 @@ function getBadgeClass(category) {
 // Cargar páginas desde el backend
 async function loadPages(sectionName) {
   try {
-    // Multi-tenant: verificar si hay usuario autenticado
-    let isAuthenticated = false;
-    try {
-      const authRes = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-      isAuthenticated = authRes.ok;
-    } catch {
-      isAuthenticated = false;
-    }
+    // Multi-tenant: verificar si hay usuario autenticado (cacheado)
+    const user = await getTheoryUser();
+    const isAuthenticated = Boolean(user);
 
     // Si está autenticado, usar ruta /api/pages para ver páginas de su ownerAdmin
     // Si no está autenticado, usar ruta pública
@@ -147,9 +158,7 @@ async function loadPages(sectionName) {
 // Verificar si el usuario es admin
 async function checkAdminStatus() {
   try {
-    const res = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-    if (!res.ok) return false;
-    const { user } = await res.json();
+    const user = await getTheoryUser();
     return user?.role === 'admin' || user?.role === 'moderator';
   } catch {
     return false;
