@@ -68,6 +68,11 @@
 	--shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
 	--shadow-header: 0 1px 3px rgba(0, 0, 0, 0.06);
 
+	/* Stronger shadows for modals and elevated elements */
+	--shadow-base: 0 2px 8px rgba(0, 0, 0, 0.1);
+	--shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.3);
+	--shadow-button: 0 4px 12px rgba(0, 217, 126, 0.4);
+
 	/* Z-index layers */
 	--z-base: 0;
 	--z-dropdown: 10;
