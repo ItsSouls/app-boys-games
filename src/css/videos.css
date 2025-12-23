@@ -253,38 +253,7 @@
   flex-wrap: wrap;
 }
 
-.admin-search-bar {
-  position: relative;
-  flex: 1;
-  min-width: 300px;
-}
-
-.admin-search-icon {
-  position: absolute;
-  left: 18px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
-
-.admin-search-bar input {
-  width: 100%;
-  padding: 14px 20px 14px 52px;
-  border: 2px solid var(--color-border-medium);
-  border-radius: 50px;
-  font-size: 0.95rem;
-  font-family: var(--font-family-base);
-  color: var(--color-text-primary);
-  background: var(--color-white);
-  outline: none;
-  transition: all var(--transition-base);
-}
-
-.admin-search-bar input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
-}
+/* Admin search bar - Base styles in common-components.css */
 
 .admin-filter-btn {
   display: flex;
