@@ -22,6 +22,7 @@
 @import './components.css';
 @import './header.css';
 @import './common-components.css';
+@import './audioRecorder.css';
 
 /* 7. Theory and educational content */
 @import './theory-cards.css';
@@ -51,6 +52,7 @@
 @import './hangman.css';
 @import './wordsearch.css';
 @import './crossword.css';
+@import './bubbles.css';
 @import './ranking.css';
 
 /* 16. Purchase and billing */

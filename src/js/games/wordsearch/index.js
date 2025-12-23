@@ -66,17 +66,18 @@ export function startWordsearchGame({ container, game, onExit }) {
       <div class="wordsearch">
         <div class="wordsearch__header">
           <div class="wordsearch__title-area">
-            <div>
-              <h1 class="wordsearch__title">${escapeHtml(game.title || 'Sopa de Letras')}</h1>
-              <p class="wordsearch__subtitle">${escapeHtml(game.description || 'Encuentra todas las palabras ocultas')}</p>
-            </div>
+            <h1 class="wordsearch__title">${escapeHtml(game.title || 'Sopa de Letras')}</h1>
             <div class="wordsearch__meta">
-              <span class="wordsearch__badge">Tema: ${escapeHtml(game.topic || 'General')}</span>
+              <span class="wordsearch__badge">📚 ${escapeHtml(game.topic || 'General')}</span>
               <span class="wordsearch__badge wordsearch__badge--ghost">${width} x ${height}</span>
             </div>
           </div>
           <div class="wordsearch__actions">
-            <button class="wordsearch__exit-btn" id="wordsearch-exit-btn">Salir</button>
+            <button class="wordsearch__exit-btn" id="wordsearch-exit-btn" title="Salir">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -149,6 +150,39 @@ export function startWordsearchGame({ container, game, onExit }) {
             }
           </div>
         </div>
+
+        <!-- Modal de Salida -->
+        <div class="wordsearch__modal hidden" id="wordsearch-exit-modal">
+          <div class="wordsearch__modal-content">
+            <h2 class="wordsearch__modal-title">¿Salir del juego?</h2>
+            <p class="wordsearch__modal-text">Se perderá el progreso actual del juego.</p>
+            <div class="wordsearch__modal-actions">
+              <button class="wordsearch__modal-btn wordsearch__modal-btn--secondary" id="wordsearch-cancel-exit">Cancelar</button>
+              <button class="wordsearch__modal-btn wordsearch__modal-btn--danger" id="wordsearch-confirm-exit">Salir</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Juego Completado -->
+        <div class="wordsearch__modal hidden" id="wordsearch-gameover-modal">
+          <div class="wordsearch__modal-content wordsearch__modal-content--large">
+            <h2 class="wordsearch__modal-title">¡Juego Completado! 🎉</h2>
+            <p class="wordsearch__modal-text">Has encontrado todas las palabras.</p>
+            <div class="wordsearch__results">
+              <div class="wordsearch__result-item">
+                <span class="wordsearch__result-label">Palabras encontradas</span>
+                <span class="wordsearch__result-value wordsearch__result-value--success" id="wordsearch-final-words">0</span>
+              </div>
+              <div class="wordsearch__result-item">
+                <span class="wordsearch__result-label">Errores</span>
+                <span class="wordsearch__result-value" id="wordsearch-final-errors">0</span>
+              </div>
+            </div>
+            <div class="wordsearch__modal-actions">
+              <button class="wordsearch__modal-btn wordsearch__modal-btn--primary" id="wordsearch-finish">Finalizar</button>
+            </div>
+          </div>
+        </div>
       </div>
     `;
 
@@ -157,10 +191,24 @@ export function startWordsearchGame({ container, game, onExit }) {
   }
 
   function wireEvents() {
+    // Botón de salida - mostrar modal
     container.querySelector('#wordsearch-exit-btn')?.addEventListener('click', () => {
-      if (confirm('¿Deseas salir del juego?')) {
-        onExit?.();
-      }
+      showExitModal();
+    });
+
+    // Botones del modal de salida
+    container.querySelector('#wordsearch-cancel-exit')?.addEventListener('click', () => {
+      hideExitModal();
+    });
+
+    container.querySelector('#wordsearch-confirm-exit')?.addEventListener('click', () => {
+      hideExitModal();
+      onExit?.();
+    });
+
+    // Botón del modal de juego completado
+    container.querySelector('#wordsearch-finish')?.addEventListener('click', () => {
+      onExit?.();
     });
 
     const gridEl = container.querySelector('#wordsearch-grid');
@@ -173,6 +221,33 @@ export function startWordsearchGame({ container, game, onExit }) {
 
     const checkBtn = container.querySelector('#wordsearch-check-btn');
     checkBtn?.addEventListener('click', handleCheckSelection);
+  }
+
+  function showExitModal() {
+    const modal = container.querySelector('#wordsearch-exit-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  function hideExitModal() {
+    const modal = container.querySelector('#wordsearch-exit-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  function showGameOverModal() {
+    const modal = container.querySelector('#wordsearch-gameover-modal');
+    const finalWords = container.querySelector('#wordsearch-final-words');
+    const finalErrors = container.querySelector('#wordsearch-final-errors');
+
+    if (finalWords) finalWords.textContent = state.foundCount;
+    if (finalErrors) finalErrors.textContent = state.errors;
+
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
   }
 
   function handlePointerDown(event, cell) {
@@ -359,8 +434,7 @@ export function startWordsearchGame({ container, game, onExit }) {
     });
 
     setTimeout(() => {
-      alert('¡Has completado esta sopa de letras!');
-      onExit?.();
+      showGameOverModal();
     }, 200);
   }
 

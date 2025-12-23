@@ -54,13 +54,17 @@ export function startHangmanGame({ container, game, onExit }) {
       <div class="hangman">
         <div class="hangman__header">
           <div class="hangman__title-area">
-            <div class="hangman__title">${game.title || 'Juego del Ahorcado'}</div>
+            <h1 class="hangman__title">${game.title || 'Juego del Ahorcado'}</h1>
             <div class="hangman__meta">
-              <span class="hangman__badge">Categoría: ${game.topic || 'General'}</span>
+              <span class="hangman__badge">📚 ${game.topic || 'General'}</span>
             </div>
           </div>
           <div class="hangman__actions">
-            <button class="hangman__exit-btn" id="hangman-exit-btn">Salir</button>
+            <button class="hangman__exit-btn" id="hangman-exit-btn" title="Salir">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -91,6 +95,39 @@ export function startHangmanGame({ container, game, onExit }) {
         <div class="hangman__keyboard">
           ${LETTERS.map(letter => renderKey(letter)).join('')}
         </div>
+
+        <!-- Modal de Salida -->
+        <div class="hangman__modal hidden" id="hangman-exit-modal">
+          <div class="hangman__modal-content">
+            <h2 class="hangman__modal-title">¿Salir del juego?</h2>
+            <p class="hangman__modal-text">Se perderá el progreso actual del juego.</p>
+            <div class="hangman__modal-actions">
+              <button class="hangman__modal-btn hangman__modal-btn--secondary" id="hangman-cancel-exit">Cancelar</button>
+              <button class="hangman__modal-btn hangman__modal-btn--danger" id="hangman-confirm-exit">Salir</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Resultado -->
+        <div class="hangman__modal hidden" id="hangman-result-modal">
+          <div class="hangman__modal-content hangman__modal-content--large">
+            <h2 class="hangman__modal-title" id="hangman-result-title">¡Juego Terminado!</h2>
+            <p class="hangman__modal-text" id="hangman-result-message">Mensaje del resultado</p>
+            <div class="hangman__results">
+              <div class="hangman__result-item">
+                <span class="hangman__result-label">Palabra correcta</span>
+                <span class="hangman__result-value hangman__result-value--success" id="hangman-final-word">---</span>
+              </div>
+              <div class="hangman__result-item">
+                <span class="hangman__result-label">Errores</span>
+                <span class="hangman__result-value" id="hangman-final-errors">0</span>
+              </div>
+            </div>
+            <div class="hangman__modal-actions">
+              <button class="hangman__modal-btn hangman__modal-btn--primary" id="hangman-finish">Finalizar</button>
+            </div>
+          </div>
+        </div>
       </div>
     `;
 
@@ -120,11 +157,25 @@ export function startHangmanGame({ container, game, onExit }) {
   }
 
   function wireEvents() {
+    // Botón de salida - mostrar modal
     const exitBtn = container.querySelector('#hangman-exit-btn');
     exitBtn?.addEventListener('click', () => {
-      if (confirm('¿Deseas salir del juego?')) {
-        handleExit();
-      }
+      showExitModal();
+    });
+
+    // Botones del modal de salida
+    container.querySelector('#hangman-cancel-exit')?.addEventListener('click', () => {
+      hideExitModal();
+    });
+
+    container.querySelector('#hangman-confirm-exit')?.addEventListener('click', () => {
+      hideExitModal();
+      handleExit();
+    });
+
+    // Botón del modal de resultado
+    container.querySelector('#hangman-finish')?.addEventListener('click', () => {
+      handleExit();
     });
 
     container.querySelectorAll('.hangman__key').forEach(btn => {
@@ -135,6 +186,45 @@ export function startHangmanGame({ container, game, onExit }) {
         handleGuess(letter);
       });
     });
+  }
+
+  function showExitModal() {
+    const modal = container.querySelector('#hangman-exit-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  function hideExitModal() {
+    const modal = container.querySelector('#hangman-exit-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  function showResultModal(completed) {
+    const modal = container.querySelector('#hangman-result-modal');
+    const title = container.querySelector('#hangman-result-title');
+    const message = container.querySelector('#hangman-result-message');
+    const finalWord = container.querySelector('#hangman-final-word');
+    const finalErrors = container.querySelector('#hangman-final-errors');
+
+    if (title) {
+      title.textContent = completed ? '¡Ganaste! 🎉' : '¡Has perdido! 😔';
+    }
+
+    if (message) {
+      message.textContent = completed
+        ? 'Has adivinado la palabra correctamente.'
+        : 'No te preocupes, ¡intenta de nuevo!';
+    }
+
+    if (finalWord) finalWord.textContent = targetWord;
+    if (finalErrors) finalErrors.textContent = errors;
+
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
   }
 
   function handleGuess(letter) {
@@ -179,8 +269,7 @@ export function startHangmanGame({ container, game, onExit }) {
       });
 
       setTimeout(() => {
-        alert(completed ? '¡Ganaste!' : '¡Has perdido! Intenta de nuevo.');
-        handleExit();
+        showResultModal(completed);
       }, 100);
     }
   }

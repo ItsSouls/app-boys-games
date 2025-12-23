@@ -31,6 +31,31 @@ button {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
+	background-image: url('/background.png');
+	background-size: 80% 100%;
+	background-position: right top;
+	background-repeat: no-repeat;
+}	
+
+#app.app--videos-bg{
+	background-color: var(--color-bg-secondary);
+	background-image:
+		url('/avioneta.png'),
+		url('/lateral_izqdo.png'),
+		url('/lateral_derecho.png');
+	background-size:
+		600px auto,
+		120px auto,
+		140px auto;
+	background-position:
+		75% 150px,
+		0px 98px,
+		100% 98px;
+	background-repeat:
+		no-repeat,
+		repeat-y,
+		repeat-y;
+	background-attachment: scroll;
 }
 
 /* Utility classes */
@@ -47,6 +72,6 @@ button {
 }
 
 .container {
-	max-width: 960px;
+	max-width: 1200px;
 	margin: 0 auto;
 }

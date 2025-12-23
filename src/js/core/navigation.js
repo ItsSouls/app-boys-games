@@ -1,5 +1,7 @@
 import { renderTheory } from '../pages/theory.js';
 
+const SECTIONS_WITH_VIDEOS_BG = new Set(['videos', 'games', 'vocabulario', 'gramatica']);
+
 const PAGE_SELECTORS = [
   '#home-page',
   '#videos-page',
@@ -13,6 +15,16 @@ const PAGE_SELECTORS = [
 ];
 
 export function createNavigationController({ refreshUserGreeting, maybeShowAdminGear, getCurrentUser }) {
+  const setAppBackground = (sectionName) => {
+    const app = document.querySelector('#app');
+    if (!app) return;
+    if (SECTIONS_WITH_VIDEOS_BG.has(sectionName)) {
+      app.classList.add('app--videos-bg');
+    } else {
+      app.classList.remove('app--videos-bg');
+    }
+  };
+
   const hideAllPages = () => {
     PAGE_SELECTORS.forEach((selector) => {
       document.querySelector(selector)?.classList.add('hidden');
@@ -23,6 +35,7 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
 
   const showMainMenu = async () => {
     hideAllPages();
+    setAppBackground(null);
     document.querySelector('#home-page')?.classList.remove('hidden');
     if (typeof refreshUserGreeting === 'function') {
       await refreshUserGreeting();
@@ -31,6 +44,7 @@ export function createNavigationController({ refreshUserGreeting, maybeShowAdmin
 
   const showSection = async (sectionName) => {
     hideAllPages();
+    setAppBackground(sectionName);
 
     // Map section names to page IDs
     const pageMap = {

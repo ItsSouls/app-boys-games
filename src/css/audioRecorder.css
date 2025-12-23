@@ -1,0 +1,133 @@
+/* Audio Recorder Component Styles */
+
+.audio-recorder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.audio-recorder__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.audio-recorder__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.audio-recorder__btn:hover {
+  transform: translateY(-1px);
+}
+
+.audio-recorder__btn:active {
+  transform: translateY(0);
+}
+
+.audio-recorder__btn--record {
+  background: #3b82f6;
+  color: white;
+}
+
+.audio-recorder__btn--record:hover {
+  background: #2563eb;
+}
+
+.audio-recorder__btn--stop {
+  background: #ef4444;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+.audio-recorder__btn--stop:hover {
+  background: #dc2626;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.audio-recorder__btn--play {
+  background: #10b981;
+  color: white;
+}
+
+.audio-recorder__btn--play:hover {
+  background: #059669;
+}
+
+.audio-recorder__btn--delete {
+  background: #6b7280;
+  color: white;
+  padding: 8px;
+}
+
+.audio-recorder__btn--delete:hover {
+  background: #4b5563;
+}
+
+.audio-recorder__progress {
+  flex: 1;
+  min-width: 100px;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.audio-recorder__progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+  transition: width 0.05s linear;
+  border-radius: 4px;
+}
+
+.audio-recorder__info {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.audio-recorder__status {
+  color: #10b981;
+  font-weight: 500;
+}
+
+.audio-recorder__hint {
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .audio-recorder__controls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .audio-recorder__btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .audio-recorder__progress {
+    width: 100%;
+  }
+}

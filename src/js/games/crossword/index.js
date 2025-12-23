@@ -79,25 +79,31 @@ export function startCrosswordGame({ container, game, onExit }) {
       <div class="crossword">
         <div class="crossword__header">
           <div class="crossword__title-area">
-            <div>
-              <h1 class="crossword__title">${escapeHtml(game.title || 'Crucigrama')}</h1>
-              <p class="crossword__subtitle">${escapeHtml(game.description || 'Completa todas las palabras')}</p>
-            </div>
+            <h1 class="crossword__title">${escapeHtml(game.title || 'Crucigrama')}</h1>
             <div class="crossword__meta">
-              <span class="crossword__badge">Tema: ${escapeHtml(game.topic || 'General')}</span>
+              <span class="crossword__badge">📚 ${escapeHtml(game.topic || 'General')}</span>
               <span class="crossword__badge crossword__badge--ghost">${state.placements.length} palabras</span>
             </div>
           </div>
           <div class="crossword__actions">
             <button class="crossword__hint-btn" id="crossword-hint-btn" title="Revelar letra">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
                 <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
                 <path d="M10 6V10M10 14H10.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              Pista
+              <span>Pista</span>
             </button>
-            <button class="crossword__check-btn" id="crossword-check-btn">Verificar</button>
-            <button class="crossword__exit-btn" id="crossword-exit-btn">Salir</button>
+            <button class="crossword__check-btn" id="crossword-check-btn" title="Verificar respuestas">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+              </svg>
+              <span>Verificar</span>
+            </button>
+            <button class="crossword__exit-btn" id="crossword-exit-btn" title="Salir">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -134,6 +140,50 @@ export function startCrosswordGame({ container, game, onExit }) {
               <ul class="crossword__clues-list" id="clues-down">
                 ${downClues.map(p => renderClueItem(p)).join('')}
               </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Salida -->
+        <div class="crossword__modal hidden" id="crossword-exit-modal">
+          <div class="crossword__modal-content">
+            <h2 class="crossword__modal-title">¿Salir del juego?</h2>
+            <p class="crossword__modal-text">Se perderá el progreso actual del juego.</p>
+            <div class="crossword__modal-actions">
+              <button class="crossword__modal-btn crossword__modal-btn--secondary" id="crossword-cancel-exit">Cancelar</button>
+              <button class="crossword__modal-btn crossword__modal-btn--danger" id="crossword-confirm-exit">Salir</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Alerta -->
+        <div class="crossword__modal hidden" id="crossword-alert-modal">
+          <div class="crossword__modal-content">
+            <h2 class="crossword__modal-title">Aviso</h2>
+            <p class="crossword__modal-text" id="crossword-alert-text">Mensaje de alerta</p>
+            <div class="crossword__modal-actions">
+              <button class="crossword__modal-btn crossword__modal-btn--primary" id="crossword-alert-ok">Aceptar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de Juego Completado -->
+        <div class="crossword__modal hidden" id="crossword-complete-modal">
+          <div class="crossword__modal-content crossword__modal-content--large">
+            <h2 class="crossword__modal-title">¡Felicidades! 🎉</h2>
+            <p class="crossword__modal-text">Has completado el crucigrama correctamente.</p>
+            <div class="crossword__results">
+              <div class="crossword__result-item">
+                <span class="crossword__result-label">Palabras completadas</span>
+                <span class="crossword__result-value crossword__result-value--success" id="crossword-final-words">0</span>
+              </div>
+              <div class="crossword__result-item">
+                <span class="crossword__result-label">Pistas usadas</span>
+                <span class="crossword__result-value" id="crossword-final-hints">0</span>
+              </div>
+            </div>
+            <div class="crossword__modal-actions">
+              <button class="crossword__modal-btn crossword__modal-btn--primary" id="crossword-finish">Finalizar</button>
             </div>
           </div>
         </div>
@@ -216,11 +266,29 @@ export function startCrosswordGame({ container, game, onExit }) {
   }
 
   function wireEvents() {
-    // Exit button
+    // Exit button - mostrar modal
     container.querySelector('#crossword-exit-btn')?.addEventListener('click', () => {
-      if (confirm('¿Deseas salir del juego?')) {
-        onExit?.();
-      }
+      showExitModal();
+    });
+
+    // Botones del modal de salida
+    container.querySelector('#crossword-cancel-exit')?.addEventListener('click', () => {
+      hideExitModal();
+    });
+
+    container.querySelector('#crossword-confirm-exit')?.addEventListener('click', () => {
+      hideExitModal();
+      onExit?.();
+    });
+
+    // Botón del modal de alerta
+    container.querySelector('#crossword-alert-ok')?.addEventListener('click', () => {
+      hideAlertModal();
+    });
+
+    // Botón del modal de completado
+    container.querySelector('#crossword-finish')?.addEventListener('click', () => {
+      onExit?.();
     });
 
     // Check button
@@ -495,9 +563,53 @@ export function startCrosswordGame({ container, game, onExit }) {
     }
   }
 
+  function showExitModal() {
+    const modal = container.querySelector('#crossword-exit-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  function hideExitModal() {
+    const modal = container.querySelector('#crossword-exit-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  function showAlertModal(message) {
+    const modal = container.querySelector('#crossword-alert-modal');
+    const text = container.querySelector('#crossword-alert-text');
+
+    if (text) text.textContent = message;
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
+  function hideAlertModal() {
+    const modal = container.querySelector('#crossword-alert-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  function showCompleteModal() {
+    const modal = container.querySelector('#crossword-complete-modal');
+    const finalWords = container.querySelector('#crossword-final-words');
+    const finalHints = container.querySelector('#crossword-final-hints');
+
+    if (finalWords) finalWords.textContent = state.placements.length;
+    if (finalHints) finalHints.textContent = state.hintsUsed;
+
+    if (modal) {
+      modal.classList.remove('hidden');
+    }
+  }
+
   function handleHint() {
     if (!state.selectedCell) {
-      alert('Selecciona una celda primero');
+      showAlertModal('Selecciona una celda primero');
       return;
     }
 
@@ -604,8 +716,7 @@ export function startCrosswordGame({ container, game, onExit }) {
     showCelebration();
 
     setTimeout(() => {
-      alert('¡Felicidades! Has completado el crucigrama.');
-      onExit?.();
+      showCompleteModal();
     }, 1500);
   }
 

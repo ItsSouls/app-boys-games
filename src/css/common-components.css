@@ -135,10 +135,6 @@
   position: relative;
 }
 
-.vocabulario-hero {
-  margin-bottom: var(--spacing-4);
-}
-
 .videos-hero-content,
 .vocabulario-hero-content {
   flex: 1;

@@ -115,6 +115,46 @@ const configValidators = {
       valid: errors.length === 0,
       errors
     };
+  },
+
+  /**
+   * Valida configuración de Burbujas
+   * @param {Object} config
+   * @returns {Object} { valid: boolean, errors: string[] }
+   */
+  bubbles: (config) => {
+    const errors = [];
+
+    if (!config.topic || typeof config.topic !== 'string') {
+      errors.push('El campo "topic" (temática) es requerido');
+    }
+
+    if (!Array.isArray(config.vocabulary) || config.vocabulary.length < 6) {
+      errors.push('Debe incluir al menos 6 términos de vocabulario');
+    }
+
+    if (config.vocabulary) {
+      config.vocabulary.forEach((item, index) => {
+        if (!item.id || typeof item.id !== 'string') {
+          errors.push(`El ID del término en posición ${index + 1} es requerido`);
+        }
+        if (!item.term || typeof item.term !== 'string' || item.term.trim().length === 0) {
+          errors.push(`El término en posición ${index + 1} no es válido`);
+        }
+        // image y audio son opcionales
+        if (item.image && typeof item.image !== 'string') {
+          errors.push(`La imagen del término en posición ${index + 1} debe ser una URL válida`);
+        }
+        if (item.audio && typeof item.audio !== 'string') {
+          errors.push(`El audio del término en posición ${index + 1} debe ser una URL o base64 válido`);
+        }
+      });
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors
+    };
   }
 };
 
@@ -131,7 +171,7 @@ export const gameService = {
     if (!validator) {
       return {
         valid: false,
-        errors: [`Tipo de juego "${type}" no soportado. Tipos disponibles: wordsearch, hangman, crossword`]
+        errors: [`Tipo de juego "${type}" no soportado. Tipos disponibles: wordsearch, hangman, crossword, bubbles`]
       };
     }
 

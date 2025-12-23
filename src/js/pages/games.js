@@ -42,9 +42,9 @@ const GAME_TYPES = [
   {
     type: 'bubbles',
     name: 'Explotar Burbujas',
-    icon: '💭',
+    icon: '🫧',
     description: 'Revienta las burbujas con las respuestas correctas',
-    available: false
+    available: true
   }
 ];
 
@@ -182,19 +182,24 @@ function openGameThemeSelection(gameType) {
   openThemeSelection(gameType, games);
 }
 
+// Función nombrada para el botón de volver (para poder removerla)
+function handleGamesBackClick() {
+  window.router.navigate('/');
+}
+
 /**
  * Inicializa la vista de juegos
  */
 export function initGames() {
   console.log('[games] Initializing games view');
 
-  // Botón volver
+  // Botón volver - siempre reinicializar para evitar problemas
   const backBtn = document.getElementById('games-back-btn');
-  if (backBtn && !backBtn.__wired) {
-    backBtn.__wired = true;
-    backBtn.addEventListener('click', () => {
-      window.router.navigate('/');
-    });
+  if (backBtn) {
+    // Remover listener previo si existe
+    backBtn.removeEventListener('click', handleGamesBackClick);
+    // Añadir listener fresco
+    backBtn.addEventListener('click', handleGamesBackClick);
   }
 
   // Renderizar juegos (detecta automáticamente si el usuario está autenticado)

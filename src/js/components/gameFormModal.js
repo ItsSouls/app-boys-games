@@ -1,11 +1,13 @@
 // gameFormModal.js - Modal para crear/editar juegos
 import { api } from '../services/api.js';
+import { createAudioRecorder } from './audioRecorder.js';
 
 let modalState = {
   mode: 'create', // 'create' or 'edit'
   gameId: null,
   gameType: null,
-  onSuccess: null
+  onSuccess: null,
+  audioRecorders: [] // Audio recorders for bubbles game
 };
 
 const GAME_TYPE_INFO = {
@@ -23,6 +25,11 @@ const GAME_TYPE_INFO = {
     name: 'Crucigrama',
     icon: '🧩',
     description: 'Crea un crucigrama con palabras y definiciones'
+  },
+  bubbles: {
+    name: 'Burbujas',
+    icon: '🫧',
+    description: 'Crea un juego de burbujas con vocabulario'
   }
 };
 
@@ -127,6 +134,15 @@ function renderCreateForm() {
           <span class="game-type-selector-btn__icon">🧩</span>
           <span class="game-type-selector-btn__name">Crucigrama</span>
         </button>
+
+        <button
+          type="button"
+          class="game-type-selector-btn"
+          data-type="bubbles"
+        >
+          <span class="game-type-selector-btn__icon">🫧</span>
+          <span class="game-type-selector-btn__name">Burbujas</span>
+        </button>
       </div>
     </div>
 
@@ -164,6 +180,8 @@ function renderGameForm(type, gameData = null) {
     return renderHangmanForm(gameData);
   } else if (type === 'crossword') {
     return renderCrosswordForm(gameData);
+  } else if (type === 'bubbles') {
+    return renderBubblesForm(gameData);
   }
   return '<p>Tipo de juego no soportado</p>';
 }
@@ -621,6 +639,154 @@ function renderCrosswordCluesList(clues = []) {
 }
 
 /**
+ * Formulario de Burbujas
+ */
+function renderBubblesForm(gameData = null) {
+  const data = gameData || {};
+  const config = data.config || {};
+  const vocabulary = config.vocabulary || [];
+
+  return `
+    <form class="game-form" id="game-form" data-type="bubbles">
+      <div class="form-section">
+        <h3 class="form-section__title">Información General</h3>
+
+        <div class="form-group">
+          <label for="game-title" class="form-label">Título del Juego <span class="required">*</span></label>
+          <input
+            type="text"
+            id="game-title"
+            name="title"
+            class="form-input"
+            placeholder="Ej: Vocabulario de Animales"
+            value="${escapeHtml(data.title || '')}"
+            required
+            maxlength="100"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="game-description" class="form-label">Descripción</label>
+          <textarea
+            id="game-description"
+            name="description"
+            class="form-textarea"
+            placeholder="Descripción breve del juego..."
+            rows="2"
+            maxlength="200"
+          >${escapeHtml(data.description || '')}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="game-cover" class="form-label">Portada (URL de imagen)</label>
+          <input
+            type="url"
+            id="game-cover"
+            name="coverImage"
+            class="form-input"
+            placeholder="https://ejemplo.com/portada.jpg"
+            value="${escapeHtml(data.coverImage || '')}"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="game-topic" class="form-label">Temática del Vocabulario <span class="required">*</span></label>
+          <input
+            type="text"
+            id="game-topic"
+            name="topic"
+            class="form-input"
+            placeholder="Ej: Animales, Colores, Frutas"
+            value="${escapeHtml(config.topic || data.topic || '')}"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="game-category" class="form-label">Categoría</label>
+          <select id="game-category" name="category" class="form-select">
+            <option value="General">General</option>
+            <option value="Vocabulario" ${data.category === 'Vocabulario' ? 'selected' : ''}>Vocabulario</option>
+            <option value="Gramatica" ${data.category === 'Gramatica' ? 'selected' : ''}>Gramática</option>
+            <option value="Matematicas" ${data.category === 'Matematicas' ? 'selected' : ''}>Matemáticas</option>
+            <option value="Cultura" ${data.category === 'Cultura' ? 'selected' : ''}>Cultura</option>
+            <option value="Ciencias" ${data.category === 'Ciencias' ? 'selected' : ''}>Ciencias</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__title">Vocabulario</h3>
+        <p class="form-hint">Añade al menos 6 términos de vocabulario. Cada término puede incluir imagen y audio.</p>
+
+        <div id="bubbles-vocabulary-list">
+          ${renderBubblesVocabularyList(vocabulary)}
+        </div>
+
+        <button type="button" class="btn btn--secondary" id="add-vocabulary-btn" style="width: 100%; margin-top: 12px;">
+          + Añadir Término
+        </button>
+      </div>
+
+      <div class="game-form-modal__footer">
+        <button type="button" class="btn btn--secondary" id="cancel-game-btn">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn--primary" id="save-game-btn">
+          ${modalState.mode === 'edit' ? 'Guardar Cambios' : 'Crear Juego de Burbujas'}
+        </button>
+      </div>
+    </form>
+  `;
+}
+
+/**
+ * Renderiza la lista de vocabulario de burbujas
+ */
+function renderBubblesVocabularyList(vocabulary = []) {
+  if (vocabulary.length === 0) {
+    vocabulary = [{ id: '', term: '', image: '', audio: '' }];
+  }
+
+  return vocabulary.map((item, index) => `
+    <div class="bubbles-vocab-item" data-index="${index}">
+      <div class="form-group">
+        <label class="form-label">Término ${index + 1} <span class="required">*</span></label>
+        <input
+          type="text"
+          class="form-input bubbles-term-input"
+          placeholder="PERRO"
+          value="${escapeHtml(item.term || '')}"
+          required
+        />
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Imagen (URL)</label>
+          <input
+            type="url"
+            class="form-input bubbles-image-input"
+            placeholder="https://ejemplo.com/perro.jpg"
+            value="${escapeHtml(item.image || '')}"
+          />
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label class="form-label">Audio (Grabación)</label>
+          <div class="bubbles-audio-recorder" data-vocab-index="${index}"></div>
+        </div>
+        ${vocabulary.length > 1 ? `
+          <button type="button" class="btn-remove-vocab" data-index="${index}" title="Eliminar">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M2 4H16M7 4V2H11V4M14 4V16H4V4" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+/**
  * Wire eventos del modal
  */
 function wireModalEvents(overlay, gameData) {
@@ -712,12 +878,16 @@ function wireGameForm(overlay, gameData) {
     await handleFormSubmit(form, gameData);
   });
 
-  // Si es ahorcado o crucigrama, wire botones de añadir/eliminar palabras
+  // Si es ahorcado o crucigrama o burbujas, wire botones de añadir/eliminar palabras
   const gameType = form.dataset.type;
   if (gameType === 'hangman') {
     wireHangmanWordButtons(overlay);
   } else if (gameType === 'crossword') {
     wireCrosswordClueButtons(overlay);
+  } else if (gameType === 'bubbles') {
+    // Pass vocabulary data for audio initialization when editing
+    const vocabularyData = gameData && gameData.config ? gameData.config.vocabulary : null;
+    wireBubblesVocabularyButtons(overlay, vocabularyData);
   }
 }
 
@@ -881,6 +1051,158 @@ function wireRemoveClueButtons(overlay) {
 }
 
 /**
+ * Wire botones de vocabulario del juego de burbujas
+ */
+function wireBubblesVocabularyButtons(overlay, vocabularyData = null) {
+  const addBtn = overlay.querySelector('#add-vocabulary-btn');
+  const vocabList = overlay.querySelector('#bubbles-vocabulary-list');
+
+  if (addBtn && !addBtn.__wired) {
+    addBtn.__wired = true;
+    addBtn.addEventListener('click', () => {
+      const currentItems = Array.from(vocabList.querySelectorAll('.bubbles-vocab-item'));
+      const newIndex = currentItems.length;
+
+      const newVocabHtml = `
+        <div class="bubbles-vocab-item" data-index="${newIndex}">
+          <div class="form-group">
+            <label class="form-label">Término ${newIndex + 1} <span class="required">*</span></label>
+            <input
+              type="text"
+              class="form-input bubbles-term-input"
+              placeholder="PERRO"
+              required
+            />
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Imagen (URL)</label>
+              <input
+                type="url"
+                class="form-input bubbles-image-input"
+                placeholder="https://ejemplo.com/perro.jpg"
+              />
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label class="form-label">Audio (Grabación)</label>
+              <div class="bubbles-audio-recorder" data-vocab-index="${newIndex}"></div>
+            </div>
+            <button type="button" class="btn-remove-vocab" data-index="${newIndex}" title="Eliminar">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M2 4H16M7 4V2H11V4M14 4V16H4V4" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `;
+
+      vocabList.insertAdjacentHTML('beforeend', newVocabHtml);
+      wireRemoveVocabButtons(overlay);
+      initializeBubblesAudioRecorders(overlay, null);
+    });
+  }
+
+  wireRemoveVocabButtons(overlay);
+  initializeBubblesAudioRecorders(overlay, vocabularyData);
+}
+
+/**
+ * Wire botones de eliminar vocabulario
+ */
+function wireRemoveVocabButtons(overlay) {
+  const removeButtons = overlay.querySelectorAll('.btn-remove-vocab');
+
+  removeButtons.forEach(btn => {
+    if (btn.__wired) return;
+    btn.__wired = true;
+
+    btn.addEventListener('click', () => {
+      const vocabItem = btn.closest('.bubbles-vocab-item');
+      if (vocabItem) {
+        const vocabIndex = parseInt(vocabItem.dataset.index);
+
+        // Cleanup audio recorder
+        if (modalState.audioRecorders[vocabIndex]) {
+          modalState.audioRecorders[vocabIndex].cleanup();
+          modalState.audioRecorders[vocabIndex] = null;
+        }
+
+        vocabItem.remove();
+
+        // Renumerar los términos restantes
+        const vocabList = overlay.querySelector('#bubbles-vocabulary-list');
+        const items = vocabList.querySelectorAll('.bubbles-vocab-item');
+        items.forEach((item, index) => {
+          item.dataset.index = index;
+          const label = item.querySelector('.form-label');
+          if (label) {
+            label.innerHTML = `Término ${index + 1} <span class="required">*</span>`;
+          }
+          // Update data-vocab-index for audio recorder container
+          const recorderContainer = item.querySelector('.bubbles-audio-recorder');
+          if (recorderContainer) {
+            recorderContainer.dataset.vocabIndex = index;
+          }
+        });
+
+        // Rebuild audioRecorders array
+        const newRecorders = [];
+        items.forEach((item, index) => {
+          const oldIndex = parseInt(item.dataset.index);
+          if (modalState.audioRecorders[oldIndex]) {
+            newRecorders[index] = modalState.audioRecorders[oldIndex];
+          }
+        });
+        modalState.audioRecorders = newRecorders;
+      }
+    });
+  });
+}
+
+/**
+ * Inicializa los grabadores de audio para los términos de vocabulario
+ */
+function initializeBubblesAudioRecorders(overlay, vocabularyData = null) {
+  const recorderContainers = overlay.querySelectorAll('.bubbles-audio-recorder');
+
+  recorderContainers.forEach(container => {
+    // Skip if already initialized
+    if (container.__initialized) return;
+    container.__initialized = true;
+
+    const vocabIndex = parseInt(container.dataset.vocabIndex);
+
+    // Get initial audio if editing
+    let initialAudio = null;
+
+    // First check if there's already a recorder with audio
+    if (modalState.audioRecorders && modalState.audioRecorders[vocabIndex]) {
+      initialAudio = modalState.audioRecorders[vocabIndex].getAudio();
+    }
+    // Otherwise, check if we have vocabulary data (when editing)
+    else if (vocabularyData && vocabularyData[vocabIndex] && vocabularyData[vocabIndex].audio) {
+      initialAudio = vocabularyData[vocabIndex].audio;
+    }
+
+    // Create audio recorder
+    const recorder = createAudioRecorder({
+      container,
+      initialAudio,
+      onAudioRecorded: (base64Audio) => {
+        // Audio is automatically stored via the recorder's getAudio() method
+        // No need to store it separately
+      }
+    });
+
+    // Store recorder instance
+    if (!modalState.audioRecorders) {
+      modalState.audioRecorders = [];
+    }
+    modalState.audioRecorders[vocabIndex] = recorder;
+  });
+}
+
+/**
  * Maneja el submit del formulario
  */
 async function handleFormSubmit(form, gameData) {
@@ -963,6 +1285,39 @@ async function handleFormSubmit(form, gameData) {
       topic: formData.get('topic'),
       clues
     };
+  } else if (type === 'bubbles') {
+    const vocabItems = form.querySelectorAll('.bubbles-vocab-item');
+    const vocabulary = [];
+
+    vocabItems.forEach((item, index) => {
+      const term = item.querySelector('.bubbles-term-input').value.trim().toUpperCase();
+      const image = item.querySelector('.bubbles-image-input').value.trim();
+
+      // Get audio from recorder instead of URL input
+      let audio = '';
+      if (modalState.audioRecorders && modalState.audioRecorders[index]) {
+        audio = modalState.audioRecorders[index].getAudio() || '';
+      }
+
+      if (term) {
+        vocabulary.push({
+          id: `${Date.now()}-${index}`,
+          term,
+          image,
+          audio
+        });
+      }
+    });
+
+    if (vocabulary.length < 6) {
+      alert('Debes incluir al menos 6 términos de vocabulario');
+      return;
+    }
+
+    gamePayload.config = {
+      topic: formData.get('topic'),
+      vocabulary
+    };
   }
 
   // Mostrar loading
@@ -1006,6 +1361,15 @@ async function handleFormSubmit(form, gameData) {
  * Cierra el modal
  */
 function closeModal() {
+  // Cleanup audio recorders
+  if (modalState.audioRecorders) {
+    modalState.audioRecorders.forEach(recorder => {
+      if (recorder && recorder.cleanup) {
+        recorder.cleanup();
+      }
+    });
+  }
+
   const overlay = document.getElementById('game-form-modal-overlay');
   if (overlay) {
     overlay.remove();
@@ -1015,7 +1379,8 @@ function closeModal() {
     mode: 'create',
     gameId: null,
     gameType: null,
-    onSuccess: null
+    onSuccess: null,
+    audioRecorders: []
   };
 }
 

@@ -75,6 +75,8 @@ function renderAdminPanel() {
           <option value="">Todos los tipos</option>
           <option value="wordsearch">Sopa de Letras</option>
           <option value="hangman">Ahorcado</option>
+          <option value="crossword">Crucigrama</option>
+          <option value="bubbles">Burbujas</option>
         </select>
         <select id="games-admin-filter-status" class="admin-filter-select" aria-label="Filtrar por estado">
           <option value="">Estado</option>
@@ -258,7 +260,9 @@ function renderGamesList() {
 function createGameRow(game) {
   const typeNames = {
     wordsearch: 'Sopa de Letras',
-    hangman: 'Ahorcado'
+    hangman: 'Ahorcado',
+    crossword: 'Crucigrama',
+    bubbles: 'Burbujas'
   };
 
   const date = new Date(game.createdAt).toLocaleDateString('es-ES');

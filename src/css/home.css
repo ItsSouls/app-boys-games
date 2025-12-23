@@ -12,12 +12,18 @@
   margin-bottom: 0;
 }
 
+#home-page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height) - 150px);
+}
+
 @media (min-width: 864px) {
   .hero-section {
     flex-direction: row;
     align-items: center;
     gap: var(--spacing-8);
-    padding: var(--spacing-8) 0 0 0;
+    padding: 150px 0 0 0;
   }
 }
 
@@ -135,26 +141,29 @@
 
 /* Menu Cards - Minimalist Grid */
 .main-menu {
-  margin-bottom: var(--spacing-8);
+  margin-top: auto;
+  margin-bottom: 0;
 }
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
-  gap: var(--spacing-3);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 160px));
+  gap: var(--spacing-2);
 }
 
 .menu-card {
   background: var(--color-white);
   border: 1px solid var(--color-border-light);
   border-radius: var(--radius-md);
-  padding: var(--spacing-4);
+  padding: var(--spacing-2);
   cursor: pointer;
   transition: all var(--transition-base);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3);
-  text-align: left;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  text-align: center;
 }
 
 .menu-card:hover {
@@ -164,7 +173,7 @@
 }
 
 .menu-card-icon {
-  font-size: 1.5rem;
+  font-size: 2.25rem;
   color: var(--color-primary);
   line-height: 1;
 }
@@ -176,7 +185,7 @@
 }
 
 .menu-card-title {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0;
@@ -184,7 +193,7 @@
 }
 
 .menu-card-description {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: var(--color-text-secondary);
   margin: 0;
   line-height: 1.4;
@@ -193,6 +202,9 @@
 /* Header Styles Update */
 .header {
   border-bottom: 1px solid var(--color-border-light);
+  position: relative;
+  z-index: var(--z-header);
+  background: var(--color-bg-secondary);
 }
 
 .header .container {
@@ -379,6 +391,9 @@ button.header-nav-link {
 .footer {
   border-top: 1px solid var(--color-border-light);
   padding: var(--spacing-4) 0;
+  position: relative;
+  z-index: var(--z-header);
+  background: var(--color-bg-secondary);
 }
 
 .footer-links {
@@ -425,4 +440,9 @@ button.header-nav-link {
   to {
     opacity: 1;
   }
+}
+
+.header,
+.footer {
+
 }

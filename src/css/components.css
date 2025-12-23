@@ -3,13 +3,6 @@
   margin-bottom: var(--spacing-8);
 }
 
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--spacing-4);
-  margin-bottom: var(--spacing-8);
-}
-
 /* Menu Card - Clean Minimalist Design */
 .menu-card {
   background: var(--color-white);

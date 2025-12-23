@@ -143,18 +143,10 @@ function wireThemeEvents() {
       }
 
       import('../pages/games.js').then(module => {
-        module.renderGames?.();
+        module.initGames?.();
       });
 
       maybeShowSectionAdminGear('games');
-
-      const mainBackBtn = document.getElementById('games-back-btn');
-      if (mainBackBtn && !mainBackBtn.__wired) {
-        mainBackBtn.__wired = true;
-        mainBackBtn.addEventListener('click', () => {
-          window.router?.navigate('/');
-        });
-      }
     });
   }
 
@@ -181,7 +173,7 @@ function wireThemeEvents() {
               container.innerHTML = previousGamesUserView;
               previousGamesUserView = null;
             }
-            import('../pages/games.js').then(mod => mod.renderGames?.());
+            import('../pages/games.js').then(mod => mod.initGames?.());
             maybeShowSectionAdminGear('games');
           }
         });
@@ -198,6 +190,10 @@ function wireThemeEvents() {
       } else if (type === 'crossword') {
         import('../games/crossword/index.js').then(module => {
           mountGame(module.startCrosswordGame);
+        });
+      } else if (type === 'bubbles') {
+        import('../games/bubbles/index.js').then(module => {
+          mountGame(module.startBubblesGame);
         });
       } else {
         alert('Este tipo de juego aún no está disponible.');
