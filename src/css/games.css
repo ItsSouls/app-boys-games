@@ -450,16 +450,6 @@
   border-color: var(--color-primary);
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .games-hero {

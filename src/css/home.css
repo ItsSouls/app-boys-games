@@ -433,15 +433,6 @@ button.header-nav-link {
   display: none;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .header,
 .footer {
 

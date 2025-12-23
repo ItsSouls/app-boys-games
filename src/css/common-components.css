@@ -524,3 +524,108 @@
   border-color: var(--color-primary);
   box-shadow: 0 0 0 4px rgba(0, 217, 126, 0.1);
 }
+
+/* ============================================
+   GAME MODAL FRAMEWORK (Consolidated from 4+ games)
+   ============================================ */
+
+/* Modal Overlays - Common styles for all game modals */
+.hangman__modal,
+.wordsearch__modal,
+.crossword__modal,
+.bubbles__modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal Content - Common styles for all game modal content */
+.hangman__modal-content,
+.wordsearch__modal-content,
+.crossword__modal-content,
+.bubbles__modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Large Modal Variant */
+.hangman__modal-content--large,
+.wordsearch__modal-content--large,
+.crossword__modal-content--large,
+.bubbles__modal-content--large {
+  max-width: 500px;
+}
+
+/* Modal Buttons - Base styles for all game modal buttons */
+.hangman__modal-btn,
+.wordsearch__modal-btn,
+.crossword__modal-btn,
+.bubbles__modal-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.hangman__modal-btn--primary,
+.wordsearch__modal-btn--primary,
+.crossword__modal-btn--primary,
+.bubbles__modal-btn--primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.hangman__modal-btn--primary:hover,
+.wordsearch__modal-btn--primary:hover,
+.crossword__modal-btn--primary:hover,
+.bubbles__modal-btn--primary:hover {
+  background: var(--color-primary-dark, #059669);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 217, 126, 0.4);
+}
+
+.hangman__modal-btn--secondary,
+.wordsearch__modal-btn--secondary,
+.crossword__modal-btn--secondary,
+.bubbles__modal-btn--secondary {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.hangman__modal-btn--secondary:hover,
+.wordsearch__modal-btn--secondary:hover,
+.crossword__modal-btn--secondary:hover,
+.bubbles__modal-btn--secondary:hover {
+  background: #d1d5db;
+}
+
+.hangman__modal-btn--danger,
+.wordsearch__modal-btn--danger,
+.crossword__modal-btn--danger,
+.bubbles__modal-btn--danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.hangman__modal-btn--danger:hover,
+.wordsearch__modal-btn--danger:hover,
+.crossword__modal-btn--danger:hover,
+.bubbles__modal-btn--danger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}

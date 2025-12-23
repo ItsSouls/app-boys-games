@@ -252,58 +252,9 @@
   cursor: not-allowed;
 }
 
-/* Modal Styles */
-.hangman__modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
-  animation: fadeIn 0.2s ease-out;
-}
-
+/* Modal Styles - Base styles in common-components.css */
 .hangman__modal.hidden {
   display: none;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.hangman__modal-content {
-  background: white;
-  border-radius: 20px;
-  padding: 32px;
-  max-width: 400px;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease-out;
-}
-
-.hangman__modal-content--large {
-  max-width: 500px;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
 }
 
 .hangman__modal-title {
@@ -328,46 +279,7 @@
   justify-content: center;
 }
 
-.hangman__modal-btn {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.2s;
-  min-width: 120px;
-}
-
-.hangman__modal-btn--primary {
-  background: var(--color-primary);
-  color: white;
-}
-
-.hangman__modal-btn--primary:hover {
-  background: var(--color-primary-dark, #059669);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 217, 126, 0.4);
-}
-
-.hangman__modal-btn--secondary {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.hangman__modal-btn--secondary:hover {
-  background: #d1d5db;
-}
-
-.hangman__modal-btn--danger {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-}
-
-.hangman__modal-btn--danger:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-}
+/* Modal buttons - Base styles in common-components.css */
 
 /* Results Display */
 .hangman__results {
