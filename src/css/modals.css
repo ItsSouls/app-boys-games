@@ -507,14 +507,13 @@
 .theory-admin-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: var(--spacing-4);
   z-index: var(--z-modal-admin);
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 0.15s ease-out;
 }
 
 .theory-admin-modal {
@@ -525,7 +524,8 @@
   max-height: 90vh;
   box-shadow: var(--shadow-xl);
   overflow: hidden;
-  animation: popIn 0.25s ease;
+  animation: slideUp 0.2s ease-out;
+  will-change: transform;
 }
 
 /* Estilos de feedback admin */
