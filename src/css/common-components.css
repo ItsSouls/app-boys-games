@@ -224,7 +224,7 @@
   width: 100%;
   padding: 16px 20px 16px 52px;
   border: 2px solid var(--color-border-medium);
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   font-size: 1rem;
   font-family: var(--font-family-base);
   color: var(--color-text-primary);
