@@ -64,12 +64,12 @@
 }
 
 .audio-recorder__btn--play {
-  background: #10b981;
+  background: var(--color-success);
   color: white;
 }
 
 .audio-recorder__btn--play:hover {
-  background: #059669;
+  background: var(--color-primary-dark);
 }
 
 .audio-recorder__btn--delete {
@@ -107,7 +107,7 @@
 }
 
 .audio-recorder__status {
-  color: #10b981;
+  color: var(--color-success);
   font-weight: 500;
 }
 

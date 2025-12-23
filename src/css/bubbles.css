@@ -263,7 +263,7 @@
 
 .bubble--explode {
   animation: bubble-explode 0.3s ease-out forwards;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-primary-dark) 100%);
   pointer-events: none;
   z-index: 100;
 }

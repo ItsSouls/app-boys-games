@@ -54,6 +54,10 @@
 	--color-error: #FF6B6B;
 	--color-info: #4ECDC4;
 
+	/* Highlight Colors - for crossword/games */
+	--color-highlight-blue: #dbeafe;
+	--color-highlight-yellow: #fef3c7;
+
 	/* Subtle Shadows - Minimalist */
 	--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
 	--shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);

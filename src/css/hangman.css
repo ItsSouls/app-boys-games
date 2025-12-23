@@ -152,7 +152,7 @@
 }
 
 .hangman__letter--hit {
-  color: #10b981;
+  color: var(--color-success);
 }
 
 .hangman__hint {
@@ -192,8 +192,8 @@
 
 .hangman__key--hit {
   background: #e1f9ee;
-  color: #0f9f6e;
-  border-color: #0f9f6e;
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
 }
 
 .hangman__key--miss {

@@ -151,8 +151,8 @@
 }
 
 .game-type-card[data-type="bubbles"] {
-  --game-color: #10b981;
-  --game-color-light: rgba(16, 185, 129, 0.1);
+  --game-color: var(--color-success);
+  --game-color-light: rgba(0, 217, 126, 0.1);
 }
 
 /* Admin Panel Styles */
