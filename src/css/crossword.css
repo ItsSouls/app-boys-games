@@ -617,35 +617,4 @@
 
 /* Modal buttons - Base styles in common-components.css */
 
-/* Results Display */
-.crossword__results {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.crossword__result-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: #f9fafb;
-  border-radius: 12px;
-}
-
-.crossword__result-label {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 600;
-}
-
-.crossword__result-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a2e;
-}
-
-.crossword__result-value--success {
-  color: var(--color-primary);
-}
+/* Results Display - Base styles in common-components.css */

@@ -342,39 +342,9 @@
 
 /* Modal buttons - Base styles in common-components.css */
 
-/* Results Display */
-.bubbles__results {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
-}
+/* Results Display - Base styles in common-components.css */
 
-.bubbles__result-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  background: #f9fafb;
-  border-radius: 12px;
-}
-
-.bubbles__result-label {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 600;
-}
-
-.bubbles__result-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a2e;
-}
-
-.bubbles__result-value--success {
-  color: var(--color-primary);
-}
-
+/* Bubbles-specific result variant */
 .bubbles__result-value--error {
   color: #ef4444;
 }
