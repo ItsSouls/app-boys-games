@@ -9,58 +9,13 @@
   gap: var(--spacing-6);
 }
 
-.hangman__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 24px;
-  background: white;
-  color: var(--color-text-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 20;
-  gap: 20px;
-  flex-wrap: wrap;
-  border-bottom: 3px solid var(--color-primary);
-}
+/* Header - Base styles in common-components.css */
 
-.hangman__title-area {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-
-.hangman__title {
-  font-size: 20px;
-  font-weight: 700;
-  margin: 0;
-  color: var(--color-text-primary);
-  white-space: nowrap;
-}
-
+/* Hangman-specific meta area */
 .hangman__meta {
   display: flex;
   gap: 8px;
   align-items: center;
-}
-
-.hangman__badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  background: var(--color-primary);
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  white-space: nowrap;
-}
-
-.hangman__badge--ghost {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border-light);
 }
 
 .hangman__actions {

@@ -349,29 +349,6 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--spacing-2);
-  /* Optimizaciones de rendimiento para scroll */
-  -webkit-overflow-scrolling: touch;
-  /* Firefox scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 217, 126, 0.3) transparent;
-}
-
-/* Scrollbar personalizada - Estilo minimalista verde */
-.vocabulario-admin__list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.vocabulario-admin__list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.vocabulario-admin__list::-webkit-scrollbar-thumb {
-  background: rgba(0, 217, 126, 0.3);
-  border-radius: 4px;
-}
-
-.vocabulario-admin__list::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 217, 126, 0.5);
 }
 
 .vocabulario-admin__list-item {
@@ -508,29 +485,6 @@
   padding: var(--spacing-4);
   padding-top: var(--spacing-6);
   padding-bottom: var(--spacing-4);
-  /* Optimizaciones de rendimiento para scroll */
-  -webkit-overflow-scrolling: touch;
-  /* Firefox scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 217, 126, 0.3) transparent;
-}
-
-/* Scrollbar personalizada para el editor */
-.vocabulario-admin__editor::-webkit-scrollbar {
-  width: 8px;
-}
-
-.vocabulario-admin__editor::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.vocabulario-admin__editor::-webkit-scrollbar-thumb {
-  background: rgba(0, 217, 126, 0.3);
-  border-radius: 4px;
-}
-
-.vocabulario-admin__editor::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 217, 126, 0.5);
 }
 
 .vocabulario-admin__editor-header {
