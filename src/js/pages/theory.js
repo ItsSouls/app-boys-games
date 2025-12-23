@@ -30,6 +30,24 @@ const THEORY_SANITIZE_CONFIG = {
 
 const HTML_TAG_REGEX = /<([a-z][\s\S]*?)>/i;
 
+// Cache para hints extraídos (optimización de rendimiento)
+const hintCache = new Map();
+
+/**
+ * Utility function para debounce
+ */
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
 /**
  * Detecta si el contenido es Markdown o HTML
  * Si parece HTML (tiene tags), lo trata como HTML
@@ -148,11 +166,29 @@ async function loadPages(sectionName) {
 
     state[sectionName].pages = pages;
     state[sectionName].filteredPages = [...pages];
+
+    // Limpiar cache de hints para esta sección (mantener cache fresco)
+    cleanHintCache(pages);
+
     return true;
   } catch (err) {
     console.error('[theory]', err);
     return false;
   }
+}
+
+// Limpiar hints del cache que ya no existen en las páginas actuales
+function cleanHintCache(currentPages) {
+  const currentIds = new Set(currentPages.map(p => p._id));
+  const keysToDelete = [];
+
+  for (const key of hintCache.keys()) {
+    if (!currentIds.has(key)) {
+      keysToDelete.push(key);
+    }
+  }
+
+  keysToDelete.forEach(key => hintCache.delete(key));
 }
 
 // Verificar si el usuario es admin
@@ -330,34 +366,48 @@ function renderUserView(sectionName) {
     `;
   }).join('');
 
-  // Event listeners para abrir modales
-  gridContainer.querySelectorAll('.vocabulario-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      const pageId = card.dataset.pageId;
-      const page = pages.find(p => p._id === pageId);
-      if (page) {
-        openTheoryModal(page, sectionName);
+  // Event delegation para abrir modales (solo wiring una vez)
+  if (!gridContainer.__wired) {
+    gridContainer.__wired = true;
+    gridContainer.addEventListener('click', (e) => {
+      const card = e.target.closest('.vocabulario-card');
+      if (card) {
+        const pageId = card.dataset.pageId;
+        const page = pages.find(p => p._id === pageId);
+        if (page) {
+          openTheoryModal(page, sectionName);
+        }
       }
     });
-  });
+  }
 }
 
-// Extraer hint/ejemplo del contenido
+// Extraer hint/ejemplo del contenido (con cache)
 function extractHint(page) {
   // Buscar en el contenido HTML algo que parezca un ejemplo
   if (!page.content) return '';
 
+  // Verificar cache primero
+  const cacheKey = page._id;
+  if (hintCache.has(cacheKey)) {
+    return hintCache.get(cacheKey);
+  }
+
+  // Si no está en cache, calcular
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = sanitizeTheoryHtml(page.content);
 
   // Buscar citas o texto en cursiva
   const quote = tempDiv.querySelector('blockquote, em, i');
+  let hint = '';
   if (quote) {
     const text = quote.textContent.trim();
-    return text.length > 50 ? text.slice(0, 50) + '...' : text;
+    hint = text.length > 50 ? text.slice(0, 50) + '...' : text;
   }
 
-  return '';
+  // Guardar en cache
+  hintCache.set(cacheKey, hint);
+  return hint;
 }
 
 // Escape HTML para prevenir XSS
@@ -403,13 +453,17 @@ export async function renderTheory(sectionName) {
   renderFilters(sectionName);
   renderUserView(sectionName);
 
-  // Wire search input (solo una vez)
+  // Wire search input con debounce (solo una vez)
   if (searchInput && !searchInput.__wired) {
     searchInput.__wired = true;
-    searchInput.addEventListener('input', (e) => {
-      state[sectionName].searchTerm = e.target.value;
+    const debouncedSearch = debounce((value) => {
+      state[sectionName].searchTerm = value;
       filterPages(sectionName);
       renderUserView(sectionName);
+    }, 300);
+
+    searchInput.addEventListener('input', (e) => {
+      debouncedSearch(e.target.value);
     });
   }
 
