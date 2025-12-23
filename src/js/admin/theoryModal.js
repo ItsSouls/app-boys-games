@@ -83,7 +83,11 @@ export async function openTheoryAdminModal(section) {
         <!-- Editor de contenido Markdown -->
         <div class="vocabulario-admin__content-editor">
           <label class="vocabulario-admin__content-label">Contenido Principal (Markdown)</label>
-          <textarea id="theory-markdown-editor"></textarea>
+          <div class="vocabulario-admin__editor-loading" id="theory-editor-loading">
+            <div class="vocabulario-admin__editor-spinner"></div>
+            <span>Cargando editor...</span>
+          </div>
+          <textarea id="theory-markdown-editor" style="display: none;"></textarea>
         </div>
 
         <!-- Contenedor de acciones (feedback + botón guardar) -->
@@ -461,27 +465,58 @@ export async function openTheoryAdminModal(section) {
 
   saveBtn.addEventListener('click', saveCurrentPage);
 
-  // Inicializar editor Markdown (EasyMDE)
+  // Inicializar editor Markdown de forma asíncrona para evitar lag
   const markdownTextarea = modal.querySelector('#theory-markdown-editor');
-  state.editor = new EasyMDE({
-    element: markdownTextarea,
-    spellChecker: false,
-    autosave: {
-      enabled: false,
-    },
-    placeholder: 'Escribe el contenido en Markdown...\n\n# Título\n## Subtítulo\n\n**negrita** y *cursiva*\n\n- Lista\n- De elementos\n\n| Columna 1 | Columna 2 |\n|-----------|-----------|',
-    toolbar: [
-      'bold', 'italic', 'heading', '|',
-      'quote', 'unordered-list', 'ordered-list', '|',
-      'link', 'image', 'table', '|',
-      'preview', 'side-by-side', 'fullscreen', '|',
-      'guide'
-    ],
-    status: ['lines', 'words'],
-    minHeight: '300px',
-  });
+  const editorLoading = modal.querySelector('#theory-editor-loading');
 
-  await loadPages();
+  // Defer editor initialization to allow modal to render smoothly
+  const initializeEditor = async () => {
+    // Wait for next animation frame to ensure modal is rendered
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    // Give browser time to paint the modal
+    await new Promise(resolve => setTimeout(resolve, 0));
+
+    try {
+      // Show textarea
+      markdownTextarea.style.display = 'block';
+
+      // Initialize EasyMDE
+      state.editor = new EasyMDE({
+        element: markdownTextarea,
+        spellChecker: false,
+        autosave: {
+          enabled: false,
+        },
+        placeholder: 'Escribe el contenido en Markdown...\n\n# Título\n## Subtítulo\n\n**negrita** y *cursiva*\n\n- Lista\n- De elementos\n\n| Columna 1 | Columna 2 |\n|-----------|-----------|',
+        toolbar: [
+          'bold', 'italic', 'heading', '|',
+          'quote', 'unordered-list', 'ordered-list', '|',
+          'link', 'image', 'table', '|',
+          'preview', 'side-by-side', 'fullscreen', '|',
+          'guide'
+        ],
+        status: ['lines', 'words'],
+        minHeight: '300px',
+      });
+
+      // Hide loading, show editor
+      if (editorLoading) {
+        editorLoading.style.display = 'none';
+      }
+
+      // Load pages after editor is ready
+      await loadPages();
+    } catch (error) {
+      console.error('[theoryModal] Error initializing editor:', error);
+      if (editorLoading) {
+        editorLoading.innerHTML = '<span style="color: #ef4444;">Error al cargar el editor</span>';
+      }
+    }
+  };
+
+  // Start async initialization
+  initializeEditor();
 }
 
 // Helper function
