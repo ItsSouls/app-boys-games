@@ -32,7 +32,7 @@ button {
 	display: flex;
 	flex-direction: column;
 	background-image: url('/background.png');
-	background-size: 80% 100%;
+	background-size: 80% auto;
 	background-position: right top;
 	background-repeat: no-repeat;
 }	
