@@ -367,30 +367,37 @@ export function toggleLanguage() {
 /**
  * Update all translatable elements on the page
  */
-export function updatePageTranslations() {
+export async function updatePageTranslations() {
   // Update all elements with data-i18n attribute
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const translation = t(key);
-    
+
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
       el.placeholder = translation;
     } else {
       el.textContent = translation;
     }
   });
-  
+
   // Update elements with data-i18n-html (for innerHTML)
   document.querySelectorAll('[data-i18n-html]').forEach(el => {
     const key = el.getAttribute('data-i18n-html');
     el.innerHTML = t(key);
   });
-  
+
   // Update language toggle button
   const langBtn = document.getElementById('lang-toggle');
   if (langBtn) {
     langBtn.textContent = currentLang === 'es' ? '🇬🇧 EN' : '🇪🇸 ES';
     langBtn.setAttribute('aria-label', currentLang === 'es' ? 'Switch to English' : 'Cambiar a Español');
+  }
+
+  // Re-render ranking if visible
+  const rankingPage = document.getElementById('ranking-page');
+  if (rankingPage && !rankingPage.classList.contains('hidden')) {
+    const { renderRanking } = await import('../pages/ranking.js');
+    await renderRanking();
   }
 }
 
