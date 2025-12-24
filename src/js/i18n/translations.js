@@ -150,6 +150,8 @@ export const translations = {
     authErrorDesc: 'Por favor, inicia sesión para continuar.',
 
     // Ranking
+    rankingTitle: 'Ranking Global',
+    rankingSubtitle: 'Los mejores jugadores de la plataforma',
     rankingLoading: 'Cargando ranking...',
     rankingError: 'No se pudo cargar el ranking.',
     rankingPlayer: 'Jugador',
@@ -309,6 +311,8 @@ export const translations = {
     authErrorDesc: 'Please log in to continue.',
 
     // Ranking
+    rankingTitle: 'Global Ranking',
+    rankingSubtitle: 'Top players on the platform',
     rankingLoading: 'Loading ranking...',
     rankingError: 'Could not load ranking.',
     rankingPlayer: 'Player',
