@@ -149,6 +149,13 @@ export const translations = {
     authError: 'Error de autenticación',
     authErrorDesc: 'Por favor, inicia sesión para continuar.',
 
+    // Ranking
+    rankingLoading: 'Cargando ranking...',
+    rankingError: 'No se pudo cargar el ranking.',
+    rankingPlayer: 'Jugador',
+    rankingPoints: 'pts',
+    rankingGames: 'Partidas:',
+
     // Common
     loading: 'Cargando...',
     error: 'Error al cargar contenido.',
@@ -300,6 +307,13 @@ export const translations = {
     accessDeniedDesc: 'Only administrators can access this section.',
     authError: 'Authentication error',
     authErrorDesc: 'Please log in to continue.',
+
+    // Ranking
+    rankingLoading: 'Loading ranking...',
+    rankingError: 'Could not load ranking.',
+    rankingPlayer: 'Player',
+    rankingPoints: 'pts',
+    rankingGames: 'Games:',
 
     // Common
     loading: 'Loading...',

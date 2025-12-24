@@ -1,5 +1,6 @@
 // ranking.js - Vista de ranking global
 import { api } from '../services/api.js';
+import { t } from '../i18n/translations.js';
 
 const LIMIT = 10;
 
@@ -8,7 +9,7 @@ export async function renderRanking() {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="ranking-loading">Cargando ranking...</div>
+    <div class="ranking-loading">${t('rankingLoading')}</div>
   `;
 
   try {
@@ -28,7 +29,7 @@ export async function renderRanking() {
     `;
   } catch (error) {
     console.error('[ranking] Error loading ranking:', error);
-    container.innerHTML = `<div class="ranking-error">No se pudo cargar el ranking.</div>`;
+    container.innerHTML = `<div class="ranking-error">${t('rankingError')}</div>`;
   }
 }
 
@@ -37,7 +38,7 @@ function padRanking(list) {
   const missing = Math.max(0, LIMIT - arr.length);
   for (let i = 0; i < missing; i += 1) {
     arr.push({
-      name: `Jugador ${arr.length + 1}`,
+      name: `${t('rankingPlayer')} ${arr.length + 1}`,
       totalScore: 0,
       gamesPlayed: 0,
       gamesCompleted: 0,
@@ -52,8 +53,8 @@ function renderTopCard(player, position) {
     <div class="ranking-card ranking-card--top">
       <div class="ranking-card__medal">${medal}</div>
       <div class="ranking-card__info">
-        <div class="ranking-card__name">${escapeHtml(player.name || 'Jugador')}</div>
-        <div class="ranking-card__score">${player.totalScore || 0} pts</div>
+        <div class="ranking-card__name">${escapeHtml(player.name || t('rankingPlayer'))}</div>
+        <div class="ranking-card__score">${player.totalScore || 0} ${t('rankingPoints')}</div>
       </div>
       <div class="ranking-card__position">#${position}</div>
     </div>
@@ -64,9 +65,9 @@ function renderListItem(player, position) {
   return `
     <div class="ranking-row">
       <div class="ranking-row__pos">#${position}</div>
-      <div class="ranking-row__name">${escapeHtml(player.name || 'Jugador')}</div>
-      <div class="ranking-row__score">${player.totalScore || 0} pts</div>
-      <div class="ranking-row__meta">Partidas: ${player.gamesPlayed || 0}</div>
+      <div class="ranking-row__name">${escapeHtml(player.name || t('rankingPlayer'))}</div>
+      <div class="ranking-row__score">${player.totalScore || 0} ${t('rankingPoints')}</div>
+      <div class="ranking-row__meta">${t('rankingGames')} ${player.gamesPlayed || 0}</div>
     </div>
   `;
 }
